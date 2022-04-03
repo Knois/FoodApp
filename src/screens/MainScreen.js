@@ -1,4 +1,3 @@
-import moment from "moment";
 import React, { useState, useLayoutEffect } from "react";
 import {
   TextInput,
@@ -9,12 +8,9 @@ import {
   Button,
 } from "react-native";
 import MealContainer from "../components/MealContainer";
-import { token } from "../../Token";
+import { token } from "../API/Constants";
+import { currentDateFormatted } from "../methods/Simple";
 
-const currentDate = () => {
-  let date = moment(new Date()).format("YYYY-MM-DD");
-  return date;
-};
 const createUrl = (date) => {
   let url =
     "http://80.87.193.6:8079/v1.0/meal/findByDate?date=" +
@@ -25,8 +21,8 @@ const createUrl = (date) => {
 
 const MainScreen = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
-  const [date, setDate] = useState(currentDate());
+  const [data, setData] = useState([]);
+  const [date, setDate] = useState(currentDateFormatted());
   const [url, setUrl] = useState(createUrl(date));
   const [utc, setUtc] = useState("Europe/Moscow");
 
@@ -41,6 +37,7 @@ const MainScreen = ({ navigation }) => {
         },
       });
       const json = await response.json();
+
       setData(json.content);
     } catch (error) {
       console.error(error);
@@ -95,15 +92,14 @@ const MainScreen = ({ navigation }) => {
               </TouchableOpacity>
 
               <FlatList
+                style={{ height: 400 }}
                 data={data}
                 keyExtractor={(item) => item.id}
-                renderItem={(item) => (
-                  <MealContainer
-                    item={item}
-                    key={item.id}
-                    navigation={navigation}
-                  />
-                )}
+                renderItem={(item) => {
+                  return (
+                    <MealContainer item={item.item} navigation={navigation} />
+                  );
+                }}
               />
 
               <Button

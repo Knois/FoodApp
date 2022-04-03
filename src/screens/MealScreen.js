@@ -1,65 +1,82 @@
-import { Text, TextInput, View, FlatList } from "react-native";
+import { Text, TextInput, View, Button, FlatList } from "react-native";
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
+import { token } from "../API/Constants";
+import { currentDate } from "../methods/Simple";
 import MealEl from "../components/MealEl";
-import { token } from "../../Token";
 
 const url = "http://80.87.193.6:8079/v1.0/meal";
 
-const mealToObj = (date_time, meal_type, name, mealID) => {
-  if (mealID) {
+const mealToObj = (date_time, meal_type, name, meal_elements, ID) => {
+  if (ID) {
     return {
       date_time: date_time,
       meal_type: meal_type,
       name: name,
-      id: mealID,
+      meal_elements: meal_elements,
+      id: ID,
     };
   } else {
-    return { date_time: date_time, meal_type: meal_type, name: name };
+    return {
+      date_time: date_time,
+      meal_type: meal_type,
+      name: name,
+      meal_elements: meal_elements,
+    };
   }
 };
 
 const MealScreen = ({ navigation, route }) => {
   console.log("Render meal screen");
-  const [mealID, setMealID] = useState(route.params.mealID);
+  const [ID, setID] = useState(route.params.mealID);
   const [meal_type, setMeal_type] = useState("BREAKFAST");
-  const [date_time, setDate_time] = useState("2021-08-23T14:19:20+03:00");
+  const [date_time, setDate_time] = useState(currentDate());
   const [name, setName] = useState("name");
   const [meal_elements, setMeal_elements] = useState([]);
 
-  const createMeal = async (date_time, meal_type, name) => {
+  const addMealElement = (obj) => {
+    let arr = Object.assign([], meal_elements);
+    arr = [...arr, obj];
+    setMeal_elements(arr);
+  };
+
+  let buttonTitle = ID ? "Обновить прием пищи" : "Создать прием пищи";
+
+  const createMeal = async (date_time, meal_type, name, meal_elements) => {
     try {
-      console.log("Start fetch POST");
       const response = await fetch(url, {
         method: "POST",
         headers: {
           Authorization: "Basic " + token,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(mealToObj(date_time, meal_type, name)),
+        body: JSON.stringify(
+          mealToObj(date_time, meal_type, name, meal_elements)
+        ),
       });
       const json = await response.json();
-      setMealID(json.id);
+      setID(json.id);
     } catch (error) {
-      console.error(error);
+      console.error("Сервер прислал ошибку");
     } finally {
     }
   };
 
-  const updateMeal = async (date_time, meal_type, name, mealID) => {
+  const updateMeal = async (date_time, meal_type, name, meal_elements, ID) => {
     try {
-      console.log("Start fetch PUT");
       const response = await fetch(url, {
         method: "PUT",
         headers: {
           Authorization: "Basic " + token,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(mealToObj(date_time, meal_type, name, mealID)),
+        body: JSON.stringify(
+          mealToObj(date_time, meal_type, name, meal_elements, ID)
+        ),
       });
       const json = await response.json();
     } catch (error) {
-      console.error(error);
+      console.error("Сервер прислал ошибку");
     } finally {
     }
   };
@@ -68,14 +85,8 @@ const MealScreen = ({ navigation, route }) => {
     <View>
       <Text>Тип приема пищи:</Text>
       <Picker
-        onValueChange={async (itemValue, itemIndex) => {
-          console.log("PICKER SELECT onValueChange start");
-          await setMeal_type(itemValue);
-          if (!mealID) {
-            createMeal(date_time, meal_type, name);
-          } else {
-            updateMeal(date_time, meal_type, name, mealID);
-          }
+        onValueChange={(itemValue, itemIndex) => {
+          setMeal_type(itemValue);
         }}
         selectedValue={meal_type}
       >
@@ -111,8 +122,8 @@ const MealScreen = ({ navigation, route }) => {
         value={date_time}
       />
 
-      {mealID ? (
-        <Text>MEAL ID присвоен:{mealID}</Text>
+      {ID ? (
+        <Text>MEAL ID присвоен:{ID}</Text>
       ) : (
         <Text>MEAL ID не присвоен</Text>
       )}
@@ -122,9 +133,23 @@ const MealScreen = ({ navigation, route }) => {
         data={meal_elements}
         keyExtractor={(item, index) => index}
         renderItem={({ item, index }) => {
-          return (
-            <MealEl item={item} index={index} deleteMealEl={deleteMealEl} />
-          );
+          return <MealEl item={item} index={index} />;
+        }}
+      />
+      <Button
+        title="Добавить элемент приема пищи"
+        onPress={() => {
+          navigation.navigate("MealElementScreen", { action: addMealElement });
+        }}
+      />
+      <Button
+        title={buttonTitle}
+        onPress={() => {
+          if (ID) {
+            updateMeal(date_time, meal_type, name, meal_elements, ID);
+          } else {
+            createMeal(date_time, meal_type, name, meal_elements);
+          }
         }}
       />
     </View>
