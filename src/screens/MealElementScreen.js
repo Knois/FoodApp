@@ -3,20 +3,30 @@ import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 
 const MealElementScreen = ({ navigation, route }) => {
-  const [calories, setCalories] = useState("0");
-  const [carbohydrates, setCarbohydrates] = useState("0");
-  const [description, setDescription] = useState("description");
-  const [fats, setFats] = useState("0");
-  const [imageUrl, setImageUrl] = useState("imageUrl");
-  const [measurement_type, setMeasurement_type] = useState("CUP");
-  const [name, setName] = useState("name");
-  const [proteins, setProteins] = useState("0");
-  const [quantity, setQuantity] = useState("quantity");
-  const [type, setType] = useState("DISH");
+  const item = route.params.item;
+  const index = route.params.index;
+
+  const [calories, setCalories] = useState(!item ? "0" : item.calories);
+  const [carbohydrates, setCarbohydrates] = useState(
+    !item ? "0" : item.carbohydrates
+  );
+  const [description, setDescription] = useState(
+    !item ? "description" : item.description
+  );
+  const [fats, setFats] = useState(!item ? "0" : item.fats);
+  const [imageUrl, setImageUrl] = useState(!item ? "imageUrl" : item.imageUrl);
+  const [measurement_type, setMeasurement_type] = useState(
+    !item ? "CUP" : item.measurement_type
+  );
+  const [name, setName] = useState(!item ? "name" : item.name);
+  const [proteins, setProteins] = useState(!item ? "0" : item.proteins);
+  const [quantity, setQuantity] = useState(!item ? "quantity" : item.quantity);
+  const [type, setType] = useState(!item ? "DISH" : item.type);
+
+  let buttonTitle = item ? "Обновить элемент" : "Создать элемент";
 
   const stateToObj = () => {
     return {
-      calories: calories,
       calories: calories,
       carbohydrates: carbohydrates,
       description: description,
@@ -159,9 +169,11 @@ const MealElementScreen = ({ navigation, route }) => {
         </Picker>
       </View>
       <Button
-        title="Добавить элемент"
+        title={buttonTitle}
         onPress={() => {
-          route.params.action(stateToObj());
+          index
+            ? route.params.action(stateToObj(), index)
+            : route.params.action(stateToObj());
           navigation.goBack();
         }}
       />

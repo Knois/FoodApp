@@ -46,6 +46,23 @@ const MainScreen = ({ navigation }) => {
     }
   };
 
+  const deleteMeal = async (id) => {
+    setLoading(true);
+    try {
+      const response = await fetch("http://80.87.193.6:8079/v1.0/meal/" + id, {
+        method: "DELETE",
+        headers: {
+          Authorization: "Basic " + token,
+          "Content-Type": "application/json",
+        },
+      });
+      const json = await response.json();
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useLayoutEffect(() => {
     getAllMeals();
   }, []);
@@ -97,7 +114,11 @@ const MainScreen = ({ navigation }) => {
                 keyExtractor={(item) => item.id}
                 renderItem={(item) => {
                   return (
-                    <MealContainer item={item.item} navigation={navigation} />
+                    <MealContainer
+                      item={item.item}
+                      navigation={navigation}
+                      deleteMeal={deleteMeal}
+                    />
                   );
                 }}
               />

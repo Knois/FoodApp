@@ -29,14 +29,34 @@ const mealToObj = (date_time, meal_type, name, meal_elements, ID) => {
 const MealScreen = ({ navigation, route }) => {
   console.log("Render meal screen");
   const [ID, setID] = useState(route.params.mealID);
-  const [meal_type, setMeal_type] = useState("BREAKFAST");
-  const [date_time, setDate_time] = useState(currentDate());
-  const [name, setName] = useState("name");
-  const [meal_elements, setMeal_elements] = useState([]);
+  const [meal_type, setMeal_type] = useState(
+    route.params.meal_type ? route.params.meal_type : "BREAKFAST"
+  );
+  const [date_time, setDate_time] = useState(
+    route.params.date_time ? route.params.date_time : currentDate()
+  );
+  const [name, setName] = useState(
+    route.params.name ? route.params.name : "name"
+  );
+  const [meal_elements, setMeal_elements] = useState(
+    route.params.meal_elements ? route.params.meal_elements : []
+  );
 
   const addMealElement = (obj) => {
     let arr = Object.assign([], meal_elements);
     arr = [...arr, obj];
+    setMeal_elements(arr);
+  };
+
+  const updateMealElement = (obj, index) => {
+    let arr = Object.assign([], meal_elements);
+    arr.splice(index, 1, obj);
+    setMeal_elements(arr);
+  };
+
+  const deleteMealElement = (index) => {
+    let arr = Object.assign([], meal_elements);
+    arr.splice(index, 1);
     setMeal_elements(arr);
   };
 
@@ -133,7 +153,15 @@ const MealScreen = ({ navigation, route }) => {
         data={meal_elements}
         keyExtractor={(item, index) => index}
         renderItem={({ item, index }) => {
-          return <MealEl item={item} index={index} />;
+          return (
+            <MealEl
+              item={item}
+              index={index}
+              updateMealElement={updateMealElement}
+              deleteMealElement={deleteMealElement}
+              navigation={navigation}
+            />
+          );
         }}
       />
       <Button
@@ -145,11 +173,9 @@ const MealScreen = ({ navigation, route }) => {
       <Button
         title={buttonTitle}
         onPress={() => {
-          if (ID) {
-            updateMeal(date_time, meal_type, name, meal_elements, ID);
-          } else {
-            createMeal(date_time, meal_type, name, meal_elements);
-          }
+          ID
+            ? updateMeal(date_time, meal_type, name, meal_elements, ID)
+            : createMeal(date_time, meal_type, name, meal_elements);
         }}
       />
     </View>
