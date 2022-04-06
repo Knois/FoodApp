@@ -1,43 +1,35 @@
 import React, { useState, useLayoutEffect } from "react";
-import {
-  TextInput,
-  Text,
-  View,
-  TouchableOpacity,
-  FlatList,
-  Button,
-} from "react-native";
+import { Text, View, FlatList, Button, TouchableOpacity } from "react-native";
+import Modal from "react-native-modal";
 import MealContainer from "../components/MealContainer";
 import { token } from "../API/Constants";
-import { currentDateFormatted } from "../methods/Simple";
-
-const createUrl = (date) => {
-  let url =
-    "http://80.87.193.6:8079/v1.0/meal/findByDate?date=" +
-    date +
-    "&timeZone=Europe%2FMoscow";
-  return url;
-};
+import { dateFormatted } from "../methods/Simple";
+import DatePicker, { getToday } from "react-native-modern-datepicker";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 const MainScreen = ({ navigation }) => {
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [date, setDate] = useState(currentDateFormatted());
-  const [url, setUrl] = useState(createUrl(date));
+  const [urlDate, setUrlDate] = useState(dateFormatted());
   const [utc, setUtc] = useState("Europe/Moscow");
+  const [isVisible, setVisible] = useState(false);
 
   const getAllMeals = async () => {
-    setLoading(true);
+    if (!isLoading) setLoading(true);
     try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: "Basic " + token,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        "http://80.87.193.6:8079/v1.0/meal/findByDate?date=" +
+          urlDate +
+          "&timeZone=Europe%2FMoscow",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Basic " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const json = await response.json();
-
       setData(json.content);
     } catch (error) {
       console.error(error);
@@ -59,55 +51,36 @@ const MainScreen = ({ navigation }) => {
       const json = await response.json();
     } catch (error) {
     } finally {
-      setLoading(false);
+      getAllMeals();
+      if (isLoading) setLoading(false);
     }
   };
 
   useLayoutEffect(() => {
     getAllMeals();
-  }, []);
+  }, [urlDate]);
 
   return (
     <>
       <View>
         {isLoading ? (
-          <Text>Loading</Text>
+          <LoadingIndicator />
         ) : (
           <>
             <View>
-              <TextInput
-                style={{
-                  borderWidth: 0.5,
-                  backgroundColor: "#f9f2d9d9",
-                  alignSelf: "center",
-                }}
-                onChangeText={(value) => {
-                  setDate(value);
-                }}
-                value={date}
-              />
-              <TextInput
-                style={{
-                  borderWidth: 0.5,
-                  backgroundColor: "#f9f2d9d9",
-                  alignSelf: "center",
-                }}
-                onChangeText={(value) => {
-                  setUtc(value);
-                }}
-                value={utc}
-              />
-
               <TouchableOpacity
-                style={{ borderWidth: 1, alignSelf: "center" }}
+                style={{
+                  alignSelf: "center",
+                  margin: 5,
+                  padding: 5,
+                  borderWidth: 1,
+                }}
                 onPress={() => {
-                  setUrl(createUrl(date));
-                  getAllMeals();
+                  setVisible(true);
                 }}
               >
-                <Text>Направить запрос</Text>
+                <Text>{urlDate}</Text>
               </TouchableOpacity>
-
               <FlatList
                 style={{ height: 400 }}
                 data={data}
@@ -129,6 +102,34 @@ const MainScreen = ({ navigation }) => {
                   navigation.navigate("MealScreen", { mealID: null });
                 }}
               />
+
+              <Modal isVisible={isVisible} animationIn="pulse">
+                <View>
+                  <DatePicker
+                    onSelectedChange={(date) => {
+                      if (dateFormatted(date) !== urlDate) {
+                        setUrlDate(dateFormatted(date));
+                        setVisible(false);
+                      }
+                    }}
+                    minimumDate="2022-01-01"
+                    maximumDate="2025-01-01"
+                    current={getToday()}
+                    selected={urlDate}
+                    mode="calendar"
+                    options={{
+                      headerAnimationDistance: 100,
+                      daysAnimationDistance: 100,
+                    }}
+                  />
+                  <Button
+                    title="Закрыть календарь"
+                    onPress={() => {
+                      setVisible(false);
+                    }}
+                  />
+                </View>
+              </Modal>
             </View>
           </>
         )}
