@@ -7,6 +7,7 @@ import { AppContext } from "../context/AppContext";
 import MainScreen from "./MainScreen";
 import MealScreen from "./MealScreen";
 import MealElementScreen from "./MealElementScreen";
+import SearchScreen from "./SearchScreen";
 
 const Main = createNativeStackNavigator();
 
@@ -19,6 +20,7 @@ const AppNavigation = () => {
         <Main.Screen name="MainScreen" component={MainScreen} />
         <Main.Screen name="MealScreen" component={MealScreen} />
         <Main.Screen name="MealElementScreen" component={MealElementScreen} />
+        <Main.Screen name="SearchScreen" component={SearchScreen} />
       </Main.Navigator>
       <StatusBar style={"dark"} />
     </NavigationContainer>

@@ -4,17 +4,22 @@ import Modal from "react-native-modal";
 import MealContainer from "../components/MealContainer";
 import { token } from "../API/Constants";
 import { dateFormatted } from "../methods/Simple";
-import DatePicker, { getToday } from "react-native-modern-datepicker";
+import DatePicker from "react-native-modern-datepicker";
 import LoadingIndicator from "../components/LoadingIndicator";
+import { useIsFocused } from "@react-navigation/native";
 
-const MainScreen = ({ navigation }) => {
+const MainScreen = ({ navigation, route }) => {
   const [isLoading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [urlDate, setUrlDate] = useState(dateFormatted());
-  const [utc, setUtc] = useState("Europe/Moscow");
   const [isVisible, setVisible] = useState(false);
 
+  const toggleModal = () => {
+    setVisible(!isVisible);
+  };
+
   const getAllMeals = async () => {
+    console.log("getAllMeal start and date is " + urlDate);
     if (!isLoading) setLoading(true);
     try {
       const response = await fetch(
@@ -56,9 +61,13 @@ const MainScreen = ({ navigation }) => {
     }
   };
 
+  let isFocused = useIsFocused();
+
   useLayoutEffect(() => {
-    getAllMeals();
-  }, [urlDate]);
+    if (isFocused) {
+      getAllMeals();
+    }
+  }, [urlDate, isFocused]);
 
   return (
     <>
@@ -76,11 +85,19 @@ const MainScreen = ({ navigation }) => {
                   borderWidth: 1,
                 }}
                 onPress={() => {
-                  setVisible(true);
+                  toggleModal();
                 }}
               >
                 <Text>{urlDate}</Text>
               </TouchableOpacity>
+              <View style={{ width: 100, alignSelf: "center" }}>
+                <Button
+                  title="Обновить"
+                  onPress={() => {
+                    getAllMeals();
+                  }}
+                />
+              </View>
               <FlatList
                 style={{ height: 400 }}
                 data={data}
@@ -95,26 +112,50 @@ const MainScreen = ({ navigation }) => {
                   );
                 }}
               />
-
               <Button
                 title="Создать прием пищи"
                 onPress={() => {
-                  navigation.navigate("MealScreen", { mealID: null });
+                  navigation.navigate("MealScreen", {
+                    mealID: null,
+                    urlDate: urlDate,
+                  });
                 }}
               />
-
-              <Modal isVisible={isVisible} animationIn="pulse">
-                <View>
+              <Modal
+                hideModalContentWhileAnimating={true}
+                onBackButtonPress={() => {
+                  toggleModal();
+                }}
+                onBackdropPress={() => {
+                  toggleModal();
+                }}
+                isVisible={isVisible}
+                animationIn="slideInUp"
+                animationInTiming={500}
+                animationOutTiming={500}
+                backdropOpacity={0.7}
+                backdropTransitionInTiming={1}
+                backdropTransitionOutTiming={1}
+              >
+                <View
+                  style={{
+                    alignSelf: "center",
+                    height: "70%",
+                    width: "100%",
+                    backgroundColor: "#FFFFFF",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <DatePicker
                     onSelectedChange={(date) => {
                       if (dateFormatted(date) !== urlDate) {
                         setUrlDate(dateFormatted(date));
-                        setVisible(false);
+                        toggleModal();
                       }
                     }}
                     minimumDate="2022-01-01"
                     maximumDate="2025-01-01"
-                    current={getToday()}
+                    current={urlDate}
                     selected={urlDate}
                     mode="calendar"
                     options={{
@@ -125,7 +166,7 @@ const MainScreen = ({ navigation }) => {
                   <Button
                     title="Закрыть календарь"
                     onPress={() => {
-                      setVisible(false);
+                      toggleModal();
                     }}
                   />
                 </View>

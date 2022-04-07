@@ -2,7 +2,7 @@ import { Text, TextInput, View, Button, FlatList } from "react-native";
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import { token } from "../API/Constants";
-import { currentDate } from "../methods/Simple";
+import { currentDate, timeNow, toNormalDate } from "../methods/Simple";
 import MealEl from "../components/MealEl";
 
 const url = "http://80.87.193.6:8079/v1.0/meal";
@@ -27,13 +27,24 @@ const mealToObj = (date_time, meal_type, name, meal_elements, ID) => {
 };
 
 const MealScreen = ({ navigation, route }) => {
-  console.log("Render meal screen");
+  const urlDate = route.params.urlDate;
+
+  const haveUrlDate = () => {
+    if (urlDate) {
+      return urlDate + "T" + timeNow();
+    } else {
+      return currentDate();
+    }
+  };
+
   const [ID, setID] = useState(route.params.mealID);
   const [meal_type, setMeal_type] = useState(
     route.params.meal_type ? route.params.meal_type : "BREAKFAST"
   );
   const [date_time, setDate_time] = useState(
-    route.params.date_time ? route.params.date_time : currentDate()
+    route.params.date_time
+      ? toNormalDate(route.params.date_time)
+      : haveUrlDate()
   );
   const [name, setName] = useState(
     route.params.name ? route.params.name : "name"
@@ -59,8 +70,6 @@ const MealScreen = ({ navigation, route }) => {
     arr.splice(index, 1);
     setMeal_elements(arr);
   };
-
-  let buttonTitle = ID ? "Обновить прием пищи" : "Создать прием пищи";
 
   const createMeal = async (date_time, meal_type, name, meal_elements) => {
     try {
@@ -100,6 +109,8 @@ const MealScreen = ({ navigation, route }) => {
     } finally {
     }
   };
+
+  let buttonTitle = ID ? "Обновить прием пищи" : "Создать прием пищи";
 
   return (
     <View>

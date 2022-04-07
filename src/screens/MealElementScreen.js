@@ -40,9 +40,32 @@ const MealElementScreen = ({ navigation, route }) => {
     };
   };
 
+  const copyToMealElement = (obj) => {
+    setCalories("" + obj.calories);
+    setCarbohydrates("" + obj.carbohydrates);
+    setDescription("" + obj.description);
+    setFats("" + obj.fats);
+    setImageUrl("" + obj.imageUrl);
+    setMeasurement_type("" + obj.measurement_type);
+    setName("" + obj.name);
+    setProteins("" + obj.proteins);
+    setQuantity("" + obj.quantity);
+    setType("" + obj.type);
+  };
+
   return (
     <>
       <View>
+        <View style={{ width: "40%", alignSelf: "center", margin: 15 }}>
+          <Button
+            title="Поиск в базе"
+            onPress={() => {
+              navigation.navigate("SearchScreen", {
+                copyToMealElement: copyToMealElement,
+              });
+            }}
+          />
+        </View>
         <Text>calories</Text>
         <TextInput
           style={{
