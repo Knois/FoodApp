@@ -38,13 +38,13 @@ const SearchInput = ({ navigation, copyToMealElement }) => {
   };
 
   useLayoutEffect(() => {
-    console.log("useLayoutEffect started, name is " + name);
     searchByName();
   }, [name]);
 
   return (
     <View>
       <TextInput
+        autoFocus={true}
         style={{
           borderWidth: 0.5,
           backgroundColor: "#f9f2d9d9",

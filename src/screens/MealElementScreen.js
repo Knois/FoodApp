@@ -50,7 +50,6 @@ const MealElementScreen = ({ navigation, route }) => {
     setName("" + obj.name);
     setProteins("" + obj.proteins);
     setQuantity("" + obj.quantity);
-    setType("" + obj.type);
   };
 
   return (
