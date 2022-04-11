@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, Button } from "react-native";
 import React from "react";
 import moment from "moment";
+import { getSumCaloriesFromArray } from "../methods/Simple";
 
 const MealContainer = ({ item, navigation, deleteMeal }) => {
   return (
@@ -23,6 +24,14 @@ const MealContainer = ({ item, navigation, deleteMeal }) => {
         </Text>
         <Text>Название : {item.name}</Text>
         <Text>Тип приема пищи : {item.meal_type}</Text>
+        <Text>
+          Сумма калорий: {+getSumCaloriesFromArray(item.meal_elements)}
+        </Text>
+
+        {item.meal_elements.map((el) => {
+          return <Text>- {el.name}</Text>;
+        })}
+
         <Button
           title="Удалить прием пищи"
           onPress={() => {

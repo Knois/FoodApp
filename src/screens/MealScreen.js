@@ -2,7 +2,12 @@ import { Text, TextInput, View, Button, FlatList } from "react-native";
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import { token } from "../API/Constants";
-import { currentDate, timeNow, toNormalDate } from "../methods/Simple";
+import {
+  currentDate,
+  getSumCaloriesFromArray,
+  timeNow,
+  toNormalDate,
+} from "../methods/Simple";
 import MealEl from "../components/MealEl";
 
 const url = "http://80.87.193.6:8079/v1.0/meal";
@@ -158,6 +163,8 @@ const MealScreen = ({ navigation, route }) => {
       ) : (
         <Text>MEAL ID не присвоен</Text>
       )}
+
+      <Text>Сумма калорий: {+getSumCaloriesFromArray(meal_elements)}</Text>
 
       <FlatList
         style={{ height: "50%" }}

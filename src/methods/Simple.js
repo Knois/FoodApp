@@ -21,3 +21,11 @@ export const timeNow = () => {
   let time = moment(new Date()).format("HH:mm:ss+03:00");
   return time;
 };
+
+export const getSumCaloriesFromArray = (arr) => {
+  let sum = 0;
+  arr.forEach((el) => {
+    sum = sum + el.calories;
+  });
+  return sum;
+};

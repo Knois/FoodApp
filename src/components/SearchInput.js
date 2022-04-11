@@ -29,7 +29,6 @@ const SearchInput = ({ navigation, copyToMealElement }) => {
         },
       });
       const json = await response.json();
-      console.log(json);
       setData(json.content);
     } catch (error) {
     } finally {
@@ -61,25 +60,28 @@ const SearchInput = ({ navigation, copyToMealElement }) => {
       {isLoading ? (
         <LoadingIndicator />
       ) : (
-        <FlatList
-          style={{ height: "80%" }}
-          data={data}
-          keyExtractor={(item) => item.id}
-          renderItem={(item) => {
-            return (
-              <TouchableOpacity
-                style={{ borderWidth: 1, margin: 5, padding: 5 }}
-                onPress={() => {
-                  copyToMealElement(item.item);
-                  navigation.goBack();
-                }}
-              >
-                <Text>Name :{item.item.name}</Text>
-                <Text>Calories :{item.item.calories}</Text>
-              </TouchableOpacity>
-            );
-          }}
-        />
+        <>
+          {data == false && <Text>Ничего не найдено</Text>}
+          <FlatList
+            style={{ height: "80%" }}
+            data={data}
+            keyExtractor={(item) => item.id}
+            renderItem={(item) => {
+              return (
+                <TouchableOpacity
+                  style={{ borderWidth: 1, margin: 5, padding: 5 }}
+                  onPress={() => {
+                    copyToMealElement(item.item);
+                    navigation.goBack();
+                  }}
+                >
+                  <Text>Name :{item.item.name}</Text>
+                  <Text>Calories :{item.item.calories}</Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </>
       )}
     </View>
   );

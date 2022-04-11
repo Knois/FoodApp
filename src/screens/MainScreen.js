@@ -19,13 +19,12 @@ const MainScreen = ({ navigation, route }) => {
   };
 
   const getAllMeals = async () => {
-    console.log("getAllMeal start and date is " + urlDate);
     if (!isLoading) setLoading(true);
     try {
       const response = await fetch(
         "http://80.87.193.6:8079/v1.0/meal/findByDate?date=" +
           urlDate +
-          "&timeZone=Europe%2FMoscow",
+          "&size=999&timeZone=Europe%2FMoscow",
         {
           method: "GET",
           headers: {
@@ -57,7 +56,6 @@ const MainScreen = ({ navigation, route }) => {
     } catch (error) {
     } finally {
       getAllMeals();
-      if (isLoading) setLoading(false);
     }
   };
 
