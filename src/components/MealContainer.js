@@ -29,7 +29,7 @@ const MealContainer = ({ item, navigation, deleteMeal }) => {
         </Text>
 
         {item.meal_elements.map((el) => {
-          return <Text>- {el.name}</Text>;
+          return <Text key={Math.random() * 9999}>- {el.name}</Text>;
         })}
 
         <Button

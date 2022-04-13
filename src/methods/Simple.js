@@ -1,12 +1,7 @@
 import moment from "moment";
 
-export const currentDate = () => {
-  let date = moment(new Date()).format("YYYY-MM-DDTHH:mm:ss+03:00");
-  return date;
-};
-
 export const toNormalDate = (smth) => {
-  let date = moment(smth).format("YYYY-MM-DDTHH:mm:ss+03:00");
+  let date = moment(smth ? smth : new Date()).format("YYYY-MM-DD HH:mm:ss");
   return date;
 };
 
@@ -18,14 +13,14 @@ export const dateFormatted = (smth) => {
 };
 
 export const timeNow = () => {
-  let time = moment(new Date()).format("HH:mm:ss+03:00");
+  let time = moment(new Date()).format("HH:mm:ss");
   return time;
 };
 
 export const getSumCaloriesFromArray = (arr) => {
   let sum = 0;
   arr.forEach((el) => {
-    sum = sum + el.calories;
+    sum = sum + +el.calories;
   });
   return sum;
 };

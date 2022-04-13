@@ -21,14 +21,12 @@ const MealEl = ({
       >
         <Text>Calories: {item.calories}</Text>
         <Text>carbohydrates: {item.carbohydrates}</Text>
-        <Text>description: {item.description}</Text>
         <Text>fats: {item.fats}</Text>
         <Text>imageUrl: {item.imageUrl}</Text>
         <Text>measurement_type: {item.measurement_type}</Text>
         <Text>name: {item.name}</Text>
         <Text>proteins: {item.proteins}</Text>
         <Text>quantity: {item.quantity}</Text>
-        <Text>type: {item.type}</Text>
       </TouchableOpacity>
       <Button
         title="Удалить элемент"

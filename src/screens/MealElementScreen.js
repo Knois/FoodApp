@@ -6,22 +6,23 @@ const MealElementScreen = ({ navigation, route }) => {
   const item = route.params.item;
   const index = route.params.index;
 
-  const [calories, setCalories] = useState(!item ? "0" : item.calories);
+  const [calories, setCalories] = useState(item ? String(item.calories) : "0");
   const [carbohydrates, setCarbohydrates] = useState(
-    !item ? "0" : item.carbohydrates
+    item ? String(item.carbohydrates) : "0"
   );
-  const [description, setDescription] = useState(
-    !item ? "description" : item.description
+
+  const [fats, setFats] = useState(item ? String(item.fats) : "0");
+  const [imageUrl, setImageUrl] = useState(
+    item ? String(item.imageUrl) : "imageUrl"
   );
-  const [fats, setFats] = useState(!item ? "0" : item.fats);
-  const [imageUrl, setImageUrl] = useState(!item ? "imageUrl" : item.imageUrl);
   const [measurement_type, setMeasurement_type] = useState(
-    !item ? "CUP" : item.measurement_type
+    item ? String(item.measurement_type) : "CUP"
   );
-  const [name, setName] = useState(!item ? "name" : item.name);
-  const [proteins, setProteins] = useState(!item ? "0" : item.proteins);
-  const [quantity, setQuantity] = useState(!item ? "quantity" : item.quantity);
-  const [type, setType] = useState(!item ? "DISH" : item.type);
+  const [name, setName] = useState(item ? String(item.name) : "name");
+  const [proteins, setProteins] = useState(item ? String(item.proteins) : "0");
+  const [quantity, setQuantity] = useState(
+    item ? String(item.quantity) : "quantity"
+  );
 
   let buttonTitle = item ? "Обновить элемент" : "Создать элемент";
 
@@ -29,21 +30,18 @@ const MealElementScreen = ({ navigation, route }) => {
     return {
       calories: calories,
       carbohydrates: carbohydrates,
-      description: description,
       fats: fats,
       imageUrl: imageUrl,
       measurement_type: measurement_type,
       name: name,
       proteins: proteins,
       quantity: quantity,
-      type: type,
     };
   };
 
   const copyToMealElement = (obj) => {
     setCalories("" + obj.calories);
     setCarbohydrates("" + obj.carbohydrates);
-    setDescription("" + obj.description);
     setFats("" + obj.fats);
     setImageUrl("" + obj.imageUrl);
     setMeasurement_type("" + obj.measurement_type);
@@ -88,18 +86,6 @@ const MealElementScreen = ({ navigation, route }) => {
             setCarbohydrates(value);
           }}
           value={carbohydrates}
-        />
-        <Text>description</Text>
-        <TextInput
-          style={{
-            borderWidth: 0.5,
-            backgroundColor: "#f9f2d9d9",
-            alignSelf: "center",
-          }}
-          onChangeText={(value) => {
-            setDescription(value);
-          }}
-          value={description}
         />
         <Text>fats</Text>
         <TextInput
@@ -179,16 +165,6 @@ const MealElementScreen = ({ navigation, route }) => {
           }}
           value={quantity}
         />
-        <Text>type</Text>
-        <Picker
-          onValueChange={(itemValue, itemIndex) => {
-            setType(itemValue);
-          }}
-          selectedValue={type}
-        >
-          <Picker.Item label="DISH" value="DISH" />
-          <Picker.Item label="PRODUCT" value="PRODUCT" />
-        </Picker>
       </View>
       <Button
         title={buttonTitle}

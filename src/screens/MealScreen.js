@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import { token } from "../API/Constants";
 import {
-  currentDate,
   getSumCaloriesFromArray,
   timeNow,
   toNormalDate,
@@ -34,14 +33,6 @@ const mealToObj = (date_time, meal_type, name, meal_elements, ID) => {
 const MealScreen = ({ navigation, route }) => {
   const urlDate = route.params.urlDate;
 
-  const haveUrlDate = () => {
-    if (urlDate) {
-      return urlDate + "T" + timeNow();
-    } else {
-      return currentDate();
-    }
-  };
-
   const [ID, setID] = useState(route.params.mealID);
   const [meal_type, setMeal_type] = useState(
     route.params.meal_type ? route.params.meal_type : "BREAKFAST"
@@ -49,7 +40,7 @@ const MealScreen = ({ navigation, route }) => {
   const [date_time, setDate_time] = useState(
     route.params.date_time
       ? toNormalDate(route.params.date_time)
-      : haveUrlDate()
+      : urlDate + " " + timeNow()
   );
   const [name, setName] = useState(
     route.params.name ? route.params.name : "name"
