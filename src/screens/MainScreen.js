@@ -2,7 +2,7 @@ import React, { useState, useLayoutEffect } from "react";
 import { Text, View, FlatList, Button, TouchableOpacity } from "react-native";
 import Modal from "react-native-modal";
 import MealContainer from "../components/MealContainer";
-import { token } from "../API/Constants";
+import { token } from "../constants/Constants";
 import { dateFormatted } from "../methods/Simple";
 import DatePicker from "react-native-modern-datepicker";
 import LoadingIndicator from "../components/LoadingIndicator";

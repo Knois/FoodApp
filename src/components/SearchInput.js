@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState, useLayoutEffect } from "react";
-import { token } from "../API/Constants";
+import { token } from "../constants/Constants";
 import LoadingIndicator from "./LoadingIndicator";
 
 const SearchInput = ({ navigation, copyToMealElement }) => {

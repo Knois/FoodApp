@@ -1,7 +1,7 @@
 import { Text, TextInput, View, Button, FlatList } from "react-native";
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
-import { token } from "../API/Constants";
+import { token } from "../constants/Constants";
 import {
   getSumCaloriesFromArray,
   timeNow,
@@ -30,6 +30,63 @@ const mealToObj = (date_time, meal_type, name, meal_elements, ID) => {
   }
 };
 
+const addMealElement = (obj) => {
+  let arr = Object.assign([], meal_elements);
+  arr = [...arr, obj];
+  setMeal_elements(arr);
+};
+
+const updateMealElement = (obj, index) => {
+  let arr = Object.assign([], meal_elements);
+  arr.splice(index, 1, obj);
+  setMeal_elements(arr);
+};
+
+const deleteMealElement = (index) => {
+  let arr = Object.assign([], meal_elements);
+  arr.splice(index, 1);
+  setMeal_elements(arr);
+};
+
+const createMeal = async (date_time, meal_type, name, meal_elements) => {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: "Basic " + token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(
+        mealToObj(date_time, meal_type, name, meal_elements)
+      ),
+    });
+    const json = await response.json();
+    setID(json.id);
+  } catch (error) {
+    console.error("Сервер прислал ошибку");
+  } finally {
+  }
+};
+
+const updateMeal = async (date_time, meal_type, name, meal_elements, ID) => {
+  try {
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        Authorization: "Basic " + token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(
+        mealToObj(date_time, meal_type, name, meal_elements, ID)
+      ),
+    });
+    const json = await response.json();
+  } catch (error) {
+    console.error("Сервер прислал ошибку");
+  } finally {
+  }
+};
+
 const MealScreen = ({ navigation, route }) => {
   const urlDate = route.params.urlDate;
 
@@ -48,63 +105,6 @@ const MealScreen = ({ navigation, route }) => {
   const [meal_elements, setMeal_elements] = useState(
     route.params.meal_elements ? route.params.meal_elements : []
   );
-
-  const addMealElement = (obj) => {
-    let arr = Object.assign([], meal_elements);
-    arr = [...arr, obj];
-    setMeal_elements(arr);
-  };
-
-  const updateMealElement = (obj, index) => {
-    let arr = Object.assign([], meal_elements);
-    arr.splice(index, 1, obj);
-    setMeal_elements(arr);
-  };
-
-  const deleteMealElement = (index) => {
-    let arr = Object.assign([], meal_elements);
-    arr.splice(index, 1);
-    setMeal_elements(arr);
-  };
-
-  const createMeal = async (date_time, meal_type, name, meal_elements) => {
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Authorization: "Basic " + token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(
-          mealToObj(date_time, meal_type, name, meal_elements)
-        ),
-      });
-      const json = await response.json();
-      setID(json.id);
-    } catch (error) {
-      console.error("Сервер прислал ошибку");
-    } finally {
-    }
-  };
-
-  const updateMeal = async (date_time, meal_type, name, meal_elements, ID) => {
-    try {
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: {
-          Authorization: "Basic " + token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(
-          mealToObj(date_time, meal_type, name, meal_elements, ID)
-        ),
-      });
-      const json = await response.json();
-    } catch (error) {
-      console.error("Сервер прислал ошибку");
-    } finally {
-    }
-  };
 
   let buttonTitle = ID ? "Обновить прием пищи" : "Создать прием пищи";
 
