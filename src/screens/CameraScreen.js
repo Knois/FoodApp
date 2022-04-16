@@ -1,10 +1,13 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Camera } from "expo-camera";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 const CameraScreen = ({ navigation, route }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
+  const [isLoading, setLoading] = useState(false);
+
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
@@ -21,6 +24,8 @@ const CameraScreen = ({ navigation, route }) => {
   return (
     <View>
       <Camera
+        ratio="16:9"
+        pictureSize="1280x720"
         type={type}
         ref={(ref) => {
           this.camera = ref;
@@ -42,6 +47,7 @@ const CameraScreen = ({ navigation, route }) => {
             style={{ height: 100 }}
             onPress={async () => {
               if (this.camera) {
+                setLoading(true);
                 let photo = await this.camera.takePictureAsync({
                   base64: true,
                 });

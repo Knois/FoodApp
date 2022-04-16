@@ -30,7 +30,6 @@ const MealEl = ({
           resizeMethod="auto"
           resizeMode="center"
         />
-
         <Text>Calories: {item.calories}</Text>
         <Text>carbohydrates: {item.carbohydrates}</Text>
         <Text>fats: {item.fats}</Text>
