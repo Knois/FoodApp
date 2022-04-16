@@ -11,83 +11,83 @@ import MealEl from "../components/MealEl";
 
 const url = "http://80.87.193.6:8079/v1.0/meal";
 
-const mealToObj = (date_time, meal_type, name, meal_elements, ID) => {
-  if (ID) {
-    return {
-      date_time: date_time,
-      meal_type: meal_type,
-      name: name,
-      meal_elements: meal_elements,
-      id: ID,
-    };
-  } else {
-    return {
-      date_time: date_time,
-      meal_type: meal_type,
-      name: name,
-      meal_elements: meal_elements,
-    };
-  }
-};
-
-const addMealElement = (obj) => {
-  let arr = Object.assign([], meal_elements);
-  arr = [...arr, obj];
-  setMeal_elements(arr);
-};
-
-const updateMealElement = (obj, index) => {
-  let arr = Object.assign([], meal_elements);
-  arr.splice(index, 1, obj);
-  setMeal_elements(arr);
-};
-
-const deleteMealElement = (index) => {
-  let arr = Object.assign([], meal_elements);
-  arr.splice(index, 1);
-  setMeal_elements(arr);
-};
-
-const createMeal = async (date_time, meal_type, name, meal_elements) => {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: "Basic " + token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(
-        mealToObj(date_time, meal_type, name, meal_elements)
-      ),
-    });
-    const json = await response.json();
-    setID(json.id);
-  } catch (error) {
-    console.error("Сервер прислал ошибку");
-  } finally {
-  }
-};
-
-const updateMeal = async (date_time, meal_type, name, meal_elements, ID) => {
-  try {
-    const response = await fetch(url, {
-      method: "PUT",
-      headers: {
-        Authorization: "Basic " + token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(
-        mealToObj(date_time, meal_type, name, meal_elements, ID)
-      ),
-    });
-    const json = await response.json();
-  } catch (error) {
-    console.error("Сервер прислал ошибку");
-  } finally {
-  }
-};
-
 const MealScreen = ({ navigation, route }) => {
+  const mealToObj = (date_time, meal_type, name, meal_elements, ID) => {
+    if (ID) {
+      return {
+        date_time: date_time,
+        meal_type: meal_type,
+        name: name,
+        meal_elements: meal_elements,
+        id: ID,
+      };
+    } else {
+      return {
+        date_time: date_time,
+        meal_type: meal_type,
+        name: name,
+        meal_elements: meal_elements,
+      };
+    }
+  };
+
+  const addMealElement = (obj) => {
+    let arr = Object.assign([], meal_elements);
+    arr = [...arr, obj];
+    setMeal_elements(arr);
+  };
+
+  const updateMealElement = (obj, index) => {
+    let arr = Object.assign([], meal_elements);
+    arr.splice(index, 1, obj);
+    setMeal_elements(arr);
+  };
+
+  const deleteMealElement = (index) => {
+    let arr = Object.assign([], meal_elements);
+    arr.splice(index, 1);
+    setMeal_elements(arr);
+  };
+
+  const createMeal = async (date_time, meal_type, name, meal_elements) => {
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: "Basic " + token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(
+          mealToObj(date_time, meal_type, name, meal_elements)
+        ),
+      });
+      const json = await response.json();
+      setID(json.id);
+    } catch (error) {
+      console.error("Сервер прислал ошибку");
+    } finally {
+    }
+  };
+
+  const updateMeal = async (date_time, meal_type, name, meal_elements, ID) => {
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: "Basic " + token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(
+          mealToObj(date_time, meal_type, name, meal_elements, ID)
+        ),
+      });
+      const json = await response.json();
+    } catch (error) {
+      console.error("Сервер прислал ошибку");
+    } finally {
+    }
+  };
+
   const urlDate = route.params.urlDate;
 
   const [ID, setID] = useState(route.params.mealID);

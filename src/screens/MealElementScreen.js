@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Button } from "react-native";
+import { View, Text, TextInput, Button, Image } from "react-native";
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 
@@ -12,6 +12,7 @@ const MealElementScreen = ({ navigation, route }) => {
   );
 
   const [fats, setFats] = useState(item ? String(item.fats) : "0");
+  const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(
     item ? String(item.imageUrl) : "imageUrl"
   );
@@ -31,6 +32,7 @@ const MealElementScreen = ({ navigation, route }) => {
       calories: calories,
       carbohydrates: carbohydrates,
       fats: fats,
+      image: image,
       imageUrl: imageUrl,
       measurement_type: measurement_type,
       name: name,
@@ -99,6 +101,35 @@ const MealElementScreen = ({ navigation, route }) => {
           }}
           value={fats}
         />
+        <View>
+          <TextInput
+            value={image}
+            style={{
+              borderWidth: 0.5,
+              backgroundColor: "#f9f2d9d9",
+              alignSelf: "center",
+            }}
+          />
+          <Image style={{ height: 100, width: 100 }} source={{ uri: image }} />
+          {image ? (
+            <>
+              <Text>Фото добавлено</Text>
+              <Button
+                title="Изменить фото"
+                onPress={() =>
+                  navigation.navigate("CameraScreen", { setImage: setImage })
+                }
+              />
+            </>
+          ) : (
+            <Button
+              title="Добавить фото"
+              onPress={() =>
+                navigation.navigate("CameraScreen", { setImage: setImage })
+              }
+            />
+          )}
+        </View>
         <Text>imageUrl</Text>
         <TextInput
           style={{

@@ -18,7 +18,6 @@ const MealContainer = ({ item, navigation, deleteMeal }) => {
           });
         }}
       >
-        <Text>id : {item.id}</Text>
         <Text>
           Время и дата : {moment(item.date_time).format("HH:mm DD.MM.YYYY")}
         </Text>

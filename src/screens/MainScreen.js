@@ -24,7 +24,7 @@ const MainScreen = ({ navigation, route }) => {
       const response = await fetch(
         "http://80.87.193.6:8079/v1.0/meal/findByDate?date=" +
           urlDate +
-          "&size=999",
+          "&size=999&sort=dateTime%2Casc",
         {
           method: "GET",
           headers: {

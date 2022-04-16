@@ -10,6 +10,7 @@ import MealScreen from "./MealScreen";
 import MealElementScreen from "./MealElementScreen";
 import SearchScreen from "./SearchScreen";
 import ProductScreen from "./ProductScreen";
+import CameraScreen from "./CameraScreen";
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -24,7 +25,8 @@ const HomeStackScreen = () => {
         name="MealElementScreen"
         component={MealElementScreen}
       />
-      <HomeStack.Screen name="Поиск" component={SearchScreen} />
+      <HomeStack.Screen name="SearchScreen" component={SearchScreen} />
+      <HomeStack.Screen name="CameraScreen" component={CameraScreen} />
     </HomeStack.Navigator>
   );
 };
