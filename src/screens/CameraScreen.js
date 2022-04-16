@@ -45,7 +45,7 @@ const CameraScreen = ({ navigation, route }) => {
                 let photo = await this.camera.takePictureAsync({
                   base64: true,
                 });
-                route.params.setImage(photo.base64);
+                route.params.setImage_base64(photo.base64);
                 navigation.goBack();
               }
             }}

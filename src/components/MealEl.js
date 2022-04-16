@@ -8,7 +8,11 @@ const MealEl = ({
   deleteMealElement,
   navigation,
 }) => {
-  let imageUri = item.image ? item.image : item.imageUrl;
+  let imageUri = item.image_base64
+    ? {
+        uri: `data:image/jpg;base64,${item.image_base64}`,
+      }
+    : { uri: item.image_url };
   return (
     <View style={{ borderWidth: 1, padding: 5, margin: 5 }}>
       <TouchableOpacity
@@ -22,9 +26,7 @@ const MealEl = ({
       >
         <Image
           style={{ width: 100, height: 100 }}
-          source={{
-            uri: imageUri,
-          }}
+          source={imageUri}
           resizeMethod="auto"
           resizeMode="center"
         />
@@ -32,7 +34,7 @@ const MealEl = ({
         <Text>Calories: {item.calories}</Text>
         <Text>carbohydrates: {item.carbohydrates}</Text>
         <Text>fats: {item.fats}</Text>
-        <Text>imageUrl: {item.imageUrl}</Text>
+        <Text>image_url: {item.image_url}</Text>
         <Text>measurement_type: {item.measurement_type}</Text>
         <Text>name: {item.name}</Text>
         <Text>proteins: {item.proteins}</Text>

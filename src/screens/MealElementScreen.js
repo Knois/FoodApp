@@ -12,9 +12,11 @@ const MealElementScreen = ({ navigation, route }) => {
   );
 
   const [fats, setFats] = useState(item ? String(item.fats) : "0");
-  const [image, setImage] = useState(null);
-  const [imageUrl, setImageUrl] = useState(
-    item ? String(item.imageUrl) : "imageUrl"
+  const [image_base64, setImage_base64] = useState(
+    item ? String(item.image_base64) : null
+  );
+  const [image_url, setImage_url] = useState(
+    item ? String(item.image_url) : "imageUrl"
   );
   const [measurement_type, setMeasurement_type] = useState(
     item ? String(item.measurement_type) : "CUP"
@@ -25,6 +27,11 @@ const MealElementScreen = ({ navigation, route }) => {
     item ? String(item.quantity) : "quantity"
   );
 
+  let imageUri = image_base64
+    ? {
+        uri: `data:image/jpg;base64,${image_base64}`,
+      }
+    : { uri: image_url };
   let buttonTitle = item ? "Обновить элемент" : "Создать элемент";
 
   const stateToObj = () => {
@@ -32,8 +39,8 @@ const MealElementScreen = ({ navigation, route }) => {
       calories: calories,
       carbohydrates: carbohydrates,
       fats: fats,
-      image: image,
-      imageUrl: imageUrl,
+      image_base64: image_base64,
+      image_url: image_url,
       measurement_type: measurement_type,
       name: name,
       proteins: proteins,
@@ -45,7 +52,7 @@ const MealElementScreen = ({ navigation, route }) => {
     setCalories("" + obj.calories);
     setCarbohydrates("" + obj.carbohydrates);
     setFats("" + obj.fats);
-    setImageUrl("" + obj.imageUrl);
+    setImage_url("" + obj.image_url);
     setMeasurement_type("" + obj.measurement_type);
     setName("" + obj.name);
     setProteins("" + obj.proteins);
@@ -103,21 +110,23 @@ const MealElementScreen = ({ navigation, route }) => {
         />
         <View>
           <TextInput
-            value={image}
+            value={image_base64}
             style={{
               borderWidth: 0.5,
               backgroundColor: "#f9f2d9d9",
               alignSelf: "center",
             }}
           />
-          <Image style={{ height: 100, width: 100 }} source={{ uri: image }} />
-          {image ? (
+          <Image style={{ height: 100, width: 100 }} source={imageUri} />
+          {image_base64 ? (
             <>
               <Text>Фото добавлено</Text>
               <Button
                 title="Изменить фото"
                 onPress={() =>
-                  navigation.navigate("CameraScreen", { setImage: setImage })
+                  navigation.navigate("CameraScreen", {
+                    setImage_base64: setImage_base64,
+                  })
                 }
               />
             </>
@@ -125,12 +134,14 @@ const MealElementScreen = ({ navigation, route }) => {
             <Button
               title="Добавить фото"
               onPress={() =>
-                navigation.navigate("CameraScreen", { setImage: setImage })
+                navigation.navigate("CameraScreen", {
+                  setImage_base64: setImage_base64,
+                })
               }
             />
           )}
         </View>
-        <Text>imageUrl</Text>
+        <Text>image_url</Text>
         <TextInput
           style={{
             borderWidth: 0.5,
@@ -138,9 +149,9 @@ const MealElementScreen = ({ navigation, route }) => {
             alignSelf: "center",
           }}
           onChangeText={(value) => {
-            setImageUrl(value);
+            setImage_url(value);
           }}
-          value={imageUrl}
+          value={image_url}
         />
         <Text>measurement_type</Text>
         <Picker
