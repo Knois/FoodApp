@@ -1,6 +1,7 @@
 import { View, Text, TextInput, Button, Image } from "react-native";
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
+import ScreenHeader from "../components/ScreenHeader";
 
 const MealElementScreen = ({ navigation, route }) => {
   const item = route.params.item;

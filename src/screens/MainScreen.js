@@ -7,6 +7,7 @@ import { dateFormatted } from "../methods/Simple";
 import DatePicker from "react-native-modern-datepicker";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { useIsFocused } from "@react-navigation/native";
+import ScreenHeader from "../components/ScreenHeader";
 
 const MainScreen = ({ navigation, route }) => {
   const [isLoading, setLoading] = useState(false);

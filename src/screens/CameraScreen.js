@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Camera } from "expo-camera";
 import LoadingIndicator from "../components/LoadingIndicator";
+import ScreenHeader from "../components/ScreenHeader";
 
 const CameraScreen = ({ navigation, route }) => {
   const [hasPermission, setHasPermission] = useState(null);
