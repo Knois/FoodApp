@@ -71,6 +71,12 @@ const MainScreen = ({ navigation, route }) => {
   return (
     <>
       <View>
+        <ScreenHeader
+          canGoBack={false}
+          title="Расписание питания"
+          action={getAllMeals}
+          secondAction={toggleModal}
+        />
         {isLoading ? (
           <LoadingIndicator />
         ) : (
