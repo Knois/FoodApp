@@ -41,7 +41,7 @@ const ScreenHeader = ({ canGoBack, title, action, icon }) => {
             <Ionicons
               name="ios-arrow-back-circle-outline"
               size={30}
-              color="black"
+              color="#645fb1"
             />
           </TouchableOpacity>
         ) : (
@@ -50,7 +50,7 @@ const ScreenHeader = ({ canGoBack, title, action, icon }) => {
               navigation.toggleDrawer();
             }}
           >
-            <Ionicons name="menu-outline" size={30} color="black" />
+            <Ionicons name="menu-outline" size={30} color="#645fb1" />
           </TouchableOpacity>
         )}
       </View>
@@ -89,7 +89,7 @@ const ScreenHeader = ({ canGoBack, title, action, icon }) => {
             action();
           }}
         >
-          <Ionicons name="refresh" size={30} color="black" />
+          <Ionicons name="refresh" size={30} color="#645fb1" />
         </TouchableOpacity>
       </View>
     </View>

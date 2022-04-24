@@ -1,13 +1,16 @@
-import { View, Text, TouchableOpacity, Button } from "react-native";
+import { View, Text, TouchableOpacity, Button, FlatList } from "react-native";
 import React from "react";
-import moment from "moment";
-import { getSumCaloriesFromArray } from "../methods/DateMethods";
+import { getSumCaloriesFromArray, timeNow } from "../methods/DateMethods";
+
+const stringToNormalCase = (str) => {
+  let lowerCase = str.slice(0).toLowerCase();
+  return lowerCase[0].toUpperCase() + lowerCase.slice(1);
+}; /*                         Возвращает строку, где первый символ заглавный, остальные маленькие*/
 
 const MealContainer = ({ item, navigation, deleteMeal }) => {
   return (
     <>
       <TouchableOpacity
-        style={{ margin: 10, padding: 5, borderWidth: 0.5 }}
         onPress={() => {
           navigation.navigate("MealScreen", {
             mealID: item.id,
@@ -18,18 +21,45 @@ const MealContainer = ({ item, navigation, deleteMeal }) => {
           });
         }}
       >
-        <Text>
-          Время и дата : {moment(item.date_time).format("HH:mm DD.MM.YYYY")}
+        <Text style={{ fontWeight: "bold", color: "#645fb1" }}>
+          {item.name}
         </Text>
-        <Text>Название : {item.name}</Text>
-        <Text>Тип приема пищи : {item.meal_type}</Text>
+        <Text style={{ color: "#645fb1" }}>
+          {stringToNormalCase(item.meal_type)} at {timeNow(item.date_time)}
+        </Text>
         <Text>
           Сумма калорий: {+getSumCaloriesFromArray(item.meal_elements)}
         </Text>
-
-        {item.meal_elements.map((el) => {
-          return <Text key={Math.random() * 9999}>- {el.name}</Text>;
-        })}
+        <View
+          style={{
+            marginLeft: 40,
+          }}
+        >
+          {item.meal_elements.map((el) => {
+            return (
+              <View
+                style={{ marginLeft: 20, padding: 5 }}
+                key={Math.random() * 9999}
+              >
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    color: "#645fb1",
+                  }}
+                >
+                  {el.name}
+                </Text>
+                <Text
+                  style={{
+                    color: "#645fb1",
+                  }}
+                >
+                  {el.quantity}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
 
         <Button
           title="Удалить прием пищи"

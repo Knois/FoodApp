@@ -111,11 +111,7 @@ const MealScreen = ({ navigation, route }) => {
 
   return (
     <View>
-      <ScreenHeader
-        canGoBack={true}
-        title="Прием пищи"
-        action={console.log("w")}
-      />
+      <ScreenHeader canGoBack={true} title="Прием пищи" action={console.log} />
       <Text>Тип приема пищи:</Text>
       <Picker
         onValueChange={(itemValue, itemIndex) => {

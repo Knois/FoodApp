@@ -126,7 +126,11 @@ const MainScreen = ({ navigation, route }) => {
                       toggleModal();
                     }}
                   >
-                    <Ionicons name="calendar-outline" size={30} color="black" />
+                    <Ionicons
+                      name="calendar-outline"
+                      size={30}
+                      color="#645fb1"
+                    />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -134,21 +138,22 @@ const MainScreen = ({ navigation, route }) => {
               <View /*                                 Блок статистики       */
                 style={{
                   marginVertical: 15,
-                  borderWidth: 1,
-                  borderRadius: 20,
+                  backgroundColor: "#d8d6ed",
+                  borderRadius: 10,
                   width: "100%",
                   height: (window.height - window.height / 9) / 7,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
               >
-                <Text>Место под статистику</Text>
+                <Text style={{ fontWeight: "bold", color: "#645fb1" }}>
+                  Место под статистику
+                </Text>
               </View>
 
               <FlatList /*                                 Список полученных приемов пищи       */
                 style={{
                   height: (window.height - window.height / 9) / 1.7,
-                  borderWidth: 1,
                 }}
                 data={data}
                 keyExtractor={(item) => item.id}
@@ -171,7 +176,8 @@ const MainScreen = ({ navigation, route }) => {
                   });
                 }}
               />
-              <Modal
+
+              <Modal /*                                 Модальное окно с календарем       */
                 hideModalContentWhileAnimating={true}
                 onBackButtonPress={() => {
                   toggleModal();
