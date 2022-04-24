@@ -1,6 +1,14 @@
 import React, { useState, useLayoutEffect } from "react";
-import { Text, View, FlatList, Button, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  FlatList,
+  Button,
+  TouchableOpacity,
+  useWindowDimensions,
+} from "react-native";
 import Modal from "react-native-modal";
+import { Ionicons } from "@expo/vector-icons";
 import MealContainer from "../components/MealContainer";
 import { token } from "../constants/Constants";
 import {
@@ -18,6 +26,8 @@ const MainScreen = ({ navigation, route }) => {
   const [data, setData] = useState([]);
   const [urlDate, setUrlDate] = useState(dateFormatted());
   const [isVisible, setVisible] = useState(false);
+
+  const window = useWindowDimensions();
 
   const toggleModal = () => {
     setVisible(!isVisible);
@@ -79,22 +89,67 @@ const MainScreen = ({ navigation, route }) => {
           canGoBack={false}
           title="Расписание питания"
           action={getAllMeals}
-          secondAction={toggleModal}
+          icon="refresh"
         />
         {isLoading ? (
           <LoadingIndicator />
         ) : (
           <>
-            <View style={{ margin: 15 }}>
-              <Text style={{ fontWeight: "bold", color: "#645fb1" }}>
-                {dateToWeekDay(urlDate)},{" "}
-              </Text>
-              <Text style={{ color: "#645fb1" }}>
-                {dateToNormalDate(urlDate)}
-              </Text>
+            <View style={{ margin: 10 }}>
+              <View /*                                 Дата и иконка календаря        */
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <View>
+                  <Text style={{ fontWeight: "bold", color: "#645fb1" }}>
+                    {dateToWeekDay(urlDate)},{" "}
+                  </Text>
+                  <Text style={{ color: "#645fb1" }}>
+                    {dateToNormalDate(urlDate)}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    alignItems: "center",
+                    backgroundColor: "#d8d6ed",
+                    borderRadius: 10,
+                    width: 40,
+                    height: 40,
+                    padding: 5,
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      toggleModal();
+                    }}
+                  >
+                    <Ionicons name="calendar-outline" size={30} color="black" />
+                  </TouchableOpacity>
+                </View>
+              </View>
 
-              <FlatList
-                style={{ height: 400 }}
+              <View /*                                 Блок статистики       */
+                style={{
+                  marginVertical: 15,
+                  borderWidth: 1,
+                  borderRadius: 20,
+                  width: "100%",
+                  height: (window.height - window.height / 9) / 7,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text>Место под статистику</Text>
+              </View>
+
+              <FlatList /*                                 Список полученных приемов пищи       */
+                style={{
+                  height: (window.height - window.height / 9) / 1.7,
+                  borderWidth: 1,
+                }}
                 data={data}
                 keyExtractor={(item) => item.id}
                 renderItem={(item) => {

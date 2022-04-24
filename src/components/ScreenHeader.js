@@ -1,10 +1,16 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+} from "react-native";
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
-const ScreenHeader = ({ canGoBack, title, action, secondAction }) => {
+const ScreenHeader = ({ canGoBack, title, action, icon }) => {
   const navigation = useNavigation();
+  const window = useWindowDimensions();
   return (
     <View
       style={{
@@ -12,7 +18,7 @@ const ScreenHeader = ({ canGoBack, title, action, secondAction }) => {
         flexDirection: "row",
         alignItems: "flex-end",
         justifyContent: "space-between",
-        height: 90,
+        height: window.height / 9,
       }}
     >
       <View
@@ -32,15 +38,19 @@ const ScreenHeader = ({ canGoBack, title, action, secondAction }) => {
               navigation.goBack();
             }}
           >
-            <Ionicons name="arrow-back" size={30} color="black" />
+            <Ionicons
+              name="ios-arrow-back-circle-outline"
+              size={30}
+              color="black"
+            />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             onPress={() => {
-              secondAction();
+              navigation.toggleDrawer();
             }}
           >
-            <Ionicons name="ios-calendar-outline" size={30} color="black" />
+            <Ionicons name="menu-outline" size={30} color="black" />
           </TouchableOpacity>
         )}
       </View>
