@@ -2,11 +2,8 @@ import { Text, TextInput, View, Button, FlatList } from "react-native";
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import { token } from "../constants/Constants";
-import {
-  getSumCaloriesFromArray,
-  timeNow,
-  toNormalDate,
-} from "../methods/DateMethods";
+import { timeNow, toNormalDate } from "../methods/DateMethods";
+import { getSumCaloriesFromArray } from "../methods/InformationMethods";
 import MealEl from "../components/MealEl";
 import ScreenHeader from "../components/ScreenHeader";
 

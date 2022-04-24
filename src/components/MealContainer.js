@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, Button, FlatList } from "react-native";
 import React from "react";
-import { getSumCaloriesFromArray, timeNow } from "../methods/DateMethods";
+import { timeNow } from "../methods/DateMethods";
+import { getSumCaloriesFromArray } from "../methods/InformationMethods";
 
 const stringToNormalCase = (str) => {
   let lowerCaseString = str.slice(0).toLowerCase();
