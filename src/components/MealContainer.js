@@ -1,17 +1,25 @@
-import { View, Text, TouchableOpacity, Button, FlatList } from "react-native";
+import { View, Text, TouchableOpacity, Pressable } from "react-native";
 import React from "react";
 import { timeNow } from "../methods/DateMethods";
 import { getSumCaloriesFromArray } from "../methods/InformationMethods";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 const stringToNormalCase = (str) => {
   let lowerCaseString = str.slice(0).toLowerCase();
   return lowerCaseString[0].toUpperCase() + lowerCaseString.slice(1);
 }; /*                         Возвращает строку, где первый символ заглавный, остальные маленькие*/
 
-const MealContainer = ({ item, navigation, deleteMeal }) => {
+const MealContainer = ({ item, navigation, action }) => {
   return (
     <>
-      <TouchableOpacity
+      <Pressable
+        style={{
+          backgroundColor: "#f0edf9",
+          borderRadius: 10,
+          padding: 5,
+          marginVertical: 10,
+        }}
         onPress={() => {
           navigation.navigate("MealScreen", {
             mealID: item.id,
@@ -22,53 +30,60 @@ const MealContainer = ({ item, navigation, deleteMeal }) => {
           });
         }}
       >
-        <Text style={{ fontWeight: "bold", color: "#645fb1" }}>
-          {item.name}
-        </Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Text style={{ fontSize: 16, fontWeight: "bold", color: "#645fb1" }}>
+            {item.name}
+          </Text>
+          <Text style={{ fontSize: 16, fontWeight: "bold", color: "#9599a4" }}>
+            {+getSumCaloriesFromArray(item.meal_elements)} kcal
+          </Text>
+        </View>
         <Text style={{ color: "#645fb1" }}>
           {stringToNormalCase(item.meal_type)} at {timeNow(item.date_time)}
         </Text>
-        <Text>
-          Сумма калорий: {+getSumCaloriesFromArray(item.meal_elements)}
-        </Text>
-        <View
-          style={{
-            marginLeft: 40,
-          }}
-        >
+        <View>
           {item.meal_elements.map((el) => {
             return (
               <View
-                style={{ marginLeft: 20, padding: 5 }}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: 5,
+                }}
                 key={Math.random() * 9999}
               >
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: "#645fb1",
-                  }}
-                >
-                  {el.name}
-                </Text>
-                <Text
-                  style={{
-                    color: "#645fb1",
-                  }}
-                >
-                  {el.quantity}
-                </Text>
+                <MaterialCommunityIcons
+                  name="silverware-fork-knife"
+                  size={24}
+                  color="#645fb1"
+                />
+                <View style={{ marginLeft: 10 }}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: "#645fb1",
+                    }}
+                  >
+                    {el.name}
+                  </Text>
+                  <Text style={{ color: "#9599a4" }}>
+                    {el.quantity} {stringToNormalCase(el.measurement_type)}
+                  </Text>
+                </View>
               </View>
             );
           })}
         </View>
 
-        <Button
-          title="Удалить прием пищи"
+        <TouchableOpacity
+          style={{ alignSelf: "flex-end", padding: 5 }}
           onPress={() => {
-            deleteMeal(item.id);
+            action(item.id);
           }}
-        />
-      </TouchableOpacity>
+        >
+          <Ionicons name="trash-outline" size={30} color="red" />
+        </TouchableOpacity>
+      </Pressable>
     </>
   );
 };

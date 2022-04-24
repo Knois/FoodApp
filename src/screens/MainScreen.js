@@ -6,6 +6,7 @@ import {
   Button,
   TouchableOpacity,
   useWindowDimensions,
+  Alert,
 } from "react-native";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
@@ -74,6 +75,16 @@ const MainScreen = ({ navigation, route }) => {
       getAllMeals();
     }
   };
+
+  const createTwoButtonAlert = (id) =>
+    Alert.alert("Удаление приема пищи", "Подтверждаете удаление?", [
+      {
+        text: "Отмена",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      { text: "ОК", onPress: () => deleteMeal(id) },
+    ]);
 
   let isFocused = useIsFocused();
 
@@ -163,7 +174,7 @@ const MainScreen = ({ navigation, route }) => {
                     <MealContainer
                       item={item.item}
                       navigation={navigation}
-                      deleteMeal={deleteMeal}
+                      action={createTwoButtonAlert}
                     />
                   );
                 }}
