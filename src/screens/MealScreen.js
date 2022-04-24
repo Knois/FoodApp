@@ -6,7 +6,7 @@ import {
   getSumCaloriesFromArray,
   timeNow,
   toNormalDate,
-} from "../methods/Simple";
+} from "../methods/DateMethods";
 import MealEl from "../components/MealEl";
 import ScreenHeader from "../components/ScreenHeader";
 

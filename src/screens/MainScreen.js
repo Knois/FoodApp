@@ -3,7 +3,11 @@ import { Text, View, FlatList, Button, TouchableOpacity } from "react-native";
 import Modal from "react-native-modal";
 import MealContainer from "../components/MealContainer";
 import { token } from "../constants/Constants";
-import { dateFormatted } from "../methods/Simple";
+import {
+  dateFormatted,
+  dateToNormalDate,
+  dateToWeekDay,
+} from "../methods/DateMethods";
 import DatePicker from "react-native-modern-datepicker";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { useIsFocused } from "@react-navigation/native";
@@ -81,28 +85,14 @@ const MainScreen = ({ navigation, route }) => {
           <LoadingIndicator />
         ) : (
           <>
-            <View>
-              <TouchableOpacity
-                style={{
-                  alignSelf: "center",
-                  margin: 5,
-                  padding: 5,
-                  borderWidth: 1,
-                }}
-                onPress={() => {
-                  toggleModal();
-                }}
-              >
-                <Text>{urlDate}</Text>
-              </TouchableOpacity>
-              <View style={{ width: 100, alignSelf: "center" }}>
-                <Button
-                  title="Обновить"
-                  onPress={() => {
-                    getAllMeals();
-                  }}
-                />
-              </View>
+            <View style={{ margin: 15 }}>
+              <Text style={{ fontWeight: "bold", color: "#645fb1" }}>
+                {dateToWeekDay(urlDate)},{" "}
+              </Text>
+              <Text style={{ color: "#645fb1" }}>
+                {dateToNormalDate(urlDate)}
+              </Text>
+
               <FlatList
                 style={{ height: 400 }}
                 data={data}

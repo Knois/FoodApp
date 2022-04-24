@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Button } from "react-native";
 import React from "react";
 import moment from "moment";
-import { getSumCaloriesFromArray } from "../methods/Simple";
+import { getSumCaloriesFromArray } from "../methods/DateMethods";
 
 const MealContainer = ({ item, navigation, deleteMeal }) => {
   return (

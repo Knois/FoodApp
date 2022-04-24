@@ -13,7 +13,6 @@ const ScreenHeader = ({ canGoBack, title, action, secondAction }) => {
         alignItems: "flex-end",
         justifyContent: "space-between",
         height: 90,
-        borderBottomWidth: 1,
       }}
     >
       <View
@@ -58,6 +57,7 @@ const ScreenHeader = ({ canGoBack, title, action, secondAction }) => {
             height: 30,
             textAlign: "center",
             fontWeight: "bold",
+            color: "#645fb1",
           }}
         >
           {title}
