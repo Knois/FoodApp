@@ -10,7 +10,7 @@ import {
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import MealContainer from "../components/MealContainer";
-import { token } from "../constants/Constants";
+import { token, serverAddress } from "../constants/Constants";
 import {
   dateFormatted,
   dateToNormalDate,
@@ -37,7 +37,8 @@ const MainScreen = ({ navigation, route }) => {
     if (!isLoading) setLoading(true);
     try {
       const response = await fetch(
-        "http://80.87.193.6:8079/v1.0/meal/findByDate?date=" +
+        serverAddress +
+          "/v1.0/meal/findByDate?date=" +
           urlDate +
           "&size=999&sort=dateTime%2Casc",
         {
@@ -60,7 +61,7 @@ const MainScreen = ({ navigation, route }) => {
   const deleteMeal = async (id) => {
     setLoading(true);
     try {
-      const response = await fetch("http://80.87.193.6:8079/v1.0/meal/" + id, {
+      const response = await fetch(serverAddress + "/v1.0/meal/" + id, {
         method: "DELETE",
         headers: {
           Authorization: "Basic " + token,

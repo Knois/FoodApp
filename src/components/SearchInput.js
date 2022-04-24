@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState, useLayoutEffect } from "react";
-import { token } from "../constants/Constants";
+import { serverAddress, token } from "../constants/Constants";
 import LoadingIndicator from "./LoadingIndicator";
 
 const SearchInput = ({ navigation, copyToMealElement }) => {
@@ -17,7 +17,8 @@ const SearchInput = ({ navigation, copyToMealElement }) => {
   const searchByName = async () => {
     setLoading(true);
     const url =
-      "http://80.87.193.6:8079/v1.0/dish/search?search=name%3A" +
+      serverAddress +
+      "/v1.0/dish/search?search=name%3A" +
       encodeURI(name) +
       "&size=50";
     try {

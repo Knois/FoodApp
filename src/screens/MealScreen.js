@@ -1,13 +1,11 @@
 import { Text, TextInput, View, Button, FlatList } from "react-native";
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
-import { token } from "../constants/Constants";
+import { serverAddress, token } from "../constants/Constants";
 import { timeNow, toNormalDate } from "../methods/DateMethods";
 import { getSumCaloriesFromArray } from "../methods/InformationMethods";
 import MealEl from "../components/MealEl";
 import ScreenHeader from "../components/ScreenHeader";
-
-const url = "http://80.87.193.6:8079/v1.0/meal";
 
 const MealScreen = ({ navigation, route }) => {
   const mealToObj = (date_time, meal_type, name, meal_elements, ID) => {
@@ -49,7 +47,7 @@ const MealScreen = ({ navigation, route }) => {
 
   const createMeal = async (date_time, meal_type, name, meal_elements) => {
     try {
-      const response = await fetch(url, {
+      const response = await fetch(serverAddress + "/v1.0/meal", {
         method: "POST",
         headers: {
           Authorization: "Basic " + token,
@@ -69,7 +67,7 @@ const MealScreen = ({ navigation, route }) => {
 
   const updateMeal = async (date_time, meal_type, name, meal_elements, ID) => {
     try {
-      const response = await fetch(url, {
+      const response = await fetch(serverAddress + "/v1.0/meal", {
         method: "PUT",
         headers: {
           Authorization: "Basic " + token,
