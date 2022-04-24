@@ -3,8 +3,8 @@ import React from "react";
 import { getSumCaloriesFromArray, timeNow } from "../methods/DateMethods";
 
 const stringToNormalCase = (str) => {
-  let lowerCase = str.slice(0).toLowerCase();
-  return lowerCase[0].toUpperCase() + lowerCase.slice(1);
+  let lowerCaseString = str.slice(0).toLowerCase();
+  return lowerCaseString[0].toUpperCase() + lowerCaseString.slice(1);
 }; /*                         Возвращает строку, где первый символ заглавный, остальные маленькие*/
 
 const MealContainer = ({ item, navigation, deleteMeal }) => {
