@@ -32,7 +32,7 @@ const MealContainer = ({ item, navigation, action }) => {
       >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={{ fontSize: 16, fontWeight: "bold", color: "#645fb1" }}>
-            {item.name}
+            {stringToNormalCase(item.name)}
           </Text>
           <Text style={{ fontSize: 16, fontWeight: "bold", color: "#9599a4" }}>
             {+getSumCaloriesFromArray(item.meal_elements)} kcal

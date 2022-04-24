@@ -77,14 +77,20 @@ const MainScreen = ({ navigation, route }) => {
   };
 
   const createTwoButtonAlert = (id) =>
-    Alert.alert("Удаление приема пищи", "Подтверждаете удаление?", [
+    Alert.alert(
+      "Удаление приема пищи",
+      "Подтверждаете удаление?",
+      [
+        {
+          text: "Отмена",
+          style: "cancel",
+        },
+        { text: "ОК", onPress: () => deleteMeal(id) },
+      ],
       {
-        text: "Отмена",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel",
-      },
-      { text: "ОК", onPress: () => deleteMeal(id) },
-    ]);
+        cancelable: true,
+      }
+    );
 
   let isFocused = useIsFocused();
 
@@ -96,7 +102,7 @@ const MainScreen = ({ navigation, route }) => {
 
   return (
     <>
-      <View>
+      <View style={{ flex: 1 }}>
         <ScreenHeader
           canGoBack={false}
           title="Расписание питания"
@@ -107,7 +113,7 @@ const MainScreen = ({ navigation, route }) => {
           <LoadingIndicator />
         ) : (
           <>
-            <View style={{ margin: 10 }}>
+            <View style={{ margin: 10, flex: 1 }}>
               <View /*                                 Дата и иконка календаря        */
                 style={{
                   flexDirection: "row",
@@ -179,15 +185,27 @@ const MainScreen = ({ navigation, route }) => {
                   );
                 }}
               />
-              <Button
-                title="Создать прием пищи"
+              <TouchableOpacity /*                                 Кнопка создания приема пищи, переход на другой экран       */
+                style={{
+                  backgroundColor: "#d8d6ed",
+                  width: 50,
+                  height: 50,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  alignSelf: "center",
+                  marginBottom: 20,
+                  borderRadius: 10,
+                  margin: 5,
+                }}
                 onPress={() => {
                   navigation.navigate("MealScreen", {
                     mealID: null,
                     urlDate: urlDate,
                   });
                 }}
-              />
+              >
+                <Ionicons name="add-outline" size={40} color="#645fb1" />
+              </TouchableOpacity>
 
               <Modal /*                                 Модальное окно с календарем       */
                 hideModalContentWhileAnimating={true}
@@ -205,39 +223,45 @@ const MainScreen = ({ navigation, route }) => {
                 backdropTransitionInTiming={1}
                 backdropTransitionOutTiming={1}
               >
-                <View
+                <DatePicker
+                  onDateChange={(date) => {
+                    if (dateFormatted(date) == urlDate) {
+                      getAllMeals();
+                      toggleModal();
+                    }
+                    if (dateFormatted(date) !== urlDate) {
+                      setUrlDate(dateFormatted(date));
+                      toggleModal();
+                    }
+                  }}
+                  minimumDate="2022-01-01"
+                  maximumDate="2025-01-01"
+                  current={urlDate}
+                  selected={urlDate}
+                  mode="calendar"
+                  options={{
+                    headerAnimationDistance: 100,
+                    daysAnimationDistance: 100,
+                    textHeaderColor: "#645fb1",
+                    textDefaultColor: "#645fb1",
+                    selectedTextColor: "white",
+                    mainColor: "#645fb1",
+                    textSecondaryColor: "#645fb1",
+                    borderColor: "#645fb1",
+                  }}
+                />
+                <TouchableOpacity
                   style={{
-                    alignSelf: "center",
-                    height: "70%",
-                    width: "100%",
-                    backgroundColor: "#FFFFFF",
-                    justifyContent: "space-between",
+                    backgroundColor: "#645fb1",
+                    padding: 10,
+                    alignItems: "center",
+                  }}
+                  onPress={() => {
+                    toggleModal();
                   }}
                 >
-                  <DatePicker
-                    onSelectedChange={(date) => {
-                      if (dateFormatted(date) !== urlDate) {
-                        setUrlDate(dateFormatted(date));
-                        toggleModal();
-                      }
-                    }}
-                    minimumDate="2022-01-01"
-                    maximumDate="2025-01-01"
-                    current={urlDate}
-                    selected={urlDate}
-                    mode="calendar"
-                    options={{
-                      headerAnimationDistance: 100,
-                      daysAnimationDistance: 100,
-                    }}
-                  />
-                  <Button
-                    title="Закрыть календарь"
-                    onPress={() => {
-                      toggleModal();
-                    }}
-                  />
-                </View>
+                  <Text style={{ color: "white" }}>Закрыть календарь</Text>
+                </TouchableOpacity>
               </Modal>
             </View>
           </>
