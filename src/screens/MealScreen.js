@@ -1,6 +1,15 @@
-import { Text, TextInput, View, Button, FlatList } from "react-native";
+import {
+  Text,
+  TextInput,
+  View,
+  Button,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import React, { useState } from "react";
-import { Picker } from "@react-native-picker/picker";
+import Modal from "react-native-modal";
+import DatePicker from "react-native-modern-datepicker";
+
 import { serverAddress, token } from "../constants/Constants";
 import { timeNow, toNormalDate } from "../methods/DateMethods";
 import { getSumCaloriesFromArray } from "../methods/InformationMethods";
@@ -13,7 +22,7 @@ const MealScreen = ({ navigation, route }) => {
       return {
         date_time: date_time,
         meal_type: meal_type,
-        name: name,
+        name: name ? name.trim() : "Без названия",
         meal_elements: meal_elements,
         id: ID,
       };
@@ -21,7 +30,7 @@ const MealScreen = ({ navigation, route }) => {
       return {
         date_time: date_time,
         meal_type: meal_type,
-        name: name,
+        name: name ? name.trim() : "Без названия",
         meal_elements: meal_elements,
       };
     }
@@ -84,6 +93,10 @@ const MealScreen = ({ navigation, route }) => {
     }
   };
 
+  const toggleModal = () => {
+    setVisible(!isVisible);
+  };
+
   const urlDate = route.params.urlDate;
 
   const [ID, setID] = useState(route.params.mealID);
@@ -93,97 +106,235 @@ const MealScreen = ({ navigation, route }) => {
   const [date_time, setDate_time] = useState(
     route.params.date_time
       ? toNormalDate(route.params.date_time)
-      : urlDate + " " + timeNow()
+      : urlDate + " " + timeNow() + ":00"
   );
-  const [name, setName] = useState(
-    route.params.name ? route.params.name : "name"
-  );
+  const [name, setName] = useState(route.params.name ? route.params.name : "");
   const [meal_elements, setMeal_elements] = useState(
     route.params.meal_elements ? route.params.meal_elements : []
   );
 
+  const [isVisible, setVisible] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+
   let buttonTitle = ID ? "Обновить прием пищи" : "Создать прием пищи";
 
+  const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SUPPER", "LATE_SUPPER"];
+
   return (
-    <View>
-      <ScreenHeader canGoBack={true} title="Прием пищи" action={console.log} />
-      <Text>Тип приема пищи:</Text>
-      <Picker
-        onValueChange={(itemValue, itemIndex) => {
-          setMeal_type(itemValue);
+    <View style={{ flex: 1 }}>
+      <ScreenHeader
+        canGoBack={true}
+        title={route.params.mealID ? "Прием пищи" : "Создание приема пищи"}
+        action="none"
+      />
+      <View style={{ margin: 10, flex: 1 }}>
+        <TextInput
+          style={{
+            textAlign: "center",
+            borderWidth: 0.5,
+            borderRadius: 5,
+            borderColor: "#645fb1",
+            alignSelf: "center",
+            width: "100%",
+            height: 40,
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            color: "#645fb1",
+            fontWeight: name.length == 0 ? "normal" : "bold",
+          }}
+          onChangeText={(value) => {
+            setName(value);
+          }}
+          value={name}
+          placeholder="Введите название приема пищи"
+        />
+        <View
+          style={{
+            marginVertical: 20,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#645fb1" }}>Тип приема пищи:</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setShowCalendar(false);
+              toggleModal();
+            }}
+            style={{
+              borderWidth: 0.5,
+              padding: 5,
+              borderRadius: 5,
+              borderColor: "#645fb1",
+              width: 150,
+              height: 40,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
+              {meal_type}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View
+          style={{
+            marginVertical: 10,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#645fb1" }}>Дата и время:</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setShowCalendar(true);
+              toggleModal();
+            }}
+            style={{
+              borderWidth: 0.5,
+              padding: 5,
+              borderRadius: 5,
+              borderColor: "#645fb1",
+              width: 200,
+              height: 40,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
+              {date_time}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text>Дата и время:</Text>
+        <TextInput
+          style={{
+            borderWidth: 0.5,
+            backgroundColor: "#f9f2d9d9",
+            alignSelf: "center",
+          }}
+          onChangeText={(value) => {
+            setDate_time(value);
+          }}
+          value={date_time}
+        />
+        {ID ? (
+          <Text>MEAL ID присвоен:{ID}</Text>
+        ) : (
+          <Text>MEAL ID не присвоен</Text>
+        )}
+        <Text>Сумма калорий: {+getSumCaloriesFromArray(meal_elements)}</Text>
+        <FlatList
+          style={{ height: "50%" }}
+          data={meal_elements}
+          keyExtractor={(item, index) => index}
+          renderItem={({ item, index }) => {
+            return (
+              <MealEl
+                item={item}
+                index={index}
+                updateMealElement={updateMealElement}
+                deleteMealElement={deleteMealElement}
+                navigation={navigation}
+              />
+            );
+          }}
+        />
+        <Button
+          title="Добавить элемент приема пищи"
+          onPress={() => {
+            navigation.navigate("MealElementScreen", {
+              action: addMealElement,
+            });
+          }}
+        />
+        <Button
+          title={buttonTitle}
+          onPress={() => {
+            ID
+              ? updateMeal(date_time, meal_type, name, meal_elements, ID)
+              : createMeal(date_time, meal_type, name, meal_elements);
+          }}
+        />
+      </View>
+      <Modal /*                                 Модальное окно, которое откроет либо выбор meal_type, либо календарь       */
+        hideModalContentWhileAnimating={true}
+        onBackButtonPress={() => {
+          toggleModal();
         }}
-        selectedValue={meal_type}
+        onBackdropPress={() => {
+          toggleModal();
+        }}
+        isVisible={isVisible}
+        animationIn="slideInUp"
+        animationInTiming={500}
+        animationOutTiming={500}
+        backdropOpacity={0.7}
+        backdropTransitionInTiming={1}
+        backdropTransitionOutTiming={1}
       >
-        <Picker.Item label="BREAKFAST" value="BREAKFAST" />
-        <Picker.Item label="LUNCH" value="LUNCH" />
-        <Picker.Item label="DINNER" value="DINNER" />
-        <Picker.Item label="SUPPER" value="SUPPER" />
-        <Picker.Item label="LATE_SUPPER" value="LATE_SUPPER" />
-      </Picker>
-
-      <Text>Название:</Text>
-      <TextInput
-        style={{
-          borderWidth: 0.5,
-          backgroundColor: "#f9f2d9d9",
-          alignSelf: "center",
-        }}
-        onChangeText={(value) => {
-          setName(value);
-        }}
-        value={name}
-      />
-      <Text>Дата и время:</Text>
-      <TextInput
-        style={{
-          borderWidth: 0.5,
-          backgroundColor: "#f9f2d9d9",
-          alignSelf: "center",
-        }}
-        onChangeText={(value) => {
-          setDate_time(value);
-        }}
-        value={date_time}
-      />
-
-      {ID ? (
-        <Text>MEAL ID присвоен:{ID}</Text>
-      ) : (
-        <Text>MEAL ID не присвоен</Text>
-      )}
-
-      <Text>Сумма калорий: {+getSumCaloriesFromArray(meal_elements)}</Text>
-
-      <FlatList
-        style={{ height: "50%" }}
-        data={meal_elements}
-        keyExtractor={(item, index) => index}
-        renderItem={({ item, index }) => {
-          return (
-            <MealEl
-              item={item}
-              index={index}
-              updateMealElement={updateMealElement}
-              deleteMealElement={deleteMealElement}
-              navigation={navigation}
-            />
-          );
-        }}
-      />
-      <Button
-        title="Добавить элемент приема пищи"
-        onPress={() => {
-          navigation.navigate("MealElementScreen", { action: addMealElement });
-        }}
-      />
-      <Button
-        title={buttonTitle}
-        onPress={() => {
-          ID
-            ? updateMeal(date_time, meal_type, name, meal_elements, ID)
-            : createMeal(date_time, meal_type, name, meal_elements);
-        }}
-      />
+        {showCalendar ? (
+          <DatePicker
+            /*onDateChange={(date) => {
+            if (dateFormatted(date) == urlDate) {
+              getAllMeals();
+              toggleModal();
+            }
+            if (dateFormatted(date) !== urlDate) {
+              setUrlDate(dateFormatted(date));
+              toggleModal();
+            }
+          }}*/
+            minimumDate="2022-01-01"
+            maximumDate="2025-01-01"
+            current={urlDate}
+            selected={urlDate}
+            mode="time"
+            options={{
+              headerAnimationDistance: 100,
+              daysAnimationDistance: 100,
+              textHeaderColor: "#645fb1",
+              textDefaultColor: "#645fb1",
+              selectedTextColor: "white",
+              mainColor: "#645fb1",
+              textSecondaryColor: "#645fb1",
+              borderColor: "#645fb1",
+            }}
+          />
+        ) : (
+          <View
+            style={{
+              width: 200,
+              backgroundColor: "white",
+              alignSelf: "center",
+              borderRadius: 20,
+            }}
+          >
+            {mealTypes.map((el) => {
+              return (
+                <TouchableOpacity
+                  key={Math.random() * 9999}
+                  style={{
+                    height: 50,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={() => {
+                    setMeal_type(el);
+                    toggleModal();
+                  }}
+                >
+                  <Text>{el}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
+      </Modal>
     </View>
   );
 };

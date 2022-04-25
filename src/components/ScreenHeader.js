@@ -77,20 +77,22 @@ const ScreenHeader = ({ canGoBack, title, action, icon }) => {
         style={{
           margin: 10,
           alignItems: "center",
-          backgroundColor: "#d8d6ed",
+          backgroundColor: action == "none" ? "transparent" : "#d8d6ed",
           borderRadius: 10,
           width: 40,
           height: 40,
           padding: 5,
         }}
       >
-        <TouchableOpacity
-          onPress={() => {
-            action();
-          }}
-        >
-          <Ionicons name="refresh" size={30} color="#645fb1" />
-        </TouchableOpacity>
+        {action !== "none" && (
+          <TouchableOpacity
+            onPress={() => {
+              action();
+            }}
+          >
+            <Ionicons name="refresh" size={30} color="#645fb1" />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

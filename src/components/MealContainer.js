@@ -1,14 +1,12 @@
 import { View, Text, TouchableOpacity, Pressable } from "react-native";
 import React from "react";
 import { timeNow } from "../methods/DateMethods";
-import { getSumCaloriesFromArray } from "../methods/InformationMethods";
+import {
+  getSumCaloriesFromArray,
+  stringToNormalCase,
+} from "../methods/InformationMethods";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-
-const stringToNormalCase = (str) => {
-  let lowerCaseString = str.slice(0).toLowerCase();
-  return lowerCaseString[0].toUpperCase() + lowerCaseString.slice(1);
-}; /*                         Возвращает строку, где первый символ заглавный, остальные маленькие*/
 
 const MealContainer = ({ item, navigation, action }) => {
   return (
