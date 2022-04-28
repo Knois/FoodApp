@@ -106,7 +106,7 @@ const MainScreen = ({ navigation, route }) => {
           canGoBack={false}
           title="Расписание питания"
           action={getAllMeals}
-          icon="refresh"
+          rightIcon="refresh"
         />
         {isLoading ? (
           <LoadingIndicator />

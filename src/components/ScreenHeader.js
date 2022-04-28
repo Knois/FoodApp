@@ -8,7 +8,7 @@ import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
-const ScreenHeader = ({ canGoBack, title, action, icon }) => {
+const ScreenHeader = ({ canGoBack, title, action, rightIcon }) => {
   const navigation = useNavigation();
   const window = useWindowDimensions();
   return (
@@ -90,7 +90,7 @@ const ScreenHeader = ({ canGoBack, title, action, icon }) => {
               action();
             }}
           >
-            <Ionicons name="refresh" size={30} color="#645fb1" />
+            <Ionicons name={rightIcon} size={30} color="#645fb1" />
           </TouchableOpacity>
         )}
       </View>

@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import Modal from "react-native-modal";
-import DatePicker from "react-native-modern-datepicker";
 
 import { serverAddress, token } from "../constants/Constants";
 import { timeNow, toNormalDate } from "../methods/DateMethods";
@@ -17,14 +16,14 @@ import MealEl from "../components/MealEl";
 import ScreenHeader from "../components/ScreenHeader";
 
 const MealScreen = ({ navigation, route }) => {
-  const mealToObj = (date_time, meal_type, name, meal_elements, ID) => {
-    if (ID) {
+  const mealToObj = () => {
+    if (route.params.mealID) {
       return {
         date_time: date_time,
         meal_type: meal_type,
         name: name ? name.trim() : "Без названия",
         meal_elements: meal_elements,
-        id: ID,
+        id: route.params.mealID,
       };
     } else {
       return {
@@ -54,7 +53,7 @@ const MealScreen = ({ navigation, route }) => {
     setMeal_elements(arr);
   };
 
-  const createMeal = async (date_time, meal_type, name, meal_elements) => {
+  const createMeal = async () => {
     try {
       const response = await fetch(serverAddress + "/v1.0/meal", {
         method: "POST",
@@ -62,15 +61,13 @@ const MealScreen = ({ navigation, route }) => {
           Authorization: "Basic " + token,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(
-          mealToObj(date_time, meal_type, name, meal_elements)
-        ),
+        body: JSON.stringify(mealToObj()),
       });
       const json = await response.json();
-      setID(json.id);
     } catch (error) {
       console.error("Сервер прислал ошибку");
     } finally {
+      navigation.goBack();
     }
   };
 
@@ -99,7 +96,6 @@ const MealScreen = ({ navigation, route }) => {
 
   const urlDate = route.params.urlDate;
 
-  const [ID, setID] = useState(route.params.mealID);
   const [meal_type, setMeal_type] = useState(
     route.params.meal_type ? route.params.meal_type : "BREAKFAST"
   );
@@ -116,8 +112,6 @@ const MealScreen = ({ navigation, route }) => {
   const [isVisible, setVisible] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
 
-  let buttonTitle = ID ? "Обновить прием пищи" : "Создать прием пищи";
-
   const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SUPPER", "LATE_SUPPER"];
 
   return (
@@ -125,7 +119,8 @@ const MealScreen = ({ navigation, route }) => {
       <ScreenHeader
         canGoBack={true}
         title={route.params.mealID ? "Прием пищи" : "Создание приема пищи"}
-        action="none"
+        action={route.params.mealID ? updateMeal : createMeal}
+        rightIcon="checkmark"
       />
       <View style={{ margin: 10, flex: 1 }}>
         <TextInput
@@ -209,25 +204,18 @@ const MealScreen = ({ navigation, route }) => {
             </Text>
           </TouchableOpacity>
         </View>
-
-        <Text>Дата и время:</Text>
-        <TextInput
+        <View
           style={{
-            borderWidth: 0.5,
-            backgroundColor: "#f9f2d9d9",
-            alignSelf: "center",
+            marginVertical: 10,
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
           }}
-          onChangeText={(value) => {
-            setDate_time(value);
-          }}
-          value={date_time}
-        />
-        {ID ? (
-          <Text>MEAL ID присвоен:{ID}</Text>
-        ) : (
-          <Text>MEAL ID не присвоен</Text>
-        )}
-        <Text>Сумма калорий: {+getSumCaloriesFromArray(meal_elements)}</Text>
+        >
+          <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
+            Сумма калорий: {+getSumCaloriesFromArray(meal_elements)}
+          </Text>
+        </View>
         <FlatList
           style={{ height: "50%" }}
           data={meal_elements}
@@ -252,14 +240,6 @@ const MealScreen = ({ navigation, route }) => {
             });
           }}
         />
-        <Button
-          title={buttonTitle}
-          onPress={() => {
-            ID
-              ? updateMeal(date_time, meal_type, name, meal_elements, ID)
-              : createMeal(date_time, meal_type, name, meal_elements);
-          }}
-        />
       </View>
       <Modal /*                                 Модальное окно, которое откроет либо выбор meal_type, либо календарь       */
         hideModalContentWhileAnimating={true}
@@ -278,33 +258,37 @@ const MealScreen = ({ navigation, route }) => {
         backdropTransitionOutTiming={1}
       >
         {showCalendar ? (
-          <DatePicker
-            /*onDateChange={(date) => {
-            if (dateFormatted(date) == urlDate) {
-              getAllMeals();
-              toggleModal();
-            }
-            if (dateFormatted(date) !== urlDate) {
-              setUrlDate(dateFormatted(date));
-              toggleModal();
-            }
-          }}*/
-            minimumDate="2022-01-01"
-            maximumDate="2025-01-01"
-            current={urlDate}
-            selected={urlDate}
-            mode="time"
-            options={{
-              headerAnimationDistance: 100,
-              daysAnimationDistance: 100,
-              textHeaderColor: "#645fb1",
-              textDefaultColor: "#645fb1",
-              selectedTextColor: "white",
-              mainColor: "#645fb1",
-              textSecondaryColor: "#645fb1",
-              borderColor: "#645fb1",
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "#fff",
             }}
-          />
+          >
+            <TextInput
+              style={{
+                textAlign: "center",
+                borderWidth: 0.5,
+                borderRadius: 5,
+                borderColor: "#645fb1",
+                alignSelf: "center",
+                width: "100%",
+                height: 40,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                color: "#645fb1",
+                fontWeight: "bold",
+              }}
+              onSubmitEditing={() => {
+                toggleModal();
+              }}
+              autoFocus={true}
+              onChangeText={(value) => {
+                setDate_time(value);
+              }}
+              value={date_time}
+            />
+          </View>
         ) : (
           <View
             style={{
