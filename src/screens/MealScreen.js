@@ -2,12 +2,13 @@ import {
   Text,
   TextInput,
   View,
-  Button,
   FlatList,
   TouchableOpacity,
+  useWindowDimensions,
 } from "react-native";
 import React, { useState } from "react";
 import Modal from "react-native-modal";
+import { Ionicons } from "@expo/vector-icons";
 
 import { serverAddress, token } from "../constants/Constants";
 import { timeNow, toNormalDate } from "../methods/DateMethods";
@@ -16,6 +17,8 @@ import MealEl from "../components/MealEl";
 import ScreenHeader from "../components/ScreenHeader";
 
 const MealScreen = ({ navigation, route }) => {
+  const window = useWindowDimensions();
+
   const mealToObj = () => {
     if (route.params.mealID) {
       return {
@@ -71,7 +74,7 @@ const MealScreen = ({ navigation, route }) => {
     }
   };
 
-  const updateMeal = async (date_time, meal_type, name, meal_elements, ID) => {
+  const updateMeal = async () => {
     try {
       const response = await fetch(serverAddress + "/v1.0/meal", {
         method: "PUT",
@@ -79,9 +82,7 @@ const MealScreen = ({ navigation, route }) => {
           Authorization: "Basic " + token,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(
-          mealToObj(date_time, meal_type, name, meal_elements, ID)
-        ),
+        body: JSON.stringify(mealToObj()),
       });
       const json = await response.json();
     } catch (error) {
@@ -110,20 +111,19 @@ const MealScreen = ({ navigation, route }) => {
   );
 
   const [isVisible, setVisible] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
 
   const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SUPPER", "LATE_SUPPER"];
 
   return (
     <View style={{ flex: 1 }}>
-      <ScreenHeader
+      <ScreenHeader /*                                 Шапка*/
         canGoBack={true}
         title={route.params.mealID ? "Прием пищи" : "Создание приема пищи"}
         action={route.params.mealID ? updateMeal : createMeal}
         rightIcon="checkmark"
       />
       <View style={{ margin: 10, flex: 1 }}>
-        <TextInput
+        <TextInput /*                                 Ввод названия приема пищи*/
           style={{
             textAlign: "center",
             borderWidth: 0.5,
@@ -140,6 +140,7 @@ const MealScreen = ({ navigation, route }) => {
           onChangeText={(value) => {
             setName(value);
           }}
+          autoCapitalize="sentences"
           value={name}
           placeholder="Введите название приема пищи"
         />
@@ -152,9 +153,8 @@ const MealScreen = ({ navigation, route }) => {
           }}
         >
           <Text style={{ color: "#645fb1" }}>Тип приема пищи:</Text>
-          <TouchableOpacity
+          <TouchableOpacity /*                                 Открывает модальное окно с выбором meal_type*/
             onPress={() => {
-              setShowCalendar(false);
               toggleModal();
             }}
             style={{
@@ -162,7 +162,7 @@ const MealScreen = ({ navigation, route }) => {
               padding: 5,
               borderRadius: 5,
               borderColor: "#645fb1",
-              width: 150,
+              width: 200,
               height: 40,
               alignItems: "center",
               justifyContent: "center",
@@ -183,26 +183,29 @@ const MealScreen = ({ navigation, route }) => {
           }}
         >
           <Text style={{ color: "#645fb1" }}>Дата и время:</Text>
-          <TouchableOpacity
-            onPress={() => {
-              setShowCalendar(true);
-              toggleModal();
-            }}
+          <TextInput /*                                                   Ввод даты и времени приема пищи*/
             style={{
+              textAlign: "center",
               borderWidth: 0.5,
-              padding: 5,
               borderRadius: 5,
               borderColor: "#645fb1",
+              alignSelf: "center",
               width: 200,
               height: 40,
-              alignItems: "center",
-              justifyContent: "center",
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+              color: "#645fb1",
+              fontWeight: "bold",
             }}
-          >
-            <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
-              {date_time}
-            </Text>
-          </TouchableOpacity>
+            onSubmitEditing={() => {
+              toggleModal();
+            }}
+            onChangeText={(value) => {
+              setDate_time(value);
+            }}
+            value={date_time}
+            keyboardType="numeric"
+          />
         </View>
         <View
           style={{
@@ -216,8 +219,8 @@ const MealScreen = ({ navigation, route }) => {
             Сумма калорий: {+getSumCaloriesFromArray(meal_elements)}
           </Text>
         </View>
-        <FlatList
-          style={{ height: "50%" }}
+        <FlatList /*                                                    Список элементов приема пищи*/
+          style={{ marginBottom: 10 }}
           data={meal_elements}
           keyExtractor={(item, index) => index}
           renderItem={({ item, index }) => {
@@ -232,16 +235,28 @@ const MealScreen = ({ navigation, route }) => {
             );
           }}
         />
-        <Button
-          title="Добавить элемент приема пищи"
+        <TouchableOpacity /*                                                    Кнопка добавления элементов приема пищи*/
+          style={{
+            backgroundColor: "#d8d6ed",
+            width: 50,
+            height: 50,
+            alignItems: "center",
+            justifyContent: "center",
+            alignSelf: "center",
+            marginBottom: 20,
+            borderRadius: 10,
+            margin: 5,
+          }}
           onPress={() => {
             navigation.navigate("MealElementScreen", {
               action: addMealElement,
             });
           }}
-        />
+        >
+          <Ionicons name="add-outline" size={40} color="#645fb1" />
+        </TouchableOpacity>
       </View>
-      <Modal /*                                 Модальное окно, которое откроет либо выбор meal_type, либо календарь       */
+      <Modal /*                                 Модальное окно, которое откроет выбор meal_type*/
         hideModalContentWhileAnimating={true}
         onBackButtonPress={() => {
           toggleModal();
@@ -257,67 +272,33 @@ const MealScreen = ({ navigation, route }) => {
         backdropTransitionInTiming={1}
         backdropTransitionOutTiming={1}
       >
-        {showCalendar ? (
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "#fff",
-            }}
-          >
-            <TextInput
-              style={{
-                textAlign: "center",
-                borderWidth: 0.5,
-                borderRadius: 5,
-                borderColor: "#645fb1",
-                alignSelf: "center",
-                width: "100%",
-                height: 40,
-                paddingHorizontal: 10,
-                paddingVertical: 5,
-                color: "#645fb1",
-                fontWeight: "bold",
-              }}
-              onSubmitEditing={() => {
-                toggleModal();
-              }}
-              autoFocus={true}
-              onChangeText={(value) => {
-                setDate_time(value);
-              }}
-              value={date_time}
-            />
-          </View>
-        ) : (
-          <View
-            style={{
-              width: 200,
-              backgroundColor: "white",
-              alignSelf: "center",
-              borderRadius: 20,
-            }}
-          >
-            {mealTypes.map((el) => {
-              return (
-                <TouchableOpacity
-                  key={Math.random() * 9999}
-                  style={{
-                    height: 50,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                  onPress={() => {
-                    setMeal_type(el);
-                    toggleModal();
-                  }}
-                >
-                  <Text>{el}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        )}
+        <View
+          style={{
+            width: 200,
+            backgroundColor: "white",
+            alignSelf: "center",
+            borderRadius: 20,
+          }}
+        >
+          {mealTypes.map((el) => {
+            return (
+              <TouchableOpacity
+                key={Math.random() * 9999}
+                style={{
+                  height: 50,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  setMeal_type(el);
+                  toggleModal();
+                }}
+              >
+                <Text>{el}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </Modal>
     </View>
   );
