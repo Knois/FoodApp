@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  Button,
-  Pressable,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, Button, Pressable, Image } from "react-native";
 import React from "react";
 
 const MealEl = ({
@@ -15,11 +8,11 @@ const MealEl = ({
   deleteMealElement,
   navigation,
 }) => {
-  let imageUri = item.image_base64
-    ? {
+  let imageUri = item.image_url
+    ? { uri: item.image_url }
+    : {
         uri: `data:image/jpg;base64,${item.image_base64}`,
-      }
-    : { uri: item.image_url };
+      };
   return (
     <Pressable
       style={{
@@ -62,6 +55,7 @@ const MealEl = ({
           resizeMethod="auto"
           resizeMode="contain"
         />
+
         <View
           style={{ flexDirection: "column", justifyContent: "space-around" }}
         >

@@ -9,6 +9,7 @@ import {
 import React, { useState } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
+import * as FileSystem from "expo-file-system";
 
 import { serverAddress, token } from "../constants/Constants";
 import { timeNow, toNormalDate } from "../methods/DateMethods";
@@ -19,13 +20,44 @@ import ScreenHeader from "../components/ScreenHeader";
 const MealScreen = ({ navigation, route }) => {
   const window = useWindowDimensions();
 
+  let arrBase64 = [];
+
+  const arrUrlToBase64 = async () => {
+    let arr = Object.assign([], meal_elements);
+    for (let el of arr) {
+      if (el.image_url) {
+        console.log("условие прошло");
+        let image;
+        try {
+          const { uri } = await FileSystem.downloadAsync(
+            el.image_url,
+            FileSystem.documentDirectory + "bufferimg.jpg"
+          );
+          image = await FileSystem.readAsStringAsync(uri, {
+            encoding: "base64",
+          });
+          await FileSystem.deleteAsync(uri);
+          console.log("IMAGE IS");
+          console.log(image);
+          el.image_base64 = image;
+          el.image_url = null;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    }
+    arrBase64 = Object.assign([], arr);
+    console.log("BASE 64 ARRAY IS");
+    console.log(arrBase64);
+  };
+
   const mealToObj = () => {
     if (route.params.mealID) {
       return {
         date_time: date_time,
         meal_type: meal_type,
         name: name ? name.trim() : "Без названия",
-        meal_elements: meal_elements,
+        meal_elements: arrBase64,
         id: route.params.mealID,
       };
     } else {
@@ -33,7 +65,7 @@ const MealScreen = ({ navigation, route }) => {
         date_time: date_time,
         meal_type: meal_type,
         name: name ? name.trim() : "Без названия",
-        meal_elements: meal_elements,
+        meal_elements: arrBase64,
       };
     }
   };
@@ -57,6 +89,7 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const createMeal = async () => {
+    await arrUrlToBase64();
     try {
       const response = await fetch(serverAddress + "/v1.0/meal", {
         method: "POST",
@@ -75,6 +108,7 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const updateMeal = async () => {
+    arrUrlToBase64();
     try {
       const response = await fetch(serverAddress + "/v1.0/meal", {
         method: "PUT",
@@ -88,6 +122,7 @@ const MealScreen = ({ navigation, route }) => {
     } catch (error) {
       console.error("Сервер прислал ошибку");
     } finally {
+      navigation.goBack();
     }
   };
 
@@ -113,6 +148,8 @@ const MealScreen = ({ navigation, route }) => {
   const [isVisible, setVisible] = useState(false);
 
   const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SUPPER", "LATE_SUPPER"];
+
+  console.log(meal_elements);
 
   return (
     <View style={{ flex: 1 }}>

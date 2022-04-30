@@ -17,7 +17,7 @@ const MealElementScreen = ({ navigation, route }) => {
     item ? String(item.image_base64) : null
   );
   const [image_url, setImage_url] = useState(
-    item ? String(item.image_url) : "imageUrl"
+    item ? String(item.image_url) : null
   );
   const [measurement_type, setMeasurement_type] = useState(
     item ? String(item.measurement_type) : "CUP"
@@ -142,18 +142,6 @@ const MealElementScreen = ({ navigation, route }) => {
             />
           )}
         </View>
-        <Text>image_url</Text>
-        <TextInput
-          style={{
-            borderWidth: 0.5,
-            backgroundColor: "#f9f2d9d9",
-            alignSelf: "center",
-          }}
-          onChangeText={(value) => {
-            setImage_url(value);
-          }}
-          value={image_url}
-        />
         <Text>measurement_type</Text>
         <Picker
           onValueChange={(itemValue, itemIndex) => {
