@@ -36,8 +36,6 @@ export const dateToWeekDay = (smth) => {
 };
 
 export const timeNow = (smth) => {
-  let time = moment(smth ? smth : new Date()).format(
-    smth ? "HH:mm" : "HH:mm"
-  );
+  let time = moment(smth ? smth : new Date()).format(smth ? "HH:mm" : "HH:mm");
   return time;
 };

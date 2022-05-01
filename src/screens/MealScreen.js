@@ -108,7 +108,7 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const updateMeal = async () => {
-    arrUrlToBase64();
+    await arrUrlToBase64();
     try {
       const response = await fetch(serverAddress + "/v1.0/meal", {
         method: "PUT",
@@ -234,11 +234,8 @@ const MealScreen = ({ navigation, route }) => {
               color: "#645fb1",
               fontWeight: "bold",
             }}
-            onSubmitEditing={() => {
-              toggleModal();
-            }}
-            onChangeText={(value) => {
-              setDate_time(value);
+            onChangeText={(text) => {
+              setDate_time(text);
             }}
             value={date_time}
             keyboardType="numeric"

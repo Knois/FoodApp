@@ -1,5 +1,6 @@
-import { View, Text, Button, Pressable, Image } from "react-native";
+import { View, Text, TouchableOpacity, Pressable, Image } from "react-native";
 import React from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 const MealEl = ({
   item,
@@ -158,12 +159,14 @@ const MealEl = ({
         </View>
       </View>
 
-      <Button
-        title="Удалить элемент"
+      <TouchableOpacity
+        style={{ alignSelf: "flex-end", padding: 5 }}
         onPress={() => {
           deleteMealElement(index);
         }}
-      />
+      >
+        <Ionicons name="trash-outline" size={30} color="red" />
+      </TouchableOpacity>
     </Pressable>
   );
 };
