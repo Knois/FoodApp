@@ -41,7 +41,6 @@ const CameraScreen = ({ navigation, route }) => {
 
   const takePhoto = async () => {
     if (this.camera) {
-      setLoading(true);
       let photo = await this.camera.takePictureAsync({
         base64: true,
       });
@@ -66,7 +65,7 @@ const CameraScreen = ({ navigation, route }) => {
           this.camera = ref;
         }}
       >
-        <View style={{ height: "100%" }}>
+        <View style={{ width: window.width, height: (window.width / 9) * 16 }}>
           <View style={{ bottom: -(window.height / 1.3) }}>
             <TouchableOpacity
               style={{

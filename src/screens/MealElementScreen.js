@@ -1,6 +1,7 @@
 import { View, Text, TextInput, Button, Image } from "react-native";
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
+
 import ScreenHeader from "../components/ScreenHeader";
 
 const MealElementScreen = ({ navigation, route }) => {
@@ -11,7 +12,6 @@ const MealElementScreen = ({ navigation, route }) => {
   const [carbohydrates, setCarbohydrates] = useState(
     item ? String(item.carbohydrates) : "0"
   );
-
   const [fats, setFats] = useState(item ? String(item.fats) : "0");
   const [image_base64, setImage_base64] = useState(
     item ? String(item.image_base64) : null
@@ -33,6 +33,7 @@ const MealElementScreen = ({ navigation, route }) => {
         uri: `data:image/jpg;base64,${image_base64}`,
       }
     : { uri: image_url };
+
   let buttonTitle = item ? "Обновить элемент" : "Создать элемент";
 
   const stateToObj = () => {
