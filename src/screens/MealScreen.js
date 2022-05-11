@@ -149,8 +149,6 @@ const MealScreen = ({ navigation, route }) => {
 
   const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SUPPER", "LATE_SUPPER"];
 
-  console.log(meal_elements);
-
   return (
     <View style={{ flex: 1 }}>
       <ScreenHeader /*                                 Шапка*/
@@ -177,8 +175,8 @@ const MealScreen = ({ navigation, route }) => {
           onChangeText={(value) => {
             setName(value);
           }}
-          autoCapitalize="sentences"
           value={name}
+          autoCapitalize="sentences"
           placeholder="Введите название приема пищи"
         />
         <View

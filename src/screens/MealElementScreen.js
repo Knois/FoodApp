@@ -1,6 +1,14 @@
-import { View, Text, TextInput, Button, Image } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import React, { useState } from "react";
-import { Picker } from "@react-native-picker/picker";
+import Modal from "react-native-modal";
+import { Ionicons } from "@expo/vector-icons";
 
 import ScreenHeader from "../components/ScreenHeader";
 
@@ -20,21 +28,35 @@ const MealElementScreen = ({ navigation, route }) => {
     item ? String(item.image_url) : null
   );
   const [measurement_type, setMeasurement_type] = useState(
-    item ? String(item.measurement_type) : "CUP"
+    item ? String(item.measurement_type) : "GRAM"
   );
-  const [name, setName] = useState(item ? String(item.name) : "name");
+  const [name, setName] = useState(item ? String(item.name) : "");
   const [proteins, setProteins] = useState(item ? String(item.proteins) : "0");
-  const [quantity, setQuantity] = useState(
-    item ? String(item.quantity) : "quantity"
-  );
+  const [quantity, setQuantity] = useState(item ? String(item.quantity) : "0");
+
+  const [isVisible, setVisible] = useState(false);
 
   let imageUri = image_base64
     ? {
         uri: `data:image/jpg;base64,${image_base64}`,
       }
-    : { uri: image_url };
+    : {
+        uri: image_url ? image_url : "https://clck.ru/gwCcf",
+      };
 
-  let buttonTitle = item ? "Обновить элемент" : "Создать элемент";
+  const measurementTypes = [
+    "GRAM",
+    "KILOGRAM",
+    "LITER",
+    "MILLILITER",
+    "PACK",
+    "PIECE",
+    "PACK",
+    "SOUP_SPOON",
+    "TEA_SPOON",
+    "UNIT",
+    "CUP",
+  ];
 
   const stateToObj = () => {
     return {
@@ -44,7 +66,7 @@ const MealElementScreen = ({ navigation, route }) => {
       image_base64: image_base64,
       image_url: image_url,
       measurement_type: measurement_type,
-      name: name,
+      name: name ? name.trim() : "Без названия",
       proteins: proteins,
       quantity: quantity,
     };
@@ -61,152 +83,315 @@ const MealElementScreen = ({ navigation, route }) => {
     setQuantity("" + obj.quantity);
   };
 
+  const goToSearch = () => {
+    navigation.navigate("SearchScreen", {
+      copyToMealElement: copyToMealElement,
+    });
+  };
+
+  const goToCamera = () =>
+    navigation.navigate("CameraScreen", {
+      setImage_base64: setImage_base64,
+      setImage_url: setImage_url,
+    });
+
+  const toggleModal = () => {
+    setVisible(!isVisible);
+  };
+
   return (
     <>
-      <View>
-        <View style={{ width: "40%", alignSelf: "center", margin: 15 }}>
-          <Button
-            title="Поиск в базе"
-            onPress={() => {
-              navigation.navigate("SearchScreen", {
-                copyToMealElement: copyToMealElement,
-              });
-            }}
-          />
-        </View>
-        <Text>calories</Text>
-        <TextInput
-          style={{
-            borderWidth: 0.5,
-            backgroundColor: "#f9f2d9d9",
-            alignSelf: "center",
-          }}
-          onChangeText={(value) => {
-            setCalories(value);
-          }}
-          value={calories}
+      <View style={{ flex: 1 }}>
+        <ScreenHeader /*                                 Шапка*/
+          canGoBack={true}
+          title={route.params.item ? route.params.item.name : "Создание блюда"}
+          action={goToSearch}
+          rightIcon="search-outline"
         />
-        <Text>carbohydrates</Text>
-        <TextInput
-          style={{
-            borderWidth: 0.5,
-            backgroundColor: "#f9f2d9d9",
-            alignSelf: "center",
-          }}
-          onChangeText={(value) => {
-            setCarbohydrates(value);
-          }}
-          value={carbohydrates}
-        />
-        <Text>fats</Text>
-        <TextInput
-          style={{
-            borderWidth: 0.5,
-            backgroundColor: "#f9f2d9d9",
-            alignSelf: "center",
-          }}
-          onChangeText={(value) => {
-            setFats(value);
-          }}
-          value={fats}
-        />
-        <View>
-          <TextInput
-            value={image_base64}
-            style={{
-              borderWidth: 0.5,
-              backgroundColor: "#f9f2d9d9",
-              alignSelf: "center",
-            }}
-          />
-          <Image style={{ height: 100, width: 100 }} source={imageUri} />
-          {image_base64 ? (
-            <>
-              <Text>Фото добавлено</Text>
-              <Button
-                title="Изменить фото"
-                onPress={() =>
-                  navigation.navigate("CameraScreen", {
-                    setImage_base64: setImage_base64,
-                  })
-                }
-              />
-            </>
-          ) : (
-            <Button
-              title="Добавить фото"
-              onPress={() =>
-                navigation.navigate("CameraScreen", {
-                  setImage_base64: setImage_base64,
-                })
-              }
+        <View style={{ margin: 10, flex: 1 }}>
+          <TouchableOpacity onPress={goToCamera}>
+            <Image
+              style={{
+                marginBottom: 5,
+                width: "40%",
+                height: 200,
+                borderRadius: 20,
+                alignSelf: "center",
+              }}
+              source={imageUri}
+              resizeMethod="auto"
+              resizeMode="contain"
             />
-          )}
+          </TouchableOpacity>
+          <TextInput /*                                 Ввод названия блюда*/
+            style={{
+              marginVertical: 5,
+              textAlign: "center",
+              borderWidth: 0.5,
+              borderRadius: 5,
+              borderColor: "#645fb1",
+              alignSelf: "center",
+              width: "100%",
+              height: 40,
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+              color: "#645fb1",
+              fontWeight: name.length == 0 ? "normal" : "bold",
+            }}
+            onChangeText={(value) => {
+              setName(value);
+            }}
+            autoCapitalize="sentences"
+            value={name}
+            placeholder="Введите название блюда"
+          />
+          <View
+            style={{
+              marginVertical: 5,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "#645fb1" }}>Калории :</Text>
+            <TextInput /*                                                   Ввод калорий*/
+              style={{
+                textAlign: "center",
+                borderWidth: 0.5,
+                borderRadius: 5,
+                borderColor: "#645fb1",
+                alignSelf: "center",
+                width: 200,
+                height: 40,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                color: "#645fb1",
+                fontWeight: "bold",
+              }}
+              onChangeText={(value) => {
+                setCalories(value);
+              }}
+              value={calories}
+              keyboardType="numeric"
+            />
+          </View>
+          <View
+            style={{
+              marginVertical: 5,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "#645fb1" }}>Углеводы :</Text>
+            <TextInput /*                                                   Ввод углеводов*/
+              style={{
+                textAlign: "center",
+                borderWidth: 0.5,
+                borderRadius: 5,
+                borderColor: "#645fb1",
+                alignSelf: "center",
+                width: 200,
+                height: 40,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                color: "#645fb1",
+                fontWeight: "bold",
+              }}
+              onChangeText={(value) => {
+                setCarbohydrates(value);
+              }}
+              value={carbohydrates}
+              keyboardType="numeric"
+            />
+          </View>
+          <View
+            style={{
+              marginVertical: 5,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "#645fb1" }}>Жиры :</Text>
+            <TextInput /*                                                   Ввод жиров*/
+              style={{
+                textAlign: "center",
+                borderWidth: 0.5,
+                borderRadius: 5,
+                borderColor: "#645fb1",
+                alignSelf: "center",
+                width: 200,
+                height: 40,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                color: "#645fb1",
+                fontWeight: "bold",
+              }}
+              onChangeText={(value) => {
+                setFats(value);
+              }}
+              value={fats}
+              keyboardType="numeric"
+            />
+          </View>
+          <View
+            style={{
+              marginVertical: 5,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "#645fb1" }}>Белки :</Text>
+            <TextInput /*                                                   Ввод белков*/
+              style={{
+                textAlign: "center",
+                borderWidth: 0.5,
+                borderRadius: 5,
+                borderColor: "#645fb1",
+                alignSelf: "center",
+                width: 200,
+                height: 40,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                color: "#645fb1",
+                fontWeight: "bold",
+              }}
+              onChangeText={(value) => {
+                setProteins(value);
+              }}
+              value={proteins}
+              keyboardType="numeric"
+            />
+          </View>
+          <View
+            style={{
+              marginVertical: 5,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "#645fb1" }}>Количество :</Text>
+            <TextInput /*                                                   Ввод количества*/
+              style={{
+                textAlign: "center",
+                borderWidth: 0.5,
+                borderRadius: 5,
+                borderColor: "#645fb1",
+                alignSelf: "center",
+                width: 200,
+                height: 40,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                color: "#645fb1",
+                fontWeight: "bold",
+              }}
+              onChangeText={(value) => {
+                setQuantity(value);
+              }}
+              value={quantity}
+              keyboardType="numeric"
+            />
+          </View>
+          <View
+            style={{
+              marginVertical: 5,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "#645fb1" }}>Тип приема пищи:</Text>
+            <TouchableOpacity /*                                 Открывает модальное окно с выбором measurement_type*/
+              onPress={() => {
+                toggleModal();
+              }}
+              style={{
+                borderWidth: 0.5,
+                padding: 5,
+                borderRadius: 5,
+                borderColor: "#645fb1",
+                width: 200,
+                height: 40,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
+                {measurement_type}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text>measurement_type</Text>
-        <Picker
-          onValueChange={(itemValue, itemIndex) => {
-            setMeasurement_type(itemValue);
+        <TouchableOpacity /*                                                    Кнопка добавления/обновления элемента приема пищи*/
+          style={{
+            backgroundColor: "#d8d6ed",
+            width: 50,
+            height: 50,
+            alignItems: "center",
+            justifyContent: "center",
+            alignSelf: "center",
+            marginBottom: 20,
+            borderRadius: 10,
+            margin: 5,
           }}
-          selectedValue={measurement_type}
+          onPress={() => {
+            index
+              ? route.params.action(stateToObj(), index)
+              : route.params.action(stateToObj());
+            navigation.goBack();
+          }}
         >
-          <Picker.Item label="CUP" value="CUP" />
-          <Picker.Item label="GRAM" value="GRAM" />
-          <Picker.Item label="KILOGRAM" value="KILOGRAM" />
-          <Picker.Item label="LITER" value="LITER" />
-          <Picker.Item label="MILLILITER" value="MILLILITER" />
-          <Picker.Item label="PACK" value="PACK" />
-          <Picker.Item label="PIECE" value="PIECE" />
-          <Picker.Item label="SOUP_SPOON" value="SOUP_SPOON" />
-          <Picker.Item label="TEA_SPOON" value="TEA_SPOON" />
-          <Picker.Item label="UNIT" value="UNIT" />
-        </Picker>
-        <Text>name</Text>
-        <TextInput
-          style={{
-            borderWidth: 0.5,
-            backgroundColor: "#f9f2d9d9",
-            alignSelf: "center",
-          }}
-          onChangeText={(value) => {
-            setName(value);
-          }}
-          value={name}
-        />
-        <Text>proteins</Text>
-        <TextInput
-          style={{
-            borderWidth: 0.5,
-            backgroundColor: "#f9f2d9d9",
-            alignSelf: "center",
-          }}
-          onChangeText={(value) => {
-            setProteins(value);
-          }}
-          value={proteins}
-        />
-        <Text>quantity</Text>
-        <TextInput
-          style={{
-            borderWidth: 0.5,
-            backgroundColor: "#f9f2d9d9",
-            alignSelf: "center",
-          }}
-          onChangeText={(value) => {
-            setQuantity(value);
-          }}
-          value={quantity}
-        />
+          <Ionicons name="checkmark" size={40} color="#645fb1" />
+        </TouchableOpacity>
       </View>
-      <Button
-        title={buttonTitle}
-        onPress={() => {
-          index
-            ? route.params.action(stateToObj(), index)
-            : route.params.action(stateToObj());
-          navigation.goBack();
+
+      <Modal /*                                 Модальное окно, которое откроет выбор measurement_type*/
+        hideModalContentWhileAnimating={true}
+        onBackButtonPress={() => {
+          toggleModal();
         }}
-      />
+        onBackdropPress={() => {
+          toggleModal();
+        }}
+        isVisible={isVisible}
+        animationIn="slideInUp"
+        animationInTiming={500}
+        animationOutTiming={500}
+        backdropOpacity={0.7}
+        backdropTransitionInTiming={1}
+        backdropTransitionOutTiming={1}
+      >
+        <View
+          style={{
+            width: 200,
+            backgroundColor: "white",
+            alignSelf: "center",
+            borderRadius: 20,
+          }}
+        >
+          {measurementTypes.map((el) => {
+            return (
+              <TouchableOpacity
+                key={Math.random() * 9999}
+                style={{
+                  height: 50,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  setMeasurement_type(el);
+                  toggleModal();
+                }}
+              >
+                <Text>{el}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </Modal>
     </>
   );
 };

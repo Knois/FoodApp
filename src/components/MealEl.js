@@ -51,7 +51,7 @@ const MealEl = ({
 
       <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
         <Image
-          style={{ width: "30%", height: 150, borderRadius: 40 }}
+          style={{ width: "30%", height: 150, borderRadius: 20 }}
           source={imageUri}
           resizeMethod="auto"
           resizeMode="contain"

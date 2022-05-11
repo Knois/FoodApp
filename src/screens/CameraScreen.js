@@ -6,7 +6,6 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Camera } from "expo-camera";
-import LoadingIndicator from "../components/LoadingIndicator";
 import ScreenHeader from "../components/ScreenHeader";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -15,7 +14,6 @@ const CameraScreen = ({ navigation, route }) => {
 
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
-  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -45,6 +43,7 @@ const CameraScreen = ({ navigation, route }) => {
         base64: true,
       });
       route.params.setImage_base64(photo.base64);
+      route.params.setImage_url(null);
       navigation.goBack();
     }
   };
