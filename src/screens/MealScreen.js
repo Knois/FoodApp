@@ -26,7 +26,6 @@ const MealScreen = ({ navigation, route }) => {
     let arr = Object.assign([], meal_elements);
     for (let el of arr) {
       if (el.image_url) {
-        console.log("условие прошло");
         let image;
         try {
           const { uri } = await FileSystem.downloadAsync(
@@ -37,8 +36,6 @@ const MealScreen = ({ navigation, route }) => {
             encoding: "base64",
           });
           await FileSystem.deleteAsync(uri);
-          console.log("IMAGE IS");
-          console.log(image);
           el.image_base64 = image;
           el.image_url = null;
         } catch (err) {
@@ -47,8 +44,6 @@ const MealScreen = ({ navigation, route }) => {
       }
     }
     arrBase64 = Object.assign([], arr);
-    console.log("BASE 64 ARRAY IS");
-    console.log(arrBase64);
   };
 
   const mealToObj = () => {

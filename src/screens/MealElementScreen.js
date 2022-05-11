@@ -15,6 +15,7 @@ import ScreenHeader from "../components/ScreenHeader";
 const MealElementScreen = ({ navigation, route }) => {
   const item = route.params.item;
   const index = route.params.index;
+  console.log(item);
 
   const [calories, setCalories] = useState(item ? String(item.calories) : "0");
   const [carbohydrates, setCarbohydrates] = useState(
@@ -22,10 +23,10 @@ const MealElementScreen = ({ navigation, route }) => {
   );
   const [fats, setFats] = useState(item ? String(item.fats) : "0");
   const [image_base64, setImage_base64] = useState(
-    item ? String(item.image_base64) : null
+    item ? String(item.image_base64) : ""
   );
   const [image_url, setImage_url] = useState(
-    item ? String(item.image_url) : null
+    item ? String(item.image_url) : ""
   );
   const [measurement_type, setMeasurement_type] = useState(
     item ? String(item.measurement_type) : "GRAM"
@@ -35,14 +36,6 @@ const MealElementScreen = ({ navigation, route }) => {
   const [quantity, setQuantity] = useState(item ? String(item.quantity) : "0");
 
   const [isVisible, setVisible] = useState(false);
-
-  let imageUri = image_base64
-    ? {
-        uri: `data:image/jpg;base64,${image_base64}`,
-      }
-    : {
-        uri: image_url ? image_url : "https://clck.ru/gwCcf",
-      };
 
   const measurementTypes = [
     "GRAM",
@@ -99,6 +92,15 @@ const MealElementScreen = ({ navigation, route }) => {
     setVisible(!isVisible);
   };
 
+  let imageUri =
+    image_base64 & (image_base64 !== "")
+      ? {
+          uri: `data:image/jpg;base64,${image_base64}`,
+        }
+      : image_url
+      ? { uri: image_url }
+      : require("../../assets/img/addPhoto.png");
+
   return (
     <>
       <View style={{ flex: 1 }}>
@@ -113,7 +115,7 @@ const MealElementScreen = ({ navigation, route }) => {
             <Image
               style={{
                 marginBottom: 5,
-                width: "40%",
+                width: "50%",
                 height: 200,
                 borderRadius: 20,
                 alignSelf: "center",

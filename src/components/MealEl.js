@@ -9,11 +9,16 @@ const MealEl = ({
   deleteMealElement,
   navigation,
 }) => {
-  let imageUri = item.image_url
-    ? { uri: item.image_url }
-    : {
+  let imageUri = item.image_base64
+    ? {
         uri: `data:image/jpg;base64,${item.image_base64}`,
-      };
+      }
+    : item.image_url
+    ? { uri: item.image_url }
+    : require("../../assets/img/addPhoto.png");
+
+  console.log(item);
+
   return (
     <Pressable
       style={{
