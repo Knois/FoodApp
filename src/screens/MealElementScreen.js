@@ -2,7 +2,7 @@ import {
   View,
   Text,
   TextInput,
-  Button,
+  ScrollView,
   Image,
   TouchableOpacity,
 } from "react-native";
@@ -23,11 +23,9 @@ const MealElementScreen = ({ navigation, route }) => {
   );
   const [fats, setFats] = useState(item ? String(item.fats) : "0");
   const [image_base64, setImage_base64] = useState(
-    item ? String(item.image_base64) : ""
+    item ? item.image_base64 : null
   );
-  const [image_url, setImage_url] = useState(
-    item ? String(item.image_url) : ""
-  );
+  const [image_url, setImage_url] = useState(item ? item.image_url : null);
   const [measurement_type, setMeasurement_type] = useState(
     item ? String(item.measurement_type) : "GRAM"
   );
@@ -53,15 +51,15 @@ const MealElementScreen = ({ navigation, route }) => {
 
   const stateToObj = () => {
     return {
-      calories: calories,
-      carbohydrates: carbohydrates,
-      fats: fats,
+      calories: calories ? calories : "0",
+      carbohydrates: carbohydrates ? carbohydrates : "0",
+      fats: fats ? fats : "0",
       image_base64: image_base64,
       image_url: image_url,
       measurement_type: measurement_type,
       name: name ? name.trim() : "Без названия",
-      proteins: proteins,
-      quantity: quantity,
+      proteins: proteins ? proteins : "0",
+      quantity: quantity ? quantity : "0",
     };
   };
 
@@ -92,14 +90,18 @@ const MealElementScreen = ({ navigation, route }) => {
     setVisible(!isVisible);
   };
 
-  let imageUri =
-    image_base64 & (image_base64 !== "")
-      ? {
-          uri: `data:image/jpg;base64,${image_base64}`,
-        }
-      : image_url
-      ? { uri: image_url }
-      : require("../../assets/img/addPhoto.png");
+  let imageUri = image_base64
+    ? {
+        uri: `data:image/jpg;base64,${image_base64}`,
+      }
+    : image_url
+    ? { uri: image_url }
+    : require("../../assets/img/addPhoto.png");
+
+  console.log("image_url");
+  console.log(image_url);
+  console.log("image_base64");
+  console.log(image_base64);
 
   return (
     <>
@@ -110,7 +112,7 @@ const MealElementScreen = ({ navigation, route }) => {
           action={goToSearch}
           rightIcon="search-outline"
         />
-        <View style={{ margin: 10, flex: 1 }}>
+        <ScrollView style={{ margin: 10, flex: 1 }}>
           <TouchableOpacity onPress={goToCamera}>
             <Image
               style={{
@@ -326,7 +328,7 @@ const MealElementScreen = ({ navigation, route }) => {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </ScrollView>
         <TouchableOpacity /*                                                    Кнопка добавления/обновления элемента приема пищи*/
           style={{
             backgroundColor: "#d8d6ed",

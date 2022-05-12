@@ -14,6 +14,7 @@ import * as FileSystem from "expo-file-system";
 import { serverAddress, token } from "../constants/Constants";
 import { timeNow, toNormalDate } from "../methods/DateMethods";
 import { getSumCaloriesFromArray } from "../methods/InformationMethods";
+import LoadingIndicator from "../components/LoadingIndicator";
 import MealEl from "../components/MealEl";
 import ScreenHeader from "../components/ScreenHeader";
 
@@ -84,6 +85,7 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const createMeal = async () => {
+    setLoading(true);
     await arrUrlToBase64();
     try {
       const response = await fetch(serverAddress + "/v1.0/meal", {
@@ -96,13 +98,14 @@ const MealScreen = ({ navigation, route }) => {
       });
       const json = await response.json();
     } catch (error) {
-      console.error("Сервер прислал ошибку");
+      console.error(error);
     } finally {
       navigation.goBack();
     }
   };
 
   const updateMeal = async () => {
+    setLoading(true);
     await arrUrlToBase64();
     try {
       const response = await fetch(serverAddress + "/v1.0/meal", {
@@ -115,7 +118,7 @@ const MealScreen = ({ navigation, route }) => {
       });
       const json = await response.json();
     } catch (error) {
-      console.error("Сервер прислал ошибку");
+      console.error(error);
     } finally {
       navigation.goBack();
     }
@@ -141,192 +144,199 @@ const MealScreen = ({ navigation, route }) => {
   );
 
   const [isVisible, setVisible] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SUPPER", "LATE_SUPPER"];
 
   return (
     <View style={{ flex: 1 }}>
-      <ScreenHeader /*                                 Шапка*/
-        canGoBack={true}
-        title={route.params.mealID ? "Прием пищи" : "Создание приема пищи"}
-        action={route.params.mealID ? updateMeal : createMeal}
-        rightIcon="checkmark"
-      />
-      <View style={{ margin: 10, flex: 1 }}>
-        <TextInput /*                                 Ввод названия приема пищи*/
-          style={{
-            textAlign: "center",
-            borderWidth: 0.5,
-            borderRadius: 5,
-            borderColor: "#645fb1",
-            alignSelf: "center",
-            width: "100%",
-            height: 40,
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-            color: "#645fb1",
-            fontWeight: name.length == 0 ? "normal" : "bold",
-          }}
-          onChangeText={(value) => {
-            setName(value);
-          }}
-          value={name}
-          autoCapitalize="sentences"
-          placeholder="Введите название приема пищи"
-        />
-        <View
-          style={{
-            marginVertical: 20,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ color: "#645fb1" }}>Тип приема пищи:</Text>
-          <TouchableOpacity /*                                 Открывает модальное окно с выбором meal_type*/
-            onPress={() => {
-              toggleModal();
-            }}
-            style={{
-              borderWidth: 0.5,
-              padding: 5,
-              borderRadius: 5,
-              borderColor: "#645fb1",
-              width: 200,
-              height: 40,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
-              {meal_type}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={{
-            marginVertical: 10,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ color: "#645fb1" }}>Дата и время:</Text>
-          <TextInput /*                                                   Ввод даты и времени приема пищи*/
-            style={{
-              textAlign: "center",
-              borderWidth: 0.5,
-              borderRadius: 5,
-              borderColor: "#645fb1",
-              alignSelf: "center",
-              width: 200,
-              height: 40,
-              paddingHorizontal: 10,
-              paddingVertical: 5,
-              color: "#645fb1",
-              fontWeight: "bold",
-            }}
-            onChangeText={(text) => {
-              setDate_time(text);
-            }}
-            value={date_time}
-            keyboardType="numeric"
+      {isLoading ? (
+        <LoadingIndicator />
+      ) : (
+        <>
+          <ScreenHeader /*                                 Шапка*/
+            canGoBack={true}
+            title={route.params.mealID ? "Прием пищи" : "Создание приема пищи"}
+            action={route.params.mealID ? updateMeal : createMeal}
+            rightIcon="checkmark"
           />
-        </View>
-        <View
-          style={{
-            marginVertical: 10,
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
-            Сумма калорий: {+getSumCaloriesFromArray(meal_elements)}
-          </Text>
-        </View>
-        <FlatList /*                                                    Список элементов приема пищи*/
-          style={{ marginBottom: 10 }}
-          data={meal_elements}
-          keyExtractor={(item, index) => index}
-          renderItem={({ item, index }) => {
-            return (
-              <MealEl
-                item={item}
-                index={index}
-                updateMealElement={updateMealElement}
-                deleteMealElement={deleteMealElement}
-                navigation={navigation}
-              />
-            );
-          }}
-        />
-        <TouchableOpacity /*                                                    Кнопка добавления элементов приема пищи*/
-          style={{
-            backgroundColor: "#d8d6ed",
-            width: 50,
-            height: 50,
-            alignItems: "center",
-            justifyContent: "center",
-            alignSelf: "center",
-            marginBottom: 20,
-            borderRadius: 10,
-            margin: 5,
-          }}
-          onPress={() => {
-            navigation.navigate("MealElementScreen", {
-              action: addMealElement,
-            });
-          }}
-        >
-          <Ionicons name="add-outline" size={40} color="#645fb1" />
-        </TouchableOpacity>
-      </View>
-      <Modal /*                                 Модальное окно, которое откроет выбор meal_type*/
-        hideModalContentWhileAnimating={true}
-        onBackButtonPress={() => {
-          toggleModal();
-        }}
-        onBackdropPress={() => {
-          toggleModal();
-        }}
-        isVisible={isVisible}
-        animationIn="slideInUp"
-        animationInTiming={500}
-        animationOutTiming={500}
-        backdropOpacity={0.7}
-        backdropTransitionInTiming={1}
-        backdropTransitionOutTiming={1}
-      >
-        <View
-          style={{
-            width: 200,
-            backgroundColor: "white",
-            alignSelf: "center",
-            borderRadius: 20,
-          }}
-        >
-          {mealTypes.map((el) => {
-            return (
-              <TouchableOpacity
-                key={Math.random() * 9999}
-                style={{
-                  height: 50,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
+          <View style={{ margin: 10, flex: 1 }}>
+            <TextInput /*                                 Ввод названия приема пищи*/
+              style={{
+                textAlign: "center",
+                borderWidth: 0.5,
+                borderRadius: 5,
+                borderColor: "#645fb1",
+                alignSelf: "center",
+                width: "100%",
+                height: 40,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                color: "#645fb1",
+                fontWeight: name.length == 0 ? "normal" : "bold",
+              }}
+              onChangeText={(value) => {
+                setName(value);
+              }}
+              value={name}
+              autoCapitalize="sentences"
+              placeholder="Введите название приема пищи"
+            />
+            <View
+              style={{
+                marginVertical: 20,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#645fb1" }}>Тип приема пищи:</Text>
+              <TouchableOpacity /*                                 Открывает модальное окно с выбором meal_type*/
                 onPress={() => {
-                  setMeal_type(el);
                   toggleModal();
                 }}
+                style={{
+                  borderWidth: 0.5,
+                  padding: 5,
+                  borderRadius: 5,
+                  borderColor: "#645fb1",
+                  width: 200,
+                  height: 40,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <Text>{el}</Text>
+                <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
+                  {meal_type}
+                </Text>
               </TouchableOpacity>
-            );
-          })}
-        </View>
-      </Modal>
+            </View>
+
+            <View
+              style={{
+                marginVertical: 10,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#645fb1" }}>Дата и время:</Text>
+              <TextInput /*                                                   Ввод даты и времени приема пищи*/
+                style={{
+                  textAlign: "center",
+                  borderWidth: 0.5,
+                  borderRadius: 5,
+                  borderColor: "#645fb1",
+                  alignSelf: "center",
+                  width: 200,
+                  height: 40,
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
+                  color: "#645fb1",
+                  fontWeight: "bold",
+                }}
+                onChangeText={(text) => {
+                  setDate_time(text);
+                }}
+                value={date_time}
+                keyboardType="numeric"
+              />
+            </View>
+            <View
+              style={{
+                marginVertical: 10,
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
+                Сумма калорий: {+getSumCaloriesFromArray(meal_elements)}
+              </Text>
+            </View>
+            <FlatList /*                                                    Список элементов приема пищи*/
+              style={{ marginBottom: 10, flex: 1 }}
+              data={meal_elements}
+              keyExtractor={(item, index) => index}
+              renderItem={({ item, index }) => {
+                return (
+                  <MealEl
+                    item={item}
+                    index={index}
+                    updateMealElement={updateMealElement}
+                    deleteMealElement={deleteMealElement}
+                    navigation={navigation}
+                  />
+                );
+              }}
+            />
+            <TouchableOpacity /*                                                    Кнопка добавления элементов приема пищи*/
+              style={{
+                backgroundColor: "#d8d6ed",
+                width: 50,
+                height: 50,
+                alignItems: "center",
+                justifyContent: "center",
+                alignSelf: "center",
+                marginBottom: 20,
+                borderRadius: 10,
+                margin: 5,
+              }}
+              onPress={() => {
+                navigation.navigate("MealElementScreen", {
+                  action: addMealElement,
+                });
+              }}
+            >
+              <Ionicons name="add-outline" size={40} color="#645fb1" />
+            </TouchableOpacity>
+          </View>
+          <Modal /*                                 Модальное окно, которое откроет выбор meal_type*/
+            hideModalContentWhileAnimating={true}
+            onBackButtonPress={() => {
+              toggleModal();
+            }}
+            onBackdropPress={() => {
+              toggleModal();
+            }}
+            isVisible={isVisible}
+            animationIn="slideInUp"
+            animationInTiming={500}
+            animationOutTiming={500}
+            backdropOpacity={0.7}
+            backdropTransitionInTiming={1}
+            backdropTransitionOutTiming={1}
+          >
+            <View
+              style={{
+                width: 200,
+                backgroundColor: "white",
+                alignSelf: "center",
+                borderRadius: 20,
+              }}
+            >
+              {mealTypes.map((el) => {
+                return (
+                  <TouchableOpacity
+                    key={Math.random() * 9999}
+                    style={{
+                      height: 50,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    onPress={() => {
+                      setMeal_type(el);
+                      toggleModal();
+                    }}
+                  >
+                    <Text>{el}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </Modal>
+        </>
+      )}
     </View>
   );
 };

@@ -102,169 +102,170 @@ const MainScreen = ({ navigation, route }) => {
   return (
     <>
       <View style={{ flex: 1 }}>
-        <ScreenHeader
-          canGoBack={false}
-          title="Расписание питания"
-          action={getAllMeals}
-          rightIcon="refresh"
-        />
-        {isLoading ? (
-          <LoadingIndicator />
-        ) : (
-          <>
-            <View style={{ margin: 10, flex: 1 }}>
-              <View /*                                 Дата и иконка календаря        */
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <View>
-                  <Text style={{ fontWeight: "bold", color: "#645fb1" }}>
-                    {dateToWeekDay(urlDate)},{" "}
-                  </Text>
-                  <Text style={{ color: "#645fb1" }}>
-                    {dateToNormalDate(urlDate)}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    alignItems: "center",
-                    backgroundColor: "#d8d6ed",
-                    borderRadius: 10,
-                    width: 40,
-                    height: 40,
-                    padding: 5,
-                  }}
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      toggleModal();
-                    }}
-                  >
-                    <Ionicons
-                      name="calendar-outline"
-                      size={30}
-                      color="#645fb1"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <View /*                                 Блок статистики       */
-                style={{
-                  marginVertical: 15,
-                  backgroundColor: "#d8d6ed",
-                  borderRadius: 10,
-                  width: "100%",
-                  height: (window.height - window.height / 9) / 7,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+        <>
+          <ScreenHeader
+            canGoBack={false}
+            title="Расписание питания"
+            action={getAllMeals}
+            rightIcon="refresh"
+          />
+          <View style={{ margin: 10, flex: 1 }}>
+            <View /*                                 Дата и иконка календаря        */
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <View>
                 <Text style={{ fontWeight: "bold", color: "#645fb1" }}>
-                  Место под статистику
+                  {dateToWeekDay(urlDate)},{" "}
+                </Text>
+                <Text style={{ color: "#645fb1" }}>
+                  {dateToNormalDate(urlDate)}
                 </Text>
               </View>
-
-              <FlatList /*                                 Список полученных приемов пищи       */
+              <View
                 style={{
-                  height: (window.height - window.height / 9) / 1.7,
-                }}
-                data={data}
-                keyExtractor={(item) => item.id}
-                renderItem={(item) => {
-                  return (
-                    <MealContainer
-                      item={item.item}
-                      navigation={navigation}
-                      action={createTwoButtonAlert}
-                    />
-                  );
-                }}
-              />
-              <TouchableOpacity /*                                 Кнопка создания приема пищи, переход на другой экран       */
-                style={{
-                  backgroundColor: "#d8d6ed",
-                  width: 50,
-                  height: 50,
                   alignItems: "center",
-                  justifyContent: "center",
-                  alignSelf: "center",
-                  marginBottom: 20,
+                  backgroundColor: "#d8d6ed",
                   borderRadius: 10,
-                  margin: 5,
-                }}
-                onPress={() => {
-                  navigation.navigate("MealScreen", {
-                    mealID: null,
-                    urlDate: urlDate,
-                  });
+                  width: 40,
+                  height: 40,
+                  padding: 5,
                 }}
               >
-                <Ionicons name="add-outline" size={40} color="#645fb1" />
-              </TouchableOpacity>
-
-              <Modal /*                                 Модальное окно с календарем       */
-                hideModalContentWhileAnimating={true}
-                onBackButtonPress={() => {
-                  toggleModal();
-                }}
-                onBackdropPress={() => {
-                  toggleModal();
-                }}
-                isVisible={isVisible}
-                animationIn="slideInUp"
-                animationInTiming={500}
-                animationOutTiming={500}
-                backdropOpacity={0.7}
-                backdropTransitionInTiming={1}
-                backdropTransitionOutTiming={1}
-              >
-                <DatePicker
-                  onDateChange={(date) => {
-                    if (dateFormatted(date) == urlDate) {
-                      getAllMeals();
-                      toggleModal();
-                    }
-                    if (dateFormatted(date) !== urlDate) {
-                      setUrlDate(dateFormatted(date));
-                      toggleModal();
-                    }
-                  }}
-                  minimumDate="2022-01-01"
-                  maximumDate="2025-01-01"
-                  current={urlDate}
-                  selected={urlDate}
-                  mode="calendar"
-                  options={{
-                    headerAnimationDistance: 100,
-                    daysAnimationDistance: 100,
-                    textHeaderColor: "#645fb1",
-                    textDefaultColor: "#645fb1",
-                    selectedTextColor: "white",
-                    mainColor: "#645fb1",
-                    textSecondaryColor: "#645fb1",
-                    borderColor: "#645fb1",
-                  }}
-                />
                 <TouchableOpacity
-                  style={{
-                    backgroundColor: "#645fb1",
-                    padding: 10,
-                    alignItems: "center",
-                  }}
                   onPress={() => {
                     toggleModal();
                   }}
                 >
-                  <Text style={{ color: "white" }}>Закрыть календарь</Text>
+                  <Ionicons name="calendar-outline" size={30} color="#645fb1" />
                 </TouchableOpacity>
-              </Modal>
+              </View>
             </View>
-          </>
-        )}
+            <View /*                                 Блок статистики       */
+              style={{
+                marginVertical: 15,
+                backgroundColor: "#d8d6ed",
+                borderRadius: 10,
+                width: "100%",
+                height: (window.height - window.height / 9) / 7,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {isLoading ? (
+                <LoadingIndicator />
+              ) : (
+                <Text style={{ fontWeight: "bold", color: "#645fb1" }}>
+                  Место под статистику
+                </Text>
+              )}
+            </View>
+            <View
+              style={{
+                flex: 1,
+              }}
+            >
+              {isLoading ? (
+                <LoadingIndicator />
+              ) : (
+                <FlatList /*                                 Список полученных приемов пищи       */
+                  data={data}
+                  keyExtractor={(item) => item.id}
+                  renderItem={(item) => {
+                    return (
+                      <MealContainer
+                        item={item.item}
+                        navigation={navigation}
+                        action={createTwoButtonAlert}
+                      />
+                    );
+                  }}
+                />
+              )}
+            </View>
+
+            <TouchableOpacity /*                                 Кнопка создания приема пищи, переход на другой экран       */
+              style={{
+                backgroundColor: "#d8d6ed",
+                width: 50,
+                height: 50,
+                alignItems: "center",
+                justifyContent: "center",
+                alignSelf: "center",
+                marginBottom: 20,
+                borderRadius: 10,
+                margin: 5,
+              }}
+              onPress={() => {
+                navigation.navigate("MealScreen", {
+                  mealID: null,
+                  urlDate: urlDate,
+                });
+              }}
+            >
+              <Ionicons name="add-outline" size={40} color="#645fb1" />
+            </TouchableOpacity>
+          </View>
+          <Modal /*                                 Модальное окно с календарем       */
+            hideModalContentWhileAnimating={true}
+            onBackButtonPress={() => {
+              toggleModal();
+            }}
+            onBackdropPress={() => {
+              toggleModal();
+            }}
+            isVisible={isVisible}
+            animationIn="slideInUp"
+            animationInTiming={500}
+            animationOutTiming={500}
+            backdropOpacity={0.7}
+            backdropTransitionInTiming={1}
+            backdropTransitionOutTiming={1}
+          >
+            <DatePicker
+              onDateChange={(date) => {
+                if (dateFormatted(date) == urlDate) {
+                  getAllMeals();
+                  toggleModal();
+                }
+                if (dateFormatted(date) !== urlDate) {
+                  setUrlDate(dateFormatted(date));
+                  toggleModal();
+                }
+              }}
+              minimumDate="2022-01-01"
+              maximumDate="2025-01-01"
+              current={urlDate}
+              selected={urlDate}
+              mode="calendar"
+              options={{
+                headerAnimationDistance: 100,
+                daysAnimationDistance: 100,
+                textHeaderColor: "#645fb1",
+                textDefaultColor: "#645fb1",
+                selectedTextColor: "white",
+                mainColor: "#645fb1",
+                textSecondaryColor: "#645fb1",
+                borderColor: "#645fb1",
+              }}
+            />
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#645fb1",
+                padding: 10,
+                alignItems: "center",
+              }}
+              onPress={() => {
+                toggleModal();
+              }}
+            >
+              <Text style={{ color: "white" }}>Закрыть календарь</Text>
+            </TouchableOpacity>
+          </Modal>
+        </>
       </View>
     </>
   );
