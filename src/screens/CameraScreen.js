@@ -3,6 +3,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  Button,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Camera } from "expo-camera";
@@ -22,13 +23,6 @@ const CameraScreen = ({ navigation, route }) => {
     })();
   }, []);
 
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
-
   const changeCamera = () => {
     setType(
       type === Camera.Constants.Type.back
@@ -40,6 +34,7 @@ const CameraScreen = ({ navigation, route }) => {
   const takePhoto = async () => {
     if (this.camera) {
       let photo = await this.camera.takePictureAsync({
+        skipProcessing: false,
         base64: true,
       });
       route.params.setImage_base64(photo.base64);
@@ -48,8 +43,60 @@ const CameraScreen = ({ navigation, route }) => {
     }
   };
 
+  if (hasPermission === null) {
+    return <View />;
+  }
+
+  if (hasPermission === false) {
+    return (
+      <View style={{ flex: 1 }}>
+        <ScreenHeader /*                                 Шапка*/
+          canGoBack={true}
+          title="Камера"
+          action="none"
+          rightIcon="camera-reverse-outline"
+        />
+        <View
+          style={{ flex: 1, justifyContent: "center", alignContent: "center" }}
+        >
+          <Text
+            style={{ textAlign: "center", marginBottom: 10, color: "#645fb1" }}
+          >
+            НЕТ ДОСТУПА К КАМЕРЕ
+          </Text>
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#d8d6ed",
+              width: "60%",
+              alignItems: "center",
+              justifyContent: "center",
+              alignSelf: "center",
+              marginBottom: 50,
+              borderRadius: 10,
+            }}
+            onPress={takePhoto}
+          >
+            <Text
+              style={{
+                margin: 10,
+                fontSize: 16,
+                fontWeight: "bold",
+                textAlign: "center",
+                marginBottom: 10,
+                color: "#645fb1",
+              }}
+            >
+              Запросить{`\n`}разрешение
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <ScreenHeader /*                                 Шапка*/
         canGoBack={true}
         title="Камера"

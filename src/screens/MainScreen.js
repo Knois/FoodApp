@@ -237,7 +237,7 @@ const MainScreen = ({ navigation, route }) => {
                 }
               }}
               minimumDate="2022-01-01"
-              maximumDate="2025-01-01"
+              maximumDate="2999-01-01"
               current={urlDate}
               selected={urlDate}
               mode="calendar"
