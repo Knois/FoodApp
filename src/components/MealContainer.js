@@ -29,7 +29,14 @@ const MealContainer = ({ item, navigation, action }) => {
         }}
       >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={{ fontSize: 16, fontWeight: "bold", color: "#645fb1" }}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "bold",
+              color: "#645fb1",
+              width: "70%",
+            }}
+          >
             {stringToNormalCase(item.name)}
           </Text>
           <Text style={{ fontSize: 16, fontWeight: "bold", color: "#9599a4" }}>
@@ -60,6 +67,7 @@ const MealContainer = ({ item, navigation, action }) => {
                     style={{
                       fontWeight: "bold",
                       color: "#645fb1",
+                      width: "30%",
                     }}
                   >
                     {el.name}

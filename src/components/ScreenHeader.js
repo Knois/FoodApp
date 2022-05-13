@@ -18,7 +18,7 @@ const ScreenHeader = ({ canGoBack, title, action, rightIcon }) => {
         flexDirection: "row",
         alignItems: "flex-end",
         justifyContent: "space-between",
-        height: window.height / 9,
+        height: 100,
       }}
     >
       <View
