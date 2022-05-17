@@ -1,11 +1,24 @@
 import { View, TextInput, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
+import { MAIN, SECONDARY } from "../../constants/Constants";
 
 const PasswordInput = ({ password, setPassword }) => {
   const [isVisible, setVisible] = useState(false);
   return (
-    <View style={style.signInFormPasswordInput}>
+    <View
+      style={{
+        borderColor: MAIN,
+        borderWidth: 2,
+        padding: 15,
+        borderRadius: 20,
+        marginBottom: 10,
+        backgroundColor: SECONDARY,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
       <TextInput
         onChangeText={(text) => setPassword(text)}
         value={password}
@@ -23,7 +36,7 @@ const PasswordInput = ({ password, setPassword }) => {
         <FontAwesome
           name={isVisible ? "eye-slash" : "eye"}
           size={24}
-          color={SECONDARY_DARK}
+          color={MAIN}
         />
       </TouchableOpacity>
     </View>

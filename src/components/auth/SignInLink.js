@@ -1,13 +1,14 @@
 import { TouchableOpacity, Text, View } from "react-native";
 import React from "react";
+import { MAIN, SECONDARY } from "../../constants/Constants";
 
 const SignInLink = ({ navigation, formType }) => {
   return (
     <View style={{ flexDirection: "row", justifyContent: "center" }}>
-      <Text style={{ color: SECONDARY }}>
+      <Text style={{ color: SECONDARY, fontWeight: "bold" }}>
         {formType == "signUp"
-          ? "Already have an account? "
-          : "Don't have an account? "}
+          ? "Уже зарегистрированы? "
+          : "Еще не зарегистрированы? "}
       </Text>
       <TouchableOpacity
         onPress={() =>
@@ -19,8 +20,8 @@ const SignInLink = ({ navigation, formType }) => {
           })
         }
       >
-        <Text style={{ color: SECONDARY_DARK, fontWeight: "bold" }}>
-          {formType == "signUp" ? "Log in" : "Sign up"}
+        <Text style={{ color: MAIN, fontWeight: "bold" }}>
+          {formType == "signUp" ? "Войти" : "Регистрация"}
         </Text>
       </TouchableOpacity>
     </View>
