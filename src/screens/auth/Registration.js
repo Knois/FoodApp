@@ -3,9 +3,9 @@ import { View, Text } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import { AppContext } from "../context/AppContext";
-import SighInForm from "../components/SighInForm";
-import LoadingIndicator from "../components/LoadingIndicator";
+import { AppContext } from "../../context/AppContext";
+import SighInForm from "../../components/auth/SignInForm";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const Registration = ({ navigation }) => {
   const { setAuth } = useContext(AppContext);

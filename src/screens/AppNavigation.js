@@ -11,9 +11,9 @@ import MealElementScreen from "./MealElementScreen";
 import SearchScreen from "./SearchScreen";
 import ProductScreen from "./ProductScreen";
 import CameraScreen from "./CameraScreen";
-import AuthLoading from "./AuthLoading";
-import SignIn from "./SignIn";
-import Registration from "./Registration";
+import AuthLoading from "./auth/AuthLoading";
+import SignIn from "./auth/SignIn";
+import Registration from "./auth/Registration";
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();

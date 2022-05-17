@@ -1,8 +1,8 @@
 import { useContext, useEffect } from "react";
 import * as SecureStore from "expo-secure-store";
 
-import { AppContext } from "../context/AppContext";
-import LoadingIndicator from "../components/LoadingIndicator";
+import { AppContext } from "../../context/AppContext";
+import LoadingIndicator from "../../components/LoadingIndicator";
 
 const AuthLoading = ({ navigation }) => {
   const { setAuth } = useContext(AppContext);
