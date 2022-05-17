@@ -2,6 +2,8 @@ import { View } from "react-native";
 import React from "react";
 import * as Progress from "react-native-progress";
 
+import { MAIN } from "../constants/Constants";
+
 const LoadingIndicator = () => {
   return (
     <View
@@ -14,7 +16,7 @@ const LoadingIndicator = () => {
       <Progress.Circle
         size={50}
         indeterminate={true}
-        color="black"
+        color={MAIN}
         endAngle={0.8}
       />
     </View>
