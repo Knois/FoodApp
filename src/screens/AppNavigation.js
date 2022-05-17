@@ -11,10 +11,14 @@ import MealElementScreen from "./MealElementScreen";
 import SearchScreen from "./SearchScreen";
 import ProductScreen from "./ProductScreen";
 import CameraScreen from "./CameraScreen";
+import AuthLoading from "./AuthLoading";
+import SignIn from "./SignIn";
+import Registration from "./Registration";
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
 const ProductsStack = createNativeStackNavigator();
+const AuthStack = createNativeStackNavigator();
 
 const HomeStackScreen = () => {
   return (
@@ -47,19 +51,38 @@ const ProductsStackScreen = () => {
   );
 };
 
+const AuthStackScreen = () => {
+  return (
+    <AuthStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <AuthStack.Screen name="AuthLoading" component={AuthLoading} />
+      <AuthStack.Screen name="SignIn" component={SignIn} />
+      <AuthStack.Screen name="Registration" component={Registration} />
+    </AuthStack.Navigator>
+  );
+};
+
 const AppNavigation = () => {
-  const { something } = useContext(AppContext);
+  const { isAuth } = useContext(AppContext);
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Drawer.Screen name="Приемы пищи" component={HomeStackScreen} />
-        <Drawer.Screen name="Продукты" component={ProductsStackScreen} />
-      </Drawer.Navigator>
+      {isAuth ? (
+        <Drawer.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Drawer.Screen name="Приемы пищи" component={HomeStackScreen} />
+          <Drawer.Screen name="Продукты" component={ProductsStackScreen} />
+        </Drawer.Navigator>
+      ) : (
+        <AuthStackScreen />
+      )}
+
       <StatusBar style={"dark"} />
     </NavigationContainer>
   );

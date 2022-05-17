@@ -3,14 +3,14 @@ import { createContext, useMemo, useState } from "react";
 export const AppContext = createContext({});
 
 export const AppProvider = ({ children }) => {
-  const [something, setSomething] = useState(false);
+  const [isAuth, setAuth] = useState(false);
 
   const value = useMemo(
     () => ({
-      something,
-      setSomething,
+      isAuth,
+      setAuth,
     }),
-    [something]
+    [isAuth]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

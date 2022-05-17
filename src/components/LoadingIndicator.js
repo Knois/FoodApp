@@ -1,9 +1,8 @@
-import { useWindowDimensions, View } from "react-native";
+import { View } from "react-native";
 import React from "react";
 import * as Progress from "react-native-progress";
 
 const LoadingIndicator = () => {
-  const window = useWindowDimensions();
   return (
     <View
       style={{
