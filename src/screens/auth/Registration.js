@@ -16,31 +16,58 @@ const Registration = ({ navigation }) => {
     SecureStore.setItemAsync("token", token).then(setAuth(true));
   };
 
+  const createUser = async (obj) => {
+    console.log("start");
+    setLoading(true);
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/auth/user",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj),
+        }
+      );
+      const json = await response.json();
+      if (json.jwt_token) {
+        console.log(json);
+        await saveTokenToStore(json.jwt_token);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      console.log("end");
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       {isLoading ? (
         <LoadingIndicator />
       ) : (
-        <KeyboardAwareScrollView style={{ backgroundColor: "#fff" }}>
-          <View style={{ padding: 30 }}>
-            <Text
-              style={{
-                marginTop: 40,
-                fontSize: 40,
-                marginBottom: 40,
-                alignSelf: "center",
-                color: MAIN,
-              }}
-            >
-              Регистрация
-            </Text>
+        <KeyboardAwareScrollView
+          style={{ backgroundColor: "#fff", padding: 30 }}
+        >
+          <Text
+            style={{
+              marginTop: 40,
+              fontSize: 40,
+              marginBottom: 40,
+              alignSelf: "center",
+              color: MAIN,
+            }}
+          >
+            Регистрация
+          </Text>
 
-            <SighInForm
-              action={() => null}
-              formType="signUp"
-              navigation={navigation}
-            />
-          </View>
+          <SighInForm
+            action={createUser}
+            formType="signUp"
+            navigation={navigation}
+          />
         </KeyboardAwareScrollView>
       )}
     </>

@@ -11,7 +11,7 @@ const PasswordInput = ({ password, setPassword }) => {
         borderColor: MAIN,
         borderWidth: 2,
         padding: 15,
-        borderRadius: 20,
+        borderRadius: 10,
         marginBottom: 10,
         backgroundColor: SECONDARY,
         flexDirection: "row",
@@ -25,7 +25,7 @@ const PasswordInput = ({ password, setPassword }) => {
         textContentType="password"
         secureTextEntry={!isVisible}
         autoCapitalize="none"
-        style={{ width: "88%" }}
+        style={{ width: "88%", color: "#645fb1", fontWeight: "bold" }}
         maxLength={50}
       />
       <TouchableOpacity

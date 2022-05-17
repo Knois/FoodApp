@@ -4,9 +4,18 @@ import ScreenHeader from "../components/ScreenHeader";
 
 const ProductScreen = () => {
   return (
-    <View>
-      <Text>ProductScreen</Text>
-    </View>
+    <>
+      <View style={{ flex: 1 }}>
+        <>
+          <ScreenHeader
+            canGoBack={false}
+            title="Продукты"
+            action={() => null}
+            rightIcon="refresh"
+          />
+        </>
+      </View>
+    </>
   );
 };
 

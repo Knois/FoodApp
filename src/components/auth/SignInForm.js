@@ -7,17 +7,19 @@ import SignInLink from "./SignInLink";
 
 const SighInForm = ({ action, navigation, formType }) => {
   const [email, setEmail] = useState("");
+  const [birthday, setBirthday] = useState("2022-05-17");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
 
   const handleSubmit = () => {
-    action({
-      variables: {
-        email: email,
-        password: password,
-        username: username,
-      },
-    });
+    formType == "signIn"
+      ? action({ password: password, email: email })
+      : action({
+          password: password,
+          email: email,
+          birthday: birthday,
+          name: name,
+        });
   };
 
   return (
@@ -35,8 +37,8 @@ const SighInForm = ({ action, navigation, formType }) => {
             Имя:
           </Text>
           <TextInput
-            onChangeText={(text) => setUsername(text)}
-            value={username}
+            onChangeText={(text) => setName(text)}
+            value={name}
             textContentType="username"
             autoComplete="username"
             autoCapitalize="sentences"
@@ -44,8 +46,38 @@ const SighInForm = ({ action, navigation, formType }) => {
               borderColor: MAIN,
               borderWidth: 2,
               padding: 15,
-              borderRadius: 20,
+              borderRadius: 10,
               marginBottom: 10,
+              color: "#645fb1",
+              fontWeight: "bold",
+              backgroundColor: SECONDARY,
+            }}
+            maxLength={50}
+          />
+          <Text
+            style={{
+              marginVertical: 10,
+              marginLeft: 10,
+              fontSize: 15,
+              color: MAIN,
+            }}
+          >
+            Дата рождения:
+          </Text>
+          <TextInput
+            onChangeText={(text) => setBirthday(text)}
+            value={birthday}
+            textContentType="username"
+            autoComplete="username"
+            autoCapitalize="sentences"
+            style={{
+              borderColor: MAIN,
+              borderWidth: 2,
+              padding: 15,
+              borderRadius: 10,
+              marginBottom: 10,
+              color: "#645fb1",
+              fontWeight: "bold",
               backgroundColor: SECONDARY,
             }}
             maxLength={50}
@@ -72,8 +104,10 @@ const SighInForm = ({ action, navigation, formType }) => {
           borderColor: MAIN,
           borderWidth: 2,
           padding: 15,
-          borderRadius: 20,
+          borderRadius: 10,
           marginBottom: 10,
+          color: "#645fb1",
+          fontWeight: "bold",
           backgroundColor: SECONDARY,
         }}
         maxLength={50}

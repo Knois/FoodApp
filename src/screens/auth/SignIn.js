@@ -16,30 +16,54 @@ const SignIn = ({ navigation }) => {
     SecureStore.setItemAsync("token", token).then(setAuth(true));
   };
 
+  const createJwt = async (obj) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/auth/authenticate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj),
+        }
+      );
+      const json = await response.json();
+      if (json.jwt_token) {
+        await saveTokenToStore(json.jwt_token);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       {isLoading ? (
         <LoadingIndicator />
       ) : (
-        <KeyboardAwareScrollView style={{ backgroundColor: "#fff" }}>
-          <View style={{ padding: 30 }}>
-            <Text
-              style={{
-                marginTop: 40,
-                fontSize: 40,
-                marginBottom: 40,
-                alignSelf: "center",
-                color: MAIN,
-              }}
-            >
-              Вход
-            </Text>
-            <SighInForm
-              action={() => null}
-              formType="signIn"
-              navigation={navigation}
-            />
-          </View>
+        <KeyboardAwareScrollView
+          style={{ backgroundColor: "#fff", padding: 30 }}
+        >
+          <Text
+            style={{
+              marginTop: 40,
+              fontSize: 40,
+              marginBottom: 40,
+              alignSelf: "center",
+              color: MAIN,
+            }}
+          >
+            Вход
+          </Text>
+          <SighInForm
+            action={createJwt}
+            formType="signIn"
+            navigation={navigation}
+          />
         </KeyboardAwareScrollView>
       )}
     </>

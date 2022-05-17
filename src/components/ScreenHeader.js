@@ -7,6 +7,7 @@ import {
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { MAIN, SECONDARY } from "../constants/Constants";
 
 const ScreenHeader = ({ canGoBack, title, action, rightIcon }) => {
   const navigation = useNavigation();
@@ -25,7 +26,7 @@ const ScreenHeader = ({ canGoBack, title, action, rightIcon }) => {
         style={{
           margin: 10,
           alignItems: "center",
-          backgroundColor: "#d8d6ed",
+          backgroundColor: SECONDARY,
           borderRadius: 10,
           width: 40,
           height: 40,
@@ -41,7 +42,7 @@ const ScreenHeader = ({ canGoBack, title, action, rightIcon }) => {
             <Ionicons
               name="ios-arrow-back-circle-outline"
               size={30}
-              color="#645fb1"
+              color={MAIN}
             />
           </TouchableOpacity>
         ) : (
@@ -50,7 +51,7 @@ const ScreenHeader = ({ canGoBack, title, action, rightIcon }) => {
               navigation.toggleDrawer();
             }}
           >
-            <Ionicons name="menu-outline" size={30} color="#645fb1" />
+            <Ionicons name="menu-outline" size={30} color={MAIN} />
           </TouchableOpacity>
         )}
       </View>
@@ -67,7 +68,7 @@ const ScreenHeader = ({ canGoBack, title, action, rightIcon }) => {
             height: 30,
             textAlign: "center",
             fontWeight: "bold",
-            color: "#645fb1",
+            color: MAIN,
           }}
         >
           {title}
@@ -77,7 +78,7 @@ const ScreenHeader = ({ canGoBack, title, action, rightIcon }) => {
         style={{
           margin: 10,
           alignItems: "center",
-          backgroundColor: action == "none" ? "transparent" : "#d8d6ed",
+          backgroundColor: action == "none" ? "transparent" : SECONDARY,
           borderRadius: 10,
           width: 40,
           height: 40,
@@ -90,7 +91,7 @@ const ScreenHeader = ({ canGoBack, title, action, rightIcon }) => {
               action();
             }}
           >
-            <Ionicons name={rightIcon} size={30} color="#645fb1" />
+            <Ionicons name={rightIcon} size={30} color={MAIN} />
           </TouchableOpacity>
         )}
       </View>
