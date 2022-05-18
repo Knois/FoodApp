@@ -17,7 +17,7 @@ const SignIn = ({ navigation }) => {
   };
 
   const createJwt = async (obj) => {
-    setLoading(true);
+    if (!isLoading) setLoading(true);
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/auth/authenticate",
@@ -36,7 +36,7 @@ const SignIn = ({ navigation }) => {
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
+      if (isLoading) setLoading(false);
     }
   };
 

@@ -16,9 +16,32 @@ const Registration = ({ navigation }) => {
     SecureStore.setItemAsync("token", token).then(setAuth(true));
   };
 
+  const createJwt = async (obj) => {
+    if (!isLoading) setLoading(true);
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/auth/authenticate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj),
+        }
+      );
+      const json = await response.json();
+      if (json.jwt_token) {
+        await saveTokenToStore(json.jwt_token);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      if (isLoading) setLoading(false);
+    }
+  };
+
   const createUser = async (obj) => {
-    console.log("start");
-    setLoading(true);
+    if (!isLoading) setLoading(true);
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/auth/user",
@@ -31,15 +54,13 @@ const Registration = ({ navigation }) => {
         }
       );
       const json = await response.json();
-      if (json.jwt_token) {
-        console.log(json);
-        await saveTokenToStore(json.jwt_token);
+      if (json.id) {
+        await createJwt({ email: obj.email, password: obj.password });
       }
     } catch (error) {
       console.error(error);
     } finally {
-      console.log("end");
-      setLoading(false);
+      if (isLoading) setLoading(false);
     }
   };
 
