@@ -36,7 +36,7 @@ const SignIn = ({ navigation }) => {
     } catch (error) {
       console.error(error);
     } finally {
-      if (isLoading) setLoading(false);
+      setLoading(false);
     }
   };
 

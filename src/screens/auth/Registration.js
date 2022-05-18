@@ -36,7 +36,7 @@ const Registration = ({ navigation }) => {
     } catch (error) {
       console.error(error);
     } finally {
-      if (isLoading) setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -60,7 +60,7 @@ const Registration = ({ navigation }) => {
     } catch (error) {
       console.error(error);
     } finally {
-      if (isLoading) setLoading(false);
+      setLoading(false);
     }
   };
 
