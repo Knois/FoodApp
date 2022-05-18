@@ -1,5 +1,5 @@
 import moment from "moment";
-import "moment/locale/ru"; // without this line it didn't work
+import "moment/locale/ru"; // Локализация
 moment.locale("ru");
 moment.updateLocale("ru", {
   weekdays: [

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
 import { MAIN, SECONDARY } from "../constants/Constants";
 
 const UpdateUserForm = ({ params, action }) => {

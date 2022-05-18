@@ -1,5 +1,6 @@
 import { TouchableOpacity, Text, View } from "react-native";
 import React from "react";
+
 import { MAIN, SECONDARY } from "../../constants/Constants";
 
 const SignInLink = ({ navigation, formType }) => {

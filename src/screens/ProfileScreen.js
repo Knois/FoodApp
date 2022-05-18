@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React, { useContext, useState, useLayoutEffect } from "react";
 import * as SecureStore from "expo-secure-store";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,12 +15,8 @@ const ProfileScreen = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [birthday, setBirthday] = useState("");
-  const [password, setPassword] = useState("");
-  const [password2, setPassword2] = useState("");
 
   const [isVisible, setVisible] = useState(false);
-  const [passVisible, setPassVisible] = useState(false);
-  const [passVisible2, setPassVisible2] = useState(false);
 
   const toggleModal = () => {
     setVisible(!isVisible);
@@ -92,8 +88,8 @@ const ProfileScreen = () => {
     }
   };
 
-  useLayoutEffect(() => {
-    getUser();
+  useLayoutEffect(async () => {
+    await getUser();
   }, []);
 
   return (
@@ -141,7 +137,7 @@ const ProfileScreen = () => {
           </View>
         </View>
 
-        <TouchableOpacity
+        <TouchableOpacity /*                                 Кнопка выхода из профиля      */
           style={{
             borderWidth: 2,
             borderColor: SECONDARY,

@@ -1,6 +1,7 @@
 import { View, TextInput, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
+
 import { MAIN, SECONDARY } from "../../constants/Constants";
 
 const PasswordInput = ({ password, setPassword }) => {

@@ -1,17 +1,13 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-} from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+
 import { MAIN, SECONDARY } from "../constants/Constants";
 
 const ScreenHeader = ({ canGoBack, title, action, rightIcon }) => {
   const navigation = useNavigation();
-  const window = useWindowDimensions();
+
   return (
     <View
       style={{

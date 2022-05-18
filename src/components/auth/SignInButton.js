@@ -1,5 +1,6 @@
 import { TouchableOpacity, Text } from "react-native";
 import React from "react";
+
 import { MAIN } from "../../constants/Constants";
 
 const SignInButton = ({ handleSubmit, formType }) => {

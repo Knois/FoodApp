@@ -6,8 +6,9 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Camera } from "expo-camera";
-import ScreenHeader from "../components/ScreenHeader";
 import { Ionicons } from "@expo/vector-icons";
+
+import ScreenHeader from "../components/ScreenHeader";
 
 const CameraScreen = ({ navigation, route }) => {
   const window = useWindowDimensions();

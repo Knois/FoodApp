@@ -9,6 +9,9 @@ import {
 } from "react-native";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
+import DatePicker from "react-native-modern-datepicker";
+
 import MealContainer from "../components/MealContainer";
 import { token, serverAddress } from "../constants/Constants";
 import {
@@ -16,9 +19,7 @@ import {
   dateToNormalDate,
   dateToWeekDay,
 } from "../methods/DateMethods";
-import DatePicker from "react-native-modern-datepicker";
 import LoadingIndicator from "../components/LoadingIndicator";
-import { useIsFocused } from "@react-navigation/native";
 import ScreenHeader from "../components/ScreenHeader";
 
 const MainScreen = ({ navigation, route }) => {

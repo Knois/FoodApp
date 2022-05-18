@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput } from "react-native";
+
 import { MAIN, SECONDARY } from "../../constants/Constants";
 import PasswordInput from "./PasswordInput";
 import SignInButton from "./SignInButton";

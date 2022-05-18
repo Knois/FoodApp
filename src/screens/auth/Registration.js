@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { View, Text } from "react-native";
+import { Text } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
