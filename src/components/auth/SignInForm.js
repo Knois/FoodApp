@@ -100,6 +100,7 @@ const SighInForm = ({ action, navigation, formType }) => {
         textContentType="emailAddress"
         autoComplete="email"
         autoCapitalize="none"
+        keyboardType="email-address"
         style={{
           borderColor: MAIN,
           borderWidth: 2,
@@ -111,7 +112,6 @@ const SighInForm = ({ action, navigation, formType }) => {
           backgroundColor: SECONDARY,
         }}
         maxLength={50}
-        keyboardType="email-address"
       />
       <Text
         style={{

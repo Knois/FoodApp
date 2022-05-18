@@ -23,8 +23,8 @@ const PasswordInput = ({ password, setPassword }) => {
         onChangeText={(text) => setPassword(text)}
         value={password}
         textContentType="password"
-        secureTextEntry={!isVisible}
         autoCapitalize="none"
+        secureTextEntry={!isVisible}
         style={{ width: "88%", color: "#645fb1", fontWeight: "bold" }}
         maxLength={50}
       />
