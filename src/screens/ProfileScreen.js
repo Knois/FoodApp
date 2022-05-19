@@ -88,8 +88,8 @@ const ProfileScreen = () => {
     }
   };
 
-  useLayoutEffect(async () => {
-    await getUser();
+  useLayoutEffect(() => {
+    getUser();
   }, []);
 
   return (
