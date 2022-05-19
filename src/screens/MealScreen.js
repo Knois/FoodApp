@@ -10,6 +10,7 @@ import React, { useState } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
+import * as SecureStore from "expo-secure-store";
 
 import { serverAddress, token } from "../constants/Constants";
 import { timeNow, toNormalDate } from "../methods/DateMethods";
@@ -53,7 +54,7 @@ const MealScreen = ({ navigation, route }) => {
         date_time: date_time,
         meal_type: meal_type,
         name: name ? name.trim() : "Без названия",
-        meal_elements: arrBase64,
+        //meal_elements: arrBase64,
         id: route.params.mealID,
       };
     } else {
@@ -61,7 +62,7 @@ const MealScreen = ({ navigation, route }) => {
         date_time: date_time,
         meal_type: meal_type,
         name: name ? name.trim() : "Без названия",
-        meal_elements: arrBase64,
+        //meal_elements: arrBase64,
       };
     }
   };
@@ -84,23 +85,35 @@ const MealScreen = ({ navigation, route }) => {
     setMeal_elements(arr);
   };
 
+  const getToken = async () => {
+    const userToken = await SecureStore.getItemAsync("token");
+    return userToken;
+  };
+
   const createMeal = async () => {
+    const token = await getToken();
     setLoading(true);
-    await arrUrlToBase64();
+    //await arrUrlToBase64();
     try {
-      const response = await fetch(serverAddress + "/v1.0/meal", {
-        method: "POST",
-        headers: {
-          Authorization: "Basic " + token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(mealToObj()),
-      });
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/meal",
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(mealToObj()),
+        }
+      );
       const json = await response.json();
+      if (json) {
+        console.log(json);
+        navigation.goBack();
+      }
     } catch (error) {
       console.error(error);
     } finally {
-      navigation.goBack();
     }
   };
 

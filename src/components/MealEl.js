@@ -17,7 +17,7 @@ const MealEl = ({
     ? { uri: item.image_url }
     : require("../../assets/img/addPhoto.png");
 
-  console.log(item);
+
 
   return (
     <Pressable

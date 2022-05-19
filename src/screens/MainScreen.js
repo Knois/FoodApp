@@ -11,6 +11,7 @@ import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import DatePicker from "react-native-modern-datepicker";
+import * as SecureStore from "expo-secure-store";
 
 import MealContainer from "../components/MealContainer";
 import { token, serverAddress } from "../constants/Constants";
@@ -34,23 +35,32 @@ const MainScreen = ({ navigation, route }) => {
     setVisible(!isVisible);
   };
 
+  const getToken = async () => {
+    const userToken = await SecureStore.getItemAsync("token");
+    return userToken;
+  };
+
   const getAllMeals = async () => {
+    const token = await getToken();
     if (!isLoading) setLoading(true);
+
     try {
       const response = await fetch(
-        serverAddress +
-          "/v1.0/meal/findByDate?date=" +
+        "http://80.87.201.75:8079/gateway/my-food/meal/findByDate?date=" +
           urlDate +
           "&size=999&sort=dateTime%2Casc",
         {
           method: "GET",
           headers: {
-            Authorization: "Basic " + token,
+            Authorization: "Bearer " + token,
             "Content-Type": "application/json",
           },
         }
       );
       const json = await response.json();
+      if (json) {
+        console.log(json);
+      }
       setData(json.content);
     } catch (error) {
       console.error(error);

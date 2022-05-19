@@ -98,11 +98,6 @@ const MealElementScreen = ({ navigation, route }) => {
     ? { uri: image_url }
     : require("../../assets/img/addPhoto.png");
 
-  console.log("image_url");
-  console.log(image_url);
-  console.log("image_base64");
-  console.log(image_base64);
-
   return (
     <>
       <View style={{ flex: 1 }}>
