@@ -122,13 +122,13 @@ const MealScreen = ({ navigation, route }) => {
       );
       const json = await response.json();
       if (json.id) {
+        setMealID(json.id);
         await arrUrlToBase64(json.id);
         for (let el of arrBase64) {
-          createMealElement(token, el);
+          await createMealElement(token, el);
         }
       }
     } catch (error) {
-      console.log(error);
       createErrorAlert("Ошибка при создании приема пищи!");
       setLoading(false);
     } finally {
@@ -170,13 +170,40 @@ const MealScreen = ({ navigation, route }) => {
         }
       );
       const json = await response.json();
-      if (json) {
-      }
     } catch (error) {
       createErrorAlert(
         "Ошибка при создании элемента приема пищи:\n\n" + mealElement.name
       );
     } finally {
+    }
+  };
+
+  const getMealElements = async (mealID) => {
+    if (!isLoading) setLoading(true);
+    const token = await getToken();
+
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/meal_element?mealId=" +
+          mealID +
+          "&page=0&size=999",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const json = await response.json();
+      if (json) {
+        console.log("getMealElements result");
+        console.log(json);
+      }
+    } catch (error) {
+      createErrorAlert("Ошибка при получении элементов приема пищи");
+    } finally {
+      if (isLoading) setLoading(false);
     }
   };
 
@@ -198,6 +225,7 @@ const MealScreen = ({ navigation, route }) => {
   const [meal_elements, setMeal_elements] = useState(
     route.params.meal_elements ? route.params.meal_elements : []
   );
+  const [mealID, setMealID] = useState(route.params.mealID);
 
   const [isVisible, setVisible] = useState(false);
   const [isLoading, setLoading] = useState(false);
@@ -212,8 +240,8 @@ const MealScreen = ({ navigation, route }) => {
         <>
           <ScreenHeader /*                                 Шапка*/
             canGoBack={true}
-            title={route.params.mealID ? "Прием пищи" : "Создание приема пищи"}
-            action={route.params.mealID ? updateMeal : createMeal}
+            title={mealID ? "Прием пищи" : "Создание приема пищи"}
+            action={mealID ? updateMeal : createMeal}
             rightIcon="checkmark"
           />
           <View style={{ margin: 10, flex: 1 }}>
