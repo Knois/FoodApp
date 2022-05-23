@@ -61,7 +61,9 @@ const MainScreen = ({ navigation, route }) => {
       }
       setMeals(json.content);
     } catch (error) {
-      createErrorAlert("Произошла ошибка при отправке запроса на сервер");
+      createErrorAlert(
+        "Произошла ошибка при попытке получить приемы пищи с сервера"
+      );
     } finally {
       setLoading(false);
     }
@@ -84,7 +86,7 @@ const MainScreen = ({ navigation, route }) => {
       );
       const json = await response.json();
     } catch (error) {
-      //createErrorAlert("Произошла ошибка при отправке запроса на сервер");
+      createErrorAlert("Произошла ошибка при попытке удалить прием пищи");
     } finally {
       getAllMeals();
     }

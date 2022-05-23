@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Text } from "react-native";
+import { Text, Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -12,12 +12,22 @@ const Registration = ({ navigation }) => {
   const { setAuth } = useContext(AppContext);
   const [isLoading, setLoading] = useState(false);
 
+  const createErrorAlert = (message) => {
+    Alert.alert(
+      "Ошибка при запросе на сервер",
+      message,
+      [{ text: "ОК", onPress: () => null }],
+      {
+        cancelable: true,
+      }
+    );
+  };
+
   const saveTokenToStore = (token) => {
     SecureStore.setItemAsync("token", token).then(setAuth(true));
   };
 
   const createJwt = async (obj) => {
-    if (!isLoading) setLoading(true);
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/auth/authenticate",
@@ -34,9 +44,9 @@ const Registration = ({ navigation }) => {
         await saveTokenToStore(json.jwt_token);
       }
     } catch (error) {
-      console.error(error);
-    } finally {
       setLoading(false);
+      createErrorAlert("Ошибка при получении токена с сервера!");
+    } finally {
     }
   };
 
@@ -54,13 +64,14 @@ const Registration = ({ navigation }) => {
         }
       );
       const json = await response.json();
+      console.log(json);
       if (json.id) {
         await createJwt({ email: obj.email, password: obj.password });
       }
     } catch (error) {
-      console.error(error);
-    } finally {
       setLoading(false);
+      createErrorAlert("Ошибка при попытке регистрации!");
+    } finally {
     }
   };
 

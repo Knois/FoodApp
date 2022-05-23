@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Text } from "react-native";
+import { Text, Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -11,6 +11,17 @@ import { MAIN } from "../../constants/Constants";
 const SignIn = ({ navigation }) => {
   const { setAuth } = useContext(AppContext);
   const [isLoading, setLoading] = useState(false);
+
+  const createErrorAlert = (message) => {
+    Alert.alert(
+      "Ошибка при запросе на сервер",
+      message,
+      [{ text: "ОК", onPress: () => null }],
+      {
+        cancelable: true,
+      }
+    );
+  };
 
   const saveTokenToStore = (token) => {
     SecureStore.setItemAsync("token", token).then(setAuth(true));
@@ -34,9 +45,9 @@ const SignIn = ({ navigation }) => {
         await saveTokenToStore(json.jwt_token);
       }
     } catch (error) {
-      console.error(error);
-    } finally {
       setLoading(false);
+      createErrorAlert("Ошибка при запросе токена с сервера");
+    } finally {
     }
   };
 
