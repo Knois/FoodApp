@@ -9,7 +9,6 @@ const AuthLoading = ({ navigation }) => {
 
   const checkLoginState = async () => {
     const userToken = await SecureStore.getItemAsync("token");
-    console.log(userToken);
     userToken
       ? setAuth(true)
       : navigation.reset({

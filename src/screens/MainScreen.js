@@ -14,7 +14,6 @@ import DatePicker from "react-native-modern-datepicker";
 import * as SecureStore from "expo-secure-store";
 
 import MealContainer from "../components/MealContainer";
-import { token, serverAddress } from "../constants/Constants";
 import {
   dateFormatted,
   dateToNormalDate,
@@ -25,7 +24,7 @@ import ScreenHeader from "../components/ScreenHeader";
 
 const MainScreen = ({ navigation, route }) => {
   const [isLoading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
+  const [meals, setMeals] = useState([]);
   const [urlDate, setUrlDate] = useState(dateFormatted());
   const [isVisible, setVisible] = useState(false);
 
@@ -41,8 +40,8 @@ const MainScreen = ({ navigation, route }) => {
   };
 
   const getAllMeals = async () => {
-    const token = await getToken();
     if (!isLoading) setLoading(true);
+    const token = await getToken();
 
     try {
       const response = await fetch(
@@ -58,32 +57,48 @@ const MainScreen = ({ navigation, route }) => {
         }
       );
       const json = await response.json();
-      if (json) {
-        console.log(json);
+      if (json.content) {
       }
-      setData(json.content);
+      setMeals(json.content);
     } catch (error) {
-      console.error(error);
+      createErrorAlert("Произошла ошибка при отправке запроса на сервер");
     } finally {
       setLoading(false);
     }
   };
 
   const deleteMeal = async (id) => {
-    setLoading(true);
+    if (!isLoading) setLoading(true);
+    const token = await getToken();
+
     try {
-      const response = await fetch(serverAddress + "/v1.0/meal/" + id, {
-        method: "DELETE",
-        headers: {
-          Authorization: "Basic " + token,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/meal/" + id,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const json = await response.json();
     } catch (error) {
+      //createErrorAlert("Произошла ошибка при отправке запроса на сервер");
     } finally {
       getAllMeals();
     }
+  };
+
+  const createErrorAlert = (message) => {
+    Alert.alert(
+      "Ошибка при запросе на сервер",
+      message,
+      [{ text: "ОК", onPress: () => null }],
+      {
+        cancelable: true,
+      }
+    );
   };
 
   const createTwoButtonAlert = (id) =>
@@ -183,7 +198,7 @@ const MainScreen = ({ navigation, route }) => {
                 <LoadingIndicator />
               ) : (
                 <FlatList /*                                 Список полученных приемов пищи       */
-                  data={data}
+                  data={meals}
                   keyExtractor={(item) => item.id}
                   renderItem={(item) => {
                     return (

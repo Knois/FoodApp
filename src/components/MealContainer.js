@@ -40,14 +40,14 @@ const MealContainer = ({ item, navigation, action }) => {
             {stringToNormalCase(item.name)}
           </Text>
           <Text style={{ fontSize: 16, fontWeight: "bold", color: "#9599a4" }}>
-            {+getSumCaloriesFromArray(item.meal_elements)} kcal
+            kcal
           </Text>
         </View>
         <Text style={{ color: "#645fb1" }}>
           {stringToNormalCase(item.meal_type)} at {timeNow(item.date_time)}
         </Text>
         <View>
-          {item.meal_elements.map((el) => {
+          {/*item.meal_elements.map((el) => {
             return (
               <View
                 style={{
@@ -78,7 +78,7 @@ const MealContainer = ({ item, navigation, action }) => {
                 </View>
               </View>
             );
-          })}
+          })*/}
         </View>
 
         <TouchableOpacity

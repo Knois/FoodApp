@@ -5,6 +5,7 @@ import {
   FlatList,
   TouchableOpacity,
   useWindowDimensions,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import Modal from "react-native-modal";
@@ -24,7 +25,7 @@ const MealScreen = ({ navigation, route }) => {
 
   let arrBase64 = [];
 
-  const arrUrlToBase64 = async () => {
+  const arrUrlToBase64 = async (id) => {
     let arr = Object.assign([], meal_elements);
     for (let el of arr) {
       if (el.image_url) {
@@ -44,6 +45,9 @@ const MealScreen = ({ navigation, route }) => {
           console.log(err);
         }
       }
+      el.meal = {
+        id: id,
+      };
     }
     arrBase64 = Object.assign([], arr);
   };
@@ -90,10 +94,20 @@ const MealScreen = ({ navigation, route }) => {
     return userToken;
   };
 
+  const createErrorAlert = (message) => {
+    Alert.alert(
+      "Ошибка при запросе на сервер",
+      message,
+      [{ text: "ОК", onPress: () => null }],
+      {
+        cancelable: true,
+      }
+    );
+  };
+
   const createMeal = async () => {
     const token = await getToken();
     setLoading(true);
-    //await arrUrlToBase64();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal",
@@ -107,13 +121,18 @@ const MealScreen = ({ navigation, route }) => {
         }
       );
       const json = await response.json();
-      if (json) {
-        console.log(json);
-        navigation.goBack();
+      if (json.id) {
+        await arrUrlToBase64(json.id);
+        for (let el of arrBase64) {
+          createMealElement(token, el);
+        }
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
+      createErrorAlert("Ошибка при создании приема пищи!");
+      setLoading(false);
     } finally {
+      setLoading(false);
     }
   };
 
@@ -134,6 +153,30 @@ const MealScreen = ({ navigation, route }) => {
       console.error(error);
     } finally {
       navigation.goBack();
+    }
+  };
+
+  const createMealElement = async (token, mealElement) => {
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/meal_element",
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(mealElement),
+        }
+      );
+      const json = await response.json();
+      if (json) {
+      }
+    } catch (error) {
+      createErrorAlert(
+        "Ошибка при создании элемента приема пищи:\n\n" + mealElement.name
+      );
+    } finally {
     }
   };
 
