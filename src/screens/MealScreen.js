@@ -229,7 +229,7 @@ const MealScreen = ({ navigation, route }) => {
     }
   };
 
-  const deleteMealElemetsFromServer = async (mealElementID) => {
+  const deleteMealElementFromServer = async (mealElementID) => {
     if (!isLoading) setLoading(true);
     const token = await getToken();
 
@@ -250,6 +250,28 @@ const MealScreen = ({ navigation, route }) => {
     } catch (error) {
       setLoading(false);
       createErrorAlert("Ошибка при удалении элемента приема пищи!");
+    } finally {
+    }
+  };
+
+  const updateMealElementOnServer = async (obj) => {
+    const token = await getToken();
+
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/meal_element",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj),
+        }
+      );
+      const json = await response;
+    } catch (error) {
+      createErrorAlert("Ошибка при обновлении элемента приема пищи!");
     } finally {
     }
   };
@@ -373,9 +395,11 @@ const MealScreen = ({ navigation, route }) => {
                   <MealEl
                     item={item}
                     index={index}
-                    updateMealElement={updateMealElement}
+                    updateMealElement={
+                      item.id ? updateMealElementOnServer : updateMealElement
+                    }
                     deleteMealElement={
-                      mealID ? deleteMealElemetsFromServer : deleteMealElement
+                      mealID ? deleteMealElementFromServer : deleteMealElement
                     }
                     navigation={navigation}
                   />

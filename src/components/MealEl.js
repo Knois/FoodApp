@@ -17,9 +17,6 @@ const MealEl = ({
     ? { uri: item.image_url }
     : require("../../assets/img/addPhoto.png");
 
-  console.log("item in meal screen flatlist");
-  console.log(item);
-
   return (
     <Pressable
       style={{
