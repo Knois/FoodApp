@@ -17,7 +17,8 @@ const MealEl = ({
     ? { uri: item.image_url }
     : require("../../assets/img/addPhoto.png");
 
-
+  console.log("item in meal screen flatlist");
+  console.log(item);
 
   return (
     <Pressable
@@ -167,7 +168,7 @@ const MealEl = ({
       <TouchableOpacity
         style={{ alignSelf: "flex-end", padding: 5 }}
         onPress={() => {
-          deleteMealElement(index);
+          deleteMealElement(item.id ? item.id : index);
         }}
       >
         <Ionicons name="trash-outline" size={30} color="red" />

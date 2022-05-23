@@ -15,7 +15,6 @@ import ScreenHeader from "../components/ScreenHeader";
 const MealElementScreen = ({ navigation, route }) => {
   const item = route.params.item;
   const index = route.params.index;
-  console.log(item);
 
   const [calories, setCalories] = useState(item ? String(item.calories) : "0");
   const [carbohydrates, setCarbohydrates] = useState(
@@ -48,6 +47,14 @@ const MealElementScreen = ({ navigation, route }) => {
     "UNIT",
     "CUP",
   ];
+
+  let imageUri = image_base64
+    ? {
+        uri: `data:image/jpg;base64,${image_base64}`,
+      }
+    : image_url
+    ? { uri: image_url }
+    : require("../../assets/img/addPhoto.png");
 
   const stateToObj = () => {
     return {
@@ -89,14 +96,6 @@ const MealElementScreen = ({ navigation, route }) => {
   const toggleModal = () => {
     setVisible(!isVisible);
   };
-
-  let imageUri = image_base64
-    ? {
-        uri: `data:image/jpg;base64,${image_base64}`,
-      }
-    : image_url
-    ? { uri: image_url }
-    : require("../../assets/img/addPhoto.png");
 
   return (
     <>

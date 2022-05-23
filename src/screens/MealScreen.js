@@ -4,10 +4,9 @@ import {
   View,
   FlatList,
   TouchableOpacity,
-  useWindowDimensions,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
@@ -21,9 +20,32 @@ import MealEl from "../components/MealEl";
 import ScreenHeader from "../components/ScreenHeader";
 
 const MealScreen = ({ navigation, route }) => {
-  const window = useWindowDimensions();
+  const urlDate = route.params.urlDate;
+
+  const [meal_type, setMeal_type] = useState(
+    route.params.meal_type ? route.params.meal_type : "BREAKFAST"
+  );
+  const [date_time, setDate_time] = useState(
+    route.params.date_time
+      ? toNormalDate(route.params.date_time)
+      : urlDate + " " + timeNow() + ":00"
+  );
+  const [name, setName] = useState(route.params.name ? route.params.name : "");
+  const [meal_elements, setMeal_elements] = useState(
+    route.params.meal_elements ? route.params.meal_elements : []
+  );
+  const [mealID, setMealID] = useState(route.params.mealID);
+
+  const [isVisible, setVisible] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+
+  const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SUPPER", "LATE_SUPPER"];
 
   let arrBase64 = [];
+
+  const toggleModal = () => {
+    setVisible(!isVisible);
+  };
 
   const arrUrlToBase64 = async (id) => {
     let arr = Object.assign([], meal_elements);
@@ -95,14 +117,9 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const createErrorAlert = (message) => {
-    Alert.alert(
-      "Ошибка при запросе на сервер",
-      message,
-      [{ text: "ОК", onPress: () => null }],
-      {
-        cancelable: true,
-      }
-    );
+    Alert.alert("Ошибка!", message, [{ text: "ОК", onPress: () => null }], {
+      cancelable: true,
+    });
   };
 
   const createMeal = async () => {
@@ -127,10 +144,10 @@ const MealScreen = ({ navigation, route }) => {
         for (let el of arrBase64) {
           await createMealElement(token, el);
         }
+        await getMealElements(json.id);
       }
     } catch (error) {
       createErrorAlert("Ошибка при создании приема пищи!");
-      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -170,6 +187,8 @@ const MealScreen = ({ navigation, route }) => {
         }
       );
       const json = await response.json();
+      if (json) {
+      }
     } catch (error) {
       createErrorAlert(
         "Ошибка при создании элемента приема пищи:\n\n" + mealElement.name
@@ -196,41 +215,46 @@ const MealScreen = ({ navigation, route }) => {
         }
       );
       const json = await response.json();
-      if (json) {
-        console.log("getMealElements result");
-        console.log(json);
+      if (json.content) {
+        setMeal_elements(json.content);
       }
     } catch (error) {
-      createErrorAlert("Ошибка при получении элементов приема пищи");
+      createErrorAlert(
+        "Ошибка при получении элементов элементов приема пищи c сервера"
+      );
     } finally {
-      if (isLoading) setLoading(false);
+      setLoading(false);
     }
   };
 
-  const toggleModal = () => {
-    setVisible(!isVisible);
+  const deleteMealElemetsFromServer = async (mealElementID) => {
+    if (!isLoading) setLoading(true);
+    const token = await getToken();
+
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/meal_element/" +
+          mealElementID,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const json = await response;
+      getMealElements(mealID);
+    } catch (error) {
+      setLoading(false);
+      createErrorAlert("Ошибка при удалении элемента приема пищи!");
+    } finally {
+    }
   };
 
-  const urlDate = route.params.urlDate;
-
-  const [meal_type, setMeal_type] = useState(
-    route.params.meal_type ? route.params.meal_type : "BREAKFAST"
-  );
-  const [date_time, setDate_time] = useState(
-    route.params.date_time
-      ? toNormalDate(route.params.date_time)
-      : urlDate + " " + timeNow() + ":00"
-  );
-  const [name, setName] = useState(route.params.name ? route.params.name : "");
-  const [meal_elements, setMeal_elements] = useState(
-    route.params.meal_elements ? route.params.meal_elements : []
-  );
-  const [mealID, setMealID] = useState(route.params.mealID);
-
-  const [isVisible, setVisible] = useState(false);
-  const [isLoading, setLoading] = useState(false);
-
-  const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SUPPER", "LATE_SUPPER"];
+  useEffect(() => {
+    if (mealID) getMealElements(mealID);
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -348,7 +372,9 @@ const MealScreen = ({ navigation, route }) => {
                     item={item}
                     index={index}
                     updateMealElement={updateMealElement}
-                    deleteMealElement={deleteMealElement}
+                    deleteMealElement={
+                      mealID ? deleteMealElemetsFromServer : deleteMealElement
+                    }
                     navigation={navigation}
                   />
                 );

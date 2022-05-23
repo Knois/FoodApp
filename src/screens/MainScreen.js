@@ -84,7 +84,7 @@ const MainScreen = ({ navigation, route }) => {
           },
         }
       );
-      const json = await response.json();
+      const json = await response;
     } catch (error) {
       createErrorAlert("Произошла ошибка при попытке удалить прием пищи");
     } finally {
