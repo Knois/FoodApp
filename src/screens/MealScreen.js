@@ -12,7 +12,6 @@ import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 import * as SecureStore from "expo-secure-store";
 
-import { serverAddress, token } from "../constants/Constants";
 import { timeNow, toNormalDate } from "../methods/DateMethods";
 import { getSumCaloriesFromArray } from "../methods/InformationMethods";
 import LoadingIndicator from "../components/LoadingIndicator";
@@ -75,20 +74,18 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const mealToObj = () => {
-    if (route.params.mealID) {
+    if (mealID) {
       return {
         date_time: date_time,
         meal_type: meal_type,
         name: name ? name.trim() : "Без названия",
-        //meal_elements: arrBase64,
-        id: route.params.mealID,
+        id: mealID,
       };
     } else {
       return {
         date_time: date_time,
         meal_type: meal_type,
         name: name ? name.trim() : "Без названия",
-        //meal_elements: arrBase64,
       };
     }
   };
@@ -117,7 +114,7 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const createErrorAlert = (message) => {
-    Alert.alert("Ошибка!", message, [{ text: "ОК", onPress: () => null }], {
+    Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
       cancelable: true,
     });
   };
@@ -155,21 +152,26 @@ const MealScreen = ({ navigation, route }) => {
 
   const updateMeal = async () => {
     setLoading(true);
-    await arrUrlToBase64();
+    const token = await getToken();
+
     try {
-      const response = await fetch(serverAddress + "/v1.0/meal", {
-        method: "PUT",
-        headers: {
-          Authorization: "Basic " + token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(mealToObj()),
-      });
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/meal",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(mealToObj()),
+        }
+      );
       const json = await response.json();
-    } catch (error) {
-      console.error(error);
-    } finally {
       navigation.goBack();
+    } catch (error) {
+      setLoading(false);
+      createErrorAlert("Ошибка при обновлении приема пищи");
+    } finally {
     }
   };
 

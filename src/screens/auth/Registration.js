@@ -10,17 +10,13 @@ import { MAIN } from "../../constants/Constants";
 
 const Registration = ({ navigation }) => {
   const { setAuth } = useContext(AppContext);
+
   const [isLoading, setLoading] = useState(false);
 
   const createErrorAlert = (message) => {
-    Alert.alert(
-      "Ошибка при запросе на сервер",
-      message,
-      [{ text: "ОК", onPress: () => null }],
-      {
-        cancelable: true,
-      }
-    );
+    Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
+      cancelable: true,
+    });
   };
 
   const saveTokenToStore = (token) => {
@@ -45,7 +41,7 @@ const Registration = ({ navigation }) => {
       }
     } catch (error) {
       setLoading(false);
-      createErrorAlert("Ошибка при получении токена с сервера!");
+      createErrorAlert("Ошибка при получении токена с сервера");
     } finally {
     }
   };
@@ -70,7 +66,7 @@ const Registration = ({ navigation }) => {
       }
     } catch (error) {
       setLoading(false);
-      createErrorAlert("Ошибка при попытке регистрации!");
+      createErrorAlert("Ошибка при попытке регистрации");
     } finally {
     }
   };

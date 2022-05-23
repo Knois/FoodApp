@@ -13,14 +13,9 @@ const SignIn = ({ navigation }) => {
   const [isLoading, setLoading] = useState(false);
 
   const createErrorAlert = (message) => {
-    Alert.alert(
-      "Ошибка при запросе на сервер",
-      message,
-      [{ text: "ОК", onPress: () => null }],
-      {
-        cancelable: true,
-      }
-    );
+    Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
+      cancelable: true,
+    });
   };
 
   const saveTokenToStore = (token) => {
@@ -41,12 +36,13 @@ const SignIn = ({ navigation }) => {
         }
       );
       const json = await response.json();
+
       if (json.jwt_token) {
         await saveTokenToStore(json.jwt_token);
       }
     } catch (error) {
       setLoading(false);
-      createErrorAlert("Ошибка при запросе токена с сервера");
+      createErrorAlert("Ошибка при попытке залогиниться");
     } finally {
     }
   };

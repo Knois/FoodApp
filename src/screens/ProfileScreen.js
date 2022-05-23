@@ -1,8 +1,9 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import React, { useContext, useState, useLayoutEffect } from "react";
 import * as SecureStore from "expo-secure-store";
 import { Ionicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
+import { useIsFocused } from "@react-navigation/native";
 
 import ScreenHeader from "../components/ScreenHeader";
 import { AppContext } from "../context/AppContext";
@@ -18,8 +19,16 @@ const ProfileScreen = () => {
 
   const [isVisible, setVisible] = useState(false);
 
+  let isFocused = useIsFocused();
+
   const toggleModal = () => {
     setVisible(!isVisible);
+  };
+
+  const createErrorAlert = (message) => {
+    Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
+      cancelable: true,
+    });
   };
 
   const deleteToken = async () => {
@@ -56,7 +65,7 @@ const ProfileScreen = () => {
         setBirthday(json.birthday);
       }
     } catch (error) {
-      console.error(error);
+      createErrorAlert("Ошибка получения данных профиля");
     } finally {
     }
   };
@@ -83,14 +92,14 @@ const ProfileScreen = () => {
         toggleModal();
       }
     } catch (error) {
-      console.error(error);
+      createErrorAlert("Ошибка при обновлении профиля");
     } finally {
     }
   };
 
   useLayoutEffect(() => {
-    getUser();
-  }, []);
+    if (email == "" && isFocused) getUser();
+  }, [isFocused]);
 
   return (
     <>
