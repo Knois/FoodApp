@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput } from "react-native";
+import * as SecureStore from "expo-secure-store";
 
 import { MAIN, SECONDARY } from "../../constants/Constants";
 import PasswordInput from "./PasswordInput";
@@ -14,13 +15,19 @@ const SighInForm = ({ action, navigation, formType }) => {
 
   const handleSubmit = () => {
     formType == "signIn"
-      ? action({ password: password, email: email })
-      : action({
-          password: password,
-          email: email,
-          birthday: birthday,
-          name: name,
-        });
+      ? SecureStore.setItemAsync("email", email)
+          .then(SecureStore.setItemAsync("password", password))
+          .then(action({ password: password, email: email }))
+      : SecureStore.setItemAsync("email", email)
+          .then(SecureStore.setItemAsync("password", password))
+          .then(
+            action({
+              password: password,
+              email: email,
+              birthday: birthday,
+              name: name,
+            })
+          );
   };
 
   return (

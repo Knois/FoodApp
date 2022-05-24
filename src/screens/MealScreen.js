@@ -395,9 +395,7 @@ const MealScreen = ({ navigation, route }) => {
                   <MealEl
                     item={item}
                     index={index}
-                    updateMealElement={
-                      item.id ? updateMealElementOnServer : updateMealElement
-                    }
+                    updateMealElement={updateMealElement}
                     deleteMealElement={
                       mealID ? deleteMealElementFromServer : deleteMealElement
                     }

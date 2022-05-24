@@ -39,31 +39,40 @@ const AuthLoading = ({ navigation }) => {
     await SecureStore.deleteItemAsync("token");
   };
 
-  const checkToken = async (token) => {
+  const saveTokenToStore = (token) => {
+    SecureStore.setItemAsync("token", token).then(setAuth(true));
+  };
+
+  const createJwt = async () => {
+    const email = await SecureStore.getItemAsync("email");
+    const password = await SecureStore.getItemAsync("password");
+
     try {
       const response = await fetch(
-        "http://80.87.201.75:8079/gateway/auth/check_token",
+        "http://80.87.201.75:8079/gateway/auth/authenticate",
         {
-          method: "GET",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
           },
+          body: JSON.stringify({ email, password }),
         }
       );
+
       const json = await response.json();
-      setAuth(true);
+      await saveTokenToStore(json.jwt_token);
     } catch (error) {
       deleteToken();
-      createErrorAlert("Ошибка при проверке токена на сервере");
+      createErrorAlert(
+        "Ошибка при попытке залогиниться и получить новый токен"
+      );
     } finally {
     }
   };
 
   const checkLoginState = async () => {
     const token = await SecureStore.getItemAsync("token");
-    console.log(token);
-    token ? checkToken(token) : changeScreen();
+    token ? createJwt() : changeScreen();
   };
 
   useEffect(() => {
