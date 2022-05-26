@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect, useContext } from "react";
 import {
   Text,
   View,
@@ -11,7 +11,6 @@ import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import DatePicker from "react-native-modern-datepicker";
-import * as SecureStore from "expo-secure-store";
 
 import MealContainer from "../components/MealContainer";
 import {
@@ -21,8 +20,11 @@ import {
 } from "../methods/DateMethods";
 import LoadingIndicator from "../components/LoadingIndicator";
 import ScreenHeader from "../components/ScreenHeader";
+import TokenContext from "../context/TokenContext";
 
 const MainScreen = ({ navigation, route }) => {
+  const { token } = useContext(TokenContext);
+
   const [isLoading, setLoading] = useState(false);
   const [meals, setMeals] = useState([]);
   const [urlDate, setUrlDate] = useState(dateFormatted());
@@ -34,14 +36,9 @@ const MainScreen = ({ navigation, route }) => {
     setVisible(!isVisible);
   };
 
-  const getToken = async () => {
-    const userToken = await SecureStore.getItemAsync("token");
-    return userToken;
-  };
-
   const getAllMeals = async () => {
     if (!isLoading) setLoading(true);
-    const token = await getToken();
+
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal/findByDate?date=" +
@@ -70,7 +67,6 @@ const MainScreen = ({ navigation, route }) => {
 
   const deleteMeal = async (id) => {
     if (!isLoading) setLoading(true);
-    const token = await getToken();
 
     try {
       const response = await fetch(

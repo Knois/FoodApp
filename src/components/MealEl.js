@@ -10,7 +10,7 @@ const MealEl = ({
   deleteMealElement,
   navigation,
 }) => {
-  const { mainToken } = useContext(TokenContext);
+  const { token } = useContext(TokenContext);
 
   let imageUri = item.image_base64
     ? {
@@ -20,7 +20,7 @@ const MealEl = ({
     ? {
         uri: item.image_url,
         headers: {
-          Authorization: "Bearer " + mainToken,
+          Authorization: "Bearer " + token,
           "Content-Type": "application/json",
         },
       }

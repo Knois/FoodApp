@@ -3,7 +3,7 @@ import { createContext, useMemo, useState } from "react";
 export const TokenContext = createContext({});
 
 export const TokenProvider = ({ children }) => {
-  const [mainToken, setMainToken] = useState(false);
+  const [token, setToken] = useState(false);
 
   const value = useMemo(
     () => ({

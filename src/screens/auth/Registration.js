@@ -7,9 +7,11 @@ import { AppContext } from "../../context/AppContext";
 import SighInForm from "../../components/auth/SignInForm";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import { MAIN } from "../../constants/Constants";
+import { TokenContext } from "../../context/TokenContext";
 
 const Registration = ({ navigation }) => {
   const { setAuth } = useContext(AppContext);
+  const { setToken } = useContext(TokenContext);
 
   const [isLoading, setLoading] = useState(false);
 
@@ -37,6 +39,7 @@ const Registration = ({ navigation }) => {
       );
       const json = await response.json();
       if (json.jwt_token) {
+        setToken(json.jwt_token);
         await saveTokenToStore(json.jwt_token);
       }
     } catch (error) {

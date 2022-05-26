@@ -6,11 +6,10 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
-import * as SecureStore from "expo-secure-store";
 import { useIsFocused } from "@react-navigation/native";
 
 import { timeNow, toNormalDate } from "../methods/DateMethods";
@@ -19,8 +18,11 @@ import LoadingIndicator from "../components/LoadingIndicator";
 import MealEl from "../components/MealEl";
 import ScreenHeader from "../components/ScreenHeader";
 import { mealTypes } from "../constants/Constants";
+import { TokenContext } from "../context/TokenContext";
 
 const MealScreen = ({ navigation, route }) => {
+  const { token } = useContext(TokenContext);
+
   const urlDate = route.params.urlDate;
 
   const [meal_type, setMeal_type] = useState(
@@ -109,11 +111,6 @@ const MealScreen = ({ navigation, route }) => {
     setMeal_elements(arr);
   };
 
-  const getToken = async () => {
-    const userToken = await SecureStore.getItemAsync("token");
-    return userToken;
-  };
-
   const createErrorAlert = (message) => {
     Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
       cancelable: true,
@@ -121,7 +118,6 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const createMeal = async () => {
-    const token = await getToken();
     setLoading(true);
     try {
       const response = await fetch(
@@ -140,7 +136,7 @@ const MealScreen = ({ navigation, route }) => {
         setMealID(json.id);
         await arrUrlToBase64(json.id);
         for (let el of arrBase64) {
-          await createMealElement(token, el);
+          await createMealElement(el);
         }
         await getMealElements(json.id);
       }
@@ -153,7 +149,6 @@ const MealScreen = ({ navigation, route }) => {
 
   const updateMeal = async () => {
     setLoading(true);
-    const token = await getToken();
 
     try {
       const response = await fetch(
@@ -176,7 +171,7 @@ const MealScreen = ({ navigation, route }) => {
     }
   };
 
-  const createMealElement = async (token, mealElement) => {
+  const createMealElement = async (mealElement) => {
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal_element",
@@ -202,7 +197,6 @@ const MealScreen = ({ navigation, route }) => {
 
   const getMealElements = async (mealID) => {
     if (!isLoading) setLoading(true);
-    const token = await getToken();
 
     try {
       const response = await fetch(
@@ -230,7 +224,6 @@ const MealScreen = ({ navigation, route }) => {
 
   const deleteMealElementFromServer = async (mealElementID) => {
     if (!isLoading) setLoading(true);
-    const token = await getToken();
 
     try {
       const response = await fetch(

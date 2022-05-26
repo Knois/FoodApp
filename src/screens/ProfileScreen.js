@@ -9,9 +9,11 @@ import ScreenHeader from "../components/ScreenHeader";
 import { AppContext } from "../context/AppContext";
 import { MAIN, SECONDARY } from "../constants/Constants";
 import UpdateUserForm from "../components/UpdateUserForm";
+import { TokenContext } from "../context/TokenContext";
 
 const ProfileScreen = () => {
   const { setAuth } = useContext(AppContext);
+  const { token } = useContext(TokenContext);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -39,14 +41,7 @@ const ProfileScreen = () => {
     deleteToken().then(setAuth(false));
   };
 
-  const getToken = async () => {
-    const userToken = await SecureStore.getItemAsync("token");
-    return userToken;
-  };
-
   const getUser = async () => {
-    const token = await getToken();
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/auth/user",
@@ -71,8 +66,6 @@ const ProfileScreen = () => {
   };
 
   const updateUser = async (obj) => {
-    const token = await getToken();
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/auth/user",
@@ -87,7 +80,9 @@ const ProfileScreen = () => {
       );
       const json = await response.json();
       if (json.id) {
-        console.log(json.id);
+        SecureStore.setItemAsync("email", email).then(
+          SecureStore.setItemAsync("password", password)
+        );
         await getUser();
         toggleModal();
       }

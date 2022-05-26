@@ -11,14 +11,13 @@ import React, { useState, useContext } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
-import * as SecureStore from "expo-secure-store";
-import { measurementTypes } from "../constants/Constants";
 
+import { measurementTypes } from "../constants/Constants";
 import ScreenHeader from "../components/ScreenHeader";
 import { TokenContext } from "../context/TokenContext";
 
 const MealElementScreen = ({ navigation, route }) => {
-  const { mainToken } = useContext(TokenContext);
+  const { token } = useContext(TokenContext);
   const item = route.params.item;
   const mealElementID = item ? item.id : null;
   const index = route.params.index;
@@ -85,14 +84,7 @@ const MealElementScreen = ({ navigation, route }) => {
     setQuantity("" + obj.quantity);
   };
 
-  const getToken = async () => {
-    const userToken = await SecureStore.getItemAsync("token");
-    return userToken;
-  };
-
   const createMealElementOnServer = async (obj) => {
-    const token = await getToken();
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal_element",
@@ -117,8 +109,6 @@ const MealElementScreen = ({ navigation, route }) => {
   };
 
   const updateMealElementOnServer = async (obj) => {
-    const token = await getToken();
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal_element",
@@ -165,7 +155,7 @@ const MealElementScreen = ({ navigation, route }) => {
     ? {
         uri: image_url,
         headers: {
-          Authorization: "Bearer " + mainToken,
+          Authorization: "Bearer " + token,
           "Content-Type": "application/json",
         },
       }

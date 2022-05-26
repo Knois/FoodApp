@@ -1,6 +1,5 @@
 import { View, Text, TouchableOpacity, Pressable } from "react-native";
-import React, { useState, useLayoutEffect } from "react";
-import * as SecureStore from "expo-secure-store";
+import React, { useState, useLayoutEffect, useContext } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -10,20 +9,16 @@ import {
   stringToNormalCase,
 } from "../methods/InformationMethods";
 import LoadingIndicator from "./LoadingIndicator";
+import { TokenContext } from "../context/TokenContext";
 
 const MealContainer = ({ item, navigation, action }) => {
+  const { token } = useContext(TokenContext);
+
   const [mealElements, setMealElements] = useState([]);
-
   const [isLoading, setLoading] = useState(false);
-
-  const getToken = async () => {
-    const userToken = await SecureStore.getItemAsync("token");
-    return userToken;
-  };
 
   const getMealElements = async (mealID) => {
     if (!isLoading) setLoading(true);
-    const token = await getToken();
 
     try {
       const response = await fetch(

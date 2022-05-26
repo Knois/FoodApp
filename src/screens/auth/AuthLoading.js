@@ -8,7 +8,7 @@ import { TokenContext } from "../../context/TokenContext";
 
 const AuthLoading = ({ navigation }) => {
   const { setAuth } = useContext(AppContext);
-  const { setMainToken } = useContext(TokenContext);
+  const { setToken } = useContext(TokenContext);
 
   const createErrorAlert = (message) => {
     Alert.alert(
@@ -45,10 +45,7 @@ const AuthLoading = ({ navigation }) => {
     SecureStore.setItemAsync("token", token).then(setAuth(true));
   };
 
-  const createJwt = async () => {
-    const email = await SecureStore.getItemAsync("email");
-    const password = await SecureStore.getItemAsync("password");
-
+  const createJwt = async (obj) => {
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/auth/authenticate",
@@ -57,12 +54,12 @@ const AuthLoading = ({ navigation }) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify(obj),
         }
       );
 
       const json = await response.json();
-      setMainToken(json.jwt_token);
+      setToken(json.jwt_token);
       await saveTokenToStore(json.jwt_token);
     } catch (error) {
       deleteToken();
@@ -75,7 +72,9 @@ const AuthLoading = ({ navigation }) => {
 
   const checkLoginState = async () => {
     const token = await SecureStore.getItemAsync("token");
-    token ? createJwt() : changeScreen();
+    const email = await SecureStore.getItemAsync("email");
+    const password = await SecureStore.getItemAsync("password");
+    token ? createJwt({ email, password }) : changeScreen();
   };
 
   useEffect(() => {
