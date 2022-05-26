@@ -7,17 +7,19 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 import * as SecureStore from "expo-secure-store";
+import { measurementTypes } from "../constants/Constants";
 
 import ScreenHeader from "../components/ScreenHeader";
+import { TokenContext } from "../context/TokenContext";
 
 const MealElementScreen = ({ navigation, route }) => {
+  const { mainToken } = useContext(TokenContext);
   const item = route.params.item;
-  console.log(item);
   const mealElementID = item ? item.id : null;
   const index = route.params.index;
   const mealID = route.params.mealID;
@@ -40,28 +42,6 @@ const MealElementScreen = ({ navigation, route }) => {
   const [quantity, setQuantity] = useState(item ? String(item.quantity) : "0");
 
   const [isVisible, setVisible] = useState(false);
-
-  const measurementTypes = [
-    "GRAM",
-    "KILOGRAM",
-    "LITER",
-    "MILLILITER",
-    "PACK",
-    "PIECE",
-    "PACK",
-    "SOUP_SPOON",
-    "TEA_SPOON",
-    "UNIT",
-    "CUP",
-  ];
-
-  let imageUri = image_base64
-    ? {
-        uri: `data:image/jpg;base64,${image_base64}`,
-      }
-    : image_url
-    ? { uri: image_url }
-    : require("../../assets/img/addPhoto.png");
 
   const createErrorAlert = (message) => {
     Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
@@ -177,6 +157,21 @@ const MealElementScreen = ({ navigation, route }) => {
     setVisible(!isVisible);
   };
 
+  let imageUri = image_base64
+    ? {
+        uri: `data:image/jpg;base64,${image_base64}`,
+      }
+    : image_url
+    ? {
+        uri: image_url,
+        headers: {
+          Authorization: "Bearer " + mainToken,
+          "Content-Type": "application/json",
+        },
+      }
+    : require("../../assets/img/addPhoto.png");
+
+  console.log(imageUri);
   return (
     <>
       <View style={{ flex: 1 }}>

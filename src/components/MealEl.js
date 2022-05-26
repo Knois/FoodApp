@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, Pressable, Image } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { TokenContext } from "../context/TokenContext";
 
 const MealEl = ({
   item,
@@ -9,13 +10,24 @@ const MealEl = ({
   deleteMealElement,
   navigation,
 }) => {
+  const { mainToken } = useContext(TokenContext);
+
   let imageUri = item.image_base64
     ? {
         uri: `data:image/jpg;base64,${item.image_base64}`,
       }
     : item.image_url
-    ? { uri: item.image_url }
+    ? {
+        uri: item.image_url,
+        headers: {
+          Authorization: "Bearer " + mainToken,
+          "Content-Type": "application/json",
+        },
+      }
     : require("../../assets/img/addPhoto.png");
+
+  console.log(item);
+  console.log(imageUri);
 
   return (
     <Pressable

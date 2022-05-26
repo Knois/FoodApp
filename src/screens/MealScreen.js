@@ -11,13 +11,14 @@ import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 import * as SecureStore from "expo-secure-store";
+import { useIsFocused } from "@react-navigation/native";
 
 import { timeNow, toNormalDate } from "../methods/DateMethods";
 import { getSumCaloriesFromArray } from "../methods/InformationMethods";
 import LoadingIndicator from "../components/LoadingIndicator";
 import MealEl from "../components/MealEl";
 import ScreenHeader from "../components/ScreenHeader";
-import { useIsFocused } from "@react-navigation/native";
+import { mealTypes } from "../constants/Constants";
 
 const MealScreen = ({ navigation, route }) => {
   const urlDate = route.params.urlDate;
@@ -38,8 +39,6 @@ const MealScreen = ({ navigation, route }) => {
 
   const [isVisible, setVisible] = useState(false);
   const [isLoading, setLoading] = useState(false);
-
-  const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SUPPER", "LATE_SUPPER"];
 
   let arrBase64 = [];
   let isFocused = useIsFocused();

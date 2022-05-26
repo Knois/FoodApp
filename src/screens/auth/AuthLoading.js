@@ -4,9 +4,11 @@ import * as SecureStore from "expo-secure-store";
 
 import { AppContext } from "../../context/AppContext";
 import LoadingIndicator from "../../components/LoadingIndicator";
+import { TokenContext } from "../../context/TokenContext";
 
 const AuthLoading = ({ navigation }) => {
   const { setAuth } = useContext(AppContext);
+  const { setMainToken } = useContext(TokenContext);
 
   const createErrorAlert = (message) => {
     Alert.alert(
@@ -60,6 +62,7 @@ const AuthLoading = ({ navigation }) => {
       );
 
       const json = await response.json();
+      setMainToken(json.jwt_token);
       await saveTokenToStore(json.jwt_token);
     } catch (error) {
       deleteToken();
