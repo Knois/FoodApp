@@ -5,16 +5,23 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
+import * as FileSystem from "expo-file-system";
+import * as SecureStore from "expo-secure-store";
 
 import ScreenHeader from "../components/ScreenHeader";
 
 const MealElementScreen = ({ navigation, route }) => {
   const item = route.params.item;
+  console.log(item);
+  const mealElementID = item ? item.id : null;
   const index = route.params.index;
+  const mealID = route.params.mealID;
+  const action = route.params.action;
 
   const [calories, setCalories] = useState(item ? String(item.calories) : "0");
   const [carbohydrates, setCarbohydrates] = useState(
@@ -56,8 +63,14 @@ const MealElementScreen = ({ navigation, route }) => {
     ? { uri: image_url }
     : require("../../assets/img/addPhoto.png");
 
+  const createErrorAlert = (message) => {
+    Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
+      cancelable: true,
+    });
+  };
+
   const stateToObj = () => {
-    return {
+    let obj = {
       calories: calories ? calories : "0",
       carbohydrates: carbohydrates ? carbohydrates : "0",
       fats: fats ? fats : "0",
@@ -68,6 +81,17 @@ const MealElementScreen = ({ navigation, route }) => {
       proteins: proteins ? proteins : "0",
       quantity: quantity ? quantity : "0",
     };
+
+    if (mealID) {
+      obj.meal = {
+        id: mealID,
+      };
+    }
+    if (mealElementID) {
+      obj.id = mealElementID;
+    }
+
+    return obj;
   };
 
   const copyToMealElement = (obj) => {
@@ -79,6 +103,62 @@ const MealElementScreen = ({ navigation, route }) => {
     setName("" + obj.name);
     setProteins("" + obj.proteins);
     setQuantity("" + obj.quantity);
+  };
+
+  const getToken = async () => {
+    const userToken = await SecureStore.getItemAsync("token");
+    return userToken;
+  };
+
+  const createMealElementOnServer = async (obj) => {
+    const token = await getToken();
+
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/meal_element",
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj),
+        }
+      );
+      const json = await response.json();
+
+      if (json.id) {
+        navigation.goBack();
+      }
+    } catch (error) {
+      createErrorAlert("Ошибка при создании элемента приема пищи:\n\n" + name);
+    } finally {
+    }
+  };
+
+  const updateMealElementOnServer = async (obj) => {
+    const token = await getToken();
+
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/meal_element",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj),
+        }
+      );
+      const json = await response.json();
+      if (json.id) {
+        navigation.goBack();
+      }
+    } catch (error) {
+      createErrorAlert("Ошибка при обновлении элемента приема пищи!");
+    } finally {
+    }
   };
 
   const goToSearch = () => {
@@ -336,10 +416,16 @@ const MealElementScreen = ({ navigation, route }) => {
             margin: 5,
           }}
           onPress={() => {
-            index
-              ? route.params.action(stateToObj(), index)
-              : route.params.action(stateToObj());
-            navigation.goBack();
+            if (mealID) {
+              createMealElementOnServer(stateToObj());
+            } else {
+              if (mealElementID) {
+                updateMealElementOnServer(stateToObj());
+              } else {
+                index ? action(stateToObj(), index) : action(stateToObj());
+                navigation.goBack();
+              }
+            }
           }}
         >
           <Ionicons name="checkmark" size={40} color="#645fb1" />

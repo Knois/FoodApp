@@ -17,6 +17,7 @@ import { getSumCaloriesFromArray } from "../methods/InformationMethods";
 import LoadingIndicator from "../components/LoadingIndicator";
 import MealEl from "../components/MealEl";
 import ScreenHeader from "../components/ScreenHeader";
+import { useIsFocused } from "@react-navigation/native";
 
 const MealScreen = ({ navigation, route }) => {
   const urlDate = route.params.urlDate;
@@ -41,6 +42,7 @@ const MealScreen = ({ navigation, route }) => {
   const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SUPPER", "LATE_SUPPER"];
 
   let arrBase64 = [];
+  let isFocused = useIsFocused();
 
   const toggleModal = () => {
     setVisible(!isVisible);
@@ -221,9 +223,7 @@ const MealScreen = ({ navigation, route }) => {
         setMeal_elements(json.content);
       }
     } catch (error) {
-      createErrorAlert(
-        "Ошибка при получении элементов элементов приема пищи c сервера"
-      );
+      createErrorAlert("Ошибка при получении элементов приема пищи c сервера");
     } finally {
       setLoading(false);
     }
@@ -245,8 +245,9 @@ const MealScreen = ({ navigation, route }) => {
           },
         }
       );
-      const json = await response;
-      getMealElements(mealID);
+      if (response.status == 200) {
+        getMealElements(mealID);
+      }
     } catch (error) {
       setLoading(false);
       createErrorAlert("Ошибка при удалении элемента приема пищи!");
@@ -254,31 +255,9 @@ const MealScreen = ({ navigation, route }) => {
     }
   };
 
-  const updateMealElementOnServer = async (obj) => {
-    const token = await getToken();
-
-    try {
-      const response = await fetch(
-        "http://80.87.201.75:8079/gateway/my-food/meal_element",
-        {
-          method: "PUT",
-          headers: {
-            Authorization: "Bearer " + token,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(obj),
-        }
-      );
-      const json = await response;
-    } catch (error) {
-      createErrorAlert("Ошибка при обновлении элемента приема пищи!");
-    } finally {
-    }
-  };
-
   useEffect(() => {
-    if (mealID) getMealElements(mealID);
-  }, []);
+    if (mealID && isFocused) getMealElements(mealID);
+  }, [isFocused]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -419,6 +398,7 @@ const MealScreen = ({ navigation, route }) => {
               onPress={() => {
                 navigation.navigate("MealElementScreen", {
                   action: addMealElement,
+                  mealID: mealID,
                 });
               }}
             >

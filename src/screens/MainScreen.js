@@ -58,11 +58,6 @@ const MainScreen = ({ navigation, route }) => {
       const json = await response.json();
       if (json.content) {
         setMeals(json.content);
-        /*
-        for (let el of meals) {
-          await getMealElements(token, el.id);
-        }
-        */
       }
     } catch (error) {
       createErrorAlert(
@@ -70,32 +65,6 @@ const MainScreen = ({ navigation, route }) => {
       );
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getMealElements = async (token, mealID) => {
-    try {
-      const response = await fetch(
-        "http://80.87.201.75:8079/gateway/my-food/meal_element?mealId=" +
-          mealID +
-          "&page=0&size=999",
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + token,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const json = await response.json();
-      if (json.content) {
-        console.log(json.content);
-      }
-    } catch (error) {
-      createErrorAlert(
-        "Ошибка при получении элементов элементов приема пищи c сервера"
-      );
-    } finally {
     }
   };
 
