@@ -26,9 +26,6 @@ const MealEl = ({
       }
     : require("../../assets/img/addPhoto.png");
 
-  console.log(item);
-  console.log(imageUri);
-
   return (
     <Pressable
       style={{

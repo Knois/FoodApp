@@ -7,10 +7,10 @@ export const TokenProvider = ({ children }) => {
 
   const value = useMemo(
     () => ({
-      mainToken,
-      setMainToken,
+      token,
+      setToken,
     }),
-    [mainToken]
+    [token]
   );
 
   return (

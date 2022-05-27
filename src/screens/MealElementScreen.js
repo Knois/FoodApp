@@ -73,6 +73,28 @@ const MealElementScreen = ({ navigation, route }) => {
     return obj;
   };
 
+  const UrlToBase64 = async (obj) => {
+    let formattedObj = Object.assign({}, obj);
+    if (formattedObj.image_url) {
+      let image;
+      try {
+        const { uri } = await FileSystem.downloadAsync(
+          formattedObj.image_url,
+          FileSystem.documentDirectory + "bufferimg.jpg"
+        );
+        image = await FileSystem.readAsStringAsync(uri, {
+          encoding: "base64",
+        });
+        await FileSystem.deleteAsync(uri);
+        formattedObj.image_base64 = image;
+        formattedObj.image_url = null;
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    return formattedObj;
+  };
+
   const copyToMealElement = (obj) => {
     setCalories("" + obj.calories);
     setCarbohydrates("" + obj.carbohydrates);
@@ -85,6 +107,8 @@ const MealElementScreen = ({ navigation, route }) => {
   };
 
   const createMealElementOnServer = async (obj) => {
+    let formattedObj = await UrlToBase64(obj);
+
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal_element",
@@ -94,7 +118,7 @@ const MealElementScreen = ({ navigation, route }) => {
             Authorization: "Bearer " + token,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(obj),
+          body: JSON.stringify(formattedObj),
         }
       );
       const json = await response.json();
@@ -109,6 +133,7 @@ const MealElementScreen = ({ navigation, route }) => {
   };
 
   const updateMealElementOnServer = async (obj) => {
+    let formattedObj = await UrlToBase64(obj);
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal_element",
@@ -118,7 +143,7 @@ const MealElementScreen = ({ navigation, route }) => {
             Authorization: "Bearer " + token,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(obj),
+          body: JSON.stringify(formattedObj),
         }
       );
       const json = await response.json();
@@ -161,7 +186,6 @@ const MealElementScreen = ({ navigation, route }) => {
       }
     : require("../../assets/img/addPhoto.png");
 
-  console.log(imageUri);
   return (
     <>
       <View style={{ flex: 1 }}>

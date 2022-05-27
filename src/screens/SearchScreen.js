@@ -4,38 +4,48 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
+  Alert,
 } from "react-native";
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect, useContext } from "react";
 
 import ScreenHeader from "../components/ScreenHeader";
-import { serverAddress, token } from "../constants/Constants";
 import LoadingIndicator from "../components/LoadingIndicator";
+import { TokenContext } from "../context/TokenContext";
 
 const SearchScreen = ({ navigation, route }) => {
   const copyToMealElement = route.params.copyToMealElement;
+  const { token } = useContext(TokenContext);
 
   const [name, setName] = useState("");
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(false);
 
+  const createErrorAlert = (message) => {
+    Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
+      cancelable: true,
+    });
+  };
+
   const searchByName = async () => {
     setLoading(true);
+
     const url =
-      serverAddress +
-      "/v1.0/dish/search?search=name%3A" +
+      "http://80.87.201.75:8079/gateway/my-food/product/search?search=name%3A" +
       encodeURI(name) +
       "&size=50";
+
     try {
       const response = await fetch(url, {
         method: "GET",
         headers: {
-          Authorization: "Basic " + token,
+          Authorization: "Bearer " + token,
           "Content-Type": "application/json",
         },
       });
       const json = await response.json();
       setData(json.content);
     } catch (error) {
+      createErrorAlert("Ошибка при поиске на сервере");
     } finally {
       setLoading(false);
     }
@@ -79,7 +89,7 @@ const SearchScreen = ({ navigation, route }) => {
           <LoadingIndicator />
         ) : (
           <>
-            {data == false && <Text>Ничего не найдено</Text>}
+            {!data && <Text>Ничего не найдено</Text>}
             <FlatList
               style={{ height: "80%" }}
               data={data}

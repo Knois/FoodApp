@@ -20,7 +20,7 @@ import {
 } from "../methods/DateMethods";
 import LoadingIndicator from "../components/LoadingIndicator";
 import ScreenHeader from "../components/ScreenHeader";
-import TokenContext from "../context/TokenContext";
+import { TokenContext } from "../context/TokenContext";
 
 const MainScreen = ({ navigation, route }) => {
   const { token } = useContext(TokenContext);
