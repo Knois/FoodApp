@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, Pressable, Image } from "react-native";
 import React, { useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { TokenContext } from "../context/TokenContext";
+import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 
 const MealEl = ({
   item,
@@ -11,17 +12,19 @@ const MealEl = ({
   navigation,
 }) => {
   const { token } = useContext(TokenContext);
-
+  let imageKey = new Date();
   let imageUri = item.image_base64
     ? {
         uri: `data:image/jpg;base64,${item.image_base64}`,
       }
     : item.image_url
     ? {
-        uri: item.image_url,
+        uri: item.image_url + "?random_number=" + imageKey,
+        cache: "reload",
         headers: {
           Authorization: "Bearer " + token,
           "Content-Type": "application/json",
+          Pragma: "no-cache",
         },
       }
     : require("../../assets/img/addPhoto.png");

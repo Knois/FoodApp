@@ -171,17 +171,18 @@ const MealElementScreen = ({ navigation, route }) => {
   const toggleModal = () => {
     setVisible(!isVisible);
   };
-
+  let imageKey = new Date();
   let imageUri = image_base64
     ? {
         uri: `data:image/jpg;base64,${image_base64}`,
       }
     : image_url
     ? {
-        uri: image_url,
+        uri: image_url + "?random_number=" + imageKey,
         headers: {
           Authorization: "Bearer " + token,
           "Content-Type": "application/json",
+          Pragma: "no-cache",
         },
       }
     : require("../../assets/img/addPhoto.png");
@@ -191,7 +192,7 @@ const MealElementScreen = ({ navigation, route }) => {
       <View style={{ flex: 1 }}>
         <ScreenHeader /*                                 Шапка*/
           canGoBack={true}
-          title={route.params.item ? route.params.item.name : "Создание блюда"}
+          title={route.params.item ? "Редактирование блюда" : "Создание блюда"}
           action={goToSearch}
           rightIcon="search-outline"
         />
