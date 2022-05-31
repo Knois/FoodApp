@@ -1,8 +1,14 @@
-import { View, Text, TouchableOpacity, Pressable, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Pressable,
+  Image,
+  Alert,
+} from "react-native";
 import React, { useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { TokenContext } from "../context/TokenContext";
-import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 
 const MealEl = ({
   item,
@@ -28,6 +34,22 @@ const MealEl = ({
         },
       }
     : require("../../assets/img/addPhoto.png");
+
+  const createTwoButtonAlert = (id) =>
+    Alert.alert(
+      "Удаление элемента приема пищи",
+      "Подтверждаете удаление?",
+      [
+        {
+          text: "Отмена",
+          style: "cancel",
+        },
+        { text: "ОК", onPress: () => deleteMealElement(id) },
+      ],
+      {
+        cancelable: true,
+      }
+    );
 
   return (
     <Pressable
@@ -177,7 +199,7 @@ const MealEl = ({
       <TouchableOpacity
         style={{ alignSelf: "flex-end", padding: 5 }}
         onPress={() => {
-          deleteMealElement(item.id ? item.id : index);
+          createTwoButtonAlert(item.id ? item.id : index);
         }}
       >
         <Ionicons name="trash-outline" size={30} color="red" />
