@@ -1,18 +1,13 @@
 import { useContext, useEffect } from "react";
 import { Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  setIsAuthTrue,
-  setIsAuthFalse,
-} from "../../redux/slices/auth/isAuthSlice";
-import { AppContext } from "../../context/AppContext";
+import { useDispatch } from "react-redux";
+import { setIsAuthTrue } from "../../redux/slices/auth/isAuthSlice";
+
 import LoadingIndicator from "../../components/LoadingIndicator";
 import { TokenContext } from "../../context/TokenContext";
 
 const AuthLoading = ({ navigation }) => {
-  //const { setAuth } = useContext(AppContext);
-  const isAuth = useSelector((state) => state.isAuth.value);
   const dispatch = useDispatch();
 
   const { setToken } = useContext(TokenContext);

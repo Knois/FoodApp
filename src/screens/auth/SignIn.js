@@ -2,21 +2,16 @@ import React, { useContext, useState } from "react";
 import { Text, Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  setIsAuthTrue,
-  setIsAuthFalse,
-} from "../../redux/slices/auth/isAuthSlice";
+import { useDispatch } from "react-redux";
+import { setIsAuthTrue } from "../../redux/slices/auth/isAuthSlice";
 
 import SighInForm from "../../components/auth/SignInForm";
-import { AppContext } from "../../context/AppContext";
+
 import LoadingIndicator from "../../components/LoadingIndicator";
 import { MAIN } from "../../constants/Constants";
 import { TokenContext } from "../../context/TokenContext";
 
 const SignIn = ({ navigation }) => {
-  //const { setAuth } = useContext(AppContext);
-  const isAuth = useSelector((state) => state.isAuth.value);
   const dispatch = useDispatch();
 
   const { setToken } = useContext(TokenContext);

@@ -32,7 +32,7 @@ const SearchScreen = ({ navigation, route }) => {
     const url =
       "http://80.87.201.75:8079/gateway/my-food/product/search?search=name%3A" +
       encodeURI(name) +
-      "&size=50";
+      "&size=99999";
 
     try {
       const response = await fetch(url, {

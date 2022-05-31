@@ -4,18 +4,15 @@ import * as SecureStore from "expo-secure-store";
 import { Ionicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
 import { useIsFocused } from "@react-navigation/native";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setIsAuthFalse } from "../redux/slices/auth/isAuthSlice";
 
 import ScreenHeader from "../components/ScreenHeader";
-import { AppContext } from "../context/AppContext";
 import { MAIN, SECONDARY } from "../constants/Constants";
 import UpdateUserForm from "../components/UpdateUserForm";
 import { TokenContext } from "../context/TokenContext";
 
 const ProfileScreen = () => {
-  //const { setAuth } = useContext(AppContext);
-  const isAuth = useSelector((state) => state.isAuth.value);
   const dispatch = useDispatch();
 
   const { token } = useContext(TokenContext);

@@ -4,9 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { StatusBar } from "expo-status-bar";
-import { AppContext } from "../context/AppContext";
-import { useSelector, useDispatch } from "react-redux";
-import { setIsAuthFalse } from "../redux/slices/auth/isAuthSlice";
+import { useSelector } from "react-redux";
 
 import MainScreen from "./MainScreen";
 import MealScreen from "./MealScreen";
@@ -73,7 +71,6 @@ const AuthStackScreen = () => {
 const AppNavigation = () => {
   const window = useWindowDimensions();
 
-  //const { isAuth } = useContext(AppContext);
   const isAuth = useSelector((state) => state.isAuth.value);
 
   return (

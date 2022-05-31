@@ -19,7 +19,7 @@ const ProductScreen = ({ navigation, route }) => {
   const [dataAll, setDataAll] = useState([]);
   const [dataSearch, setDataSearch] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const [showAll, setShowAll] = useState(true);
+  const [showMy, setShowMy] = useState(true);
 
   const createErrorAlert = (message) => {
     Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
@@ -33,7 +33,7 @@ const ProductScreen = ({ navigation, route }) => {
     const url =
       "http://80.87.201.75:8079/gateway/my-food/product/search?search=name%3A" +
       encodeURI(name) +
-      "&size=50";
+      "&size=99999";
 
     try {
       const response = await fetch(url, {
@@ -56,7 +56,7 @@ const ProductScreen = ({ navigation, route }) => {
     setLoading(true);
 
     const url =
-      "http://80.87.201.75:8079/gateway/my-food/product?page=0&size=999";
+      "http://80.87.201.75:8079/gateway/my-food/product?page=0&size=99999";
 
     try {
       const response = await fetch(url, {
@@ -80,21 +80,19 @@ const ProductScreen = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    if (name) {
-      searchByName();
-    }
+    searchByName();
   }, [name]);
 
   return (
     <View style={{ flex: 1 }}>
       <ScreenHeader /*                                 Шапка*/
         canGoBack={false}
-        title={showAll ? "Все продукты" : "Поиск по имени продукта"}
-        action={() => setShowAll(!showAll)}
-        rightIcon={showAll ? "search-outline" : "book"}
+        title={showMy ? "Мои продукты" : "Все продукты"}
+        action={() => setShowMy(!showMy)}
+        rightIcon={showMy ? "library-outline" : "cube-outline"}
       />
       <View style={{ margin: 10, flex: 1 }}>
-        {!showAll && (
+        {!showMy && (
           <TextInput /*                                 Ввод названия блюда*/
             style={{
               textAlign: "center",
@@ -125,7 +123,7 @@ const ProductScreen = ({ navigation, route }) => {
             {!dataAll && <Text>Ничего не найдено</Text>}
             <FlatList
               style={{ height: "80%" }}
-              data={showAll ? dataAll : dataSearch ? dataSearch : dataAll}
+              data={showMy ? dataAll : dataSearch}
               keyExtractor={(item) => item.id}
               renderItem={(item) => {
                 return (
