@@ -7,8 +7,7 @@ import PasswordInput from "./PasswordInput";
 import SignInButton from "./SignInButton";
 import SignInLink from "./SignInLink";
 
-const SighInForm = ({ action, navigation, formType }) => {
-  const [email, setEmail] = useState("");
+const SighInForm = ({ action, navigation, formType, email, setEmail }) => {
   const [birthday, setBirthday] = useState("2022-05-17");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");

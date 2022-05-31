@@ -3,6 +3,8 @@ import { LogBox } from "react-native";
 import AppNavigation from "./src/screens/AppNavigation";
 import { AppProvider } from "./src/context/AppContext";
 import { TokenProvider } from "./src/context/TokenContext";
+import store from "./src/redux/store";
+import { Provider } from "react-redux";
 
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
@@ -10,10 +12,16 @@ LogBox.ignoreLogs([
 
 export default App = () => {
   return (
-    <AppProvider>
+    <Provider store={store}>
+      {
+        //<AppProvider>
+      }
       <TokenProvider>
         <AppNavigation />
       </TokenProvider>
-    </AppProvider>
+      {
+        //</AppProvider>
+      }
+    </Provider>
   );
 };

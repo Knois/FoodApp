@@ -1,13 +1,20 @@
 import { useContext, useEffect } from "react";
 import { Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
-
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setIsAuthTrue,
+  setIsAuthFalse,
+} from "../../redux/slices/auth/isAuthSlice";
 import { AppContext } from "../../context/AppContext";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import { TokenContext } from "../../context/TokenContext";
 
 const AuthLoading = ({ navigation }) => {
-  const { setAuth } = useContext(AppContext);
+  //const { setAuth } = useContext(AppContext);
+  const isAuth = useSelector((state) => state.isAuth.value);
+  const dispatch = useDispatch();
+
   const { setToken } = useContext(TokenContext);
 
   const createErrorAlert = (message) => {
@@ -42,13 +49,15 @@ const AuthLoading = ({ navigation }) => {
   };
 
   const saveTokenToStore = (token) => {
-    SecureStore.setItemAsync("token", token).then(setAuth(true));
+    SecureStore.setItemAsync("token", token).then(() =>
+      dispatch(setIsAuthTrue())
+    );
   };
 
   const createJwt = async (obj) => {
     try {
       const response = await fetch(
-        "http://80.87.201.75:8079/gateway/auth/authenticate",
+        "http://80.87.201.75:8079/gateway/auth/authenticate/jwt",
         {
           method: "POST",
           headers: {
