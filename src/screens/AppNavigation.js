@@ -10,13 +10,14 @@ import MainScreen from "./MainScreen";
 import MealScreen from "./MealScreen";
 import MealElementScreen from "./MealElementScreen";
 import SearchScreen from "./SearchScreen";
-import ProductScreen from "./ProductScreen";
+import ProfileScreen from "./ProfileScreen";
 import CameraScreen from "./CameraScreen";
 import AuthLoading from "./auth/AuthLoading";
 import SignIn from "./auth/SignIn";
 import Registration from "./auth/Registration";
-import ProfileScreen from "./ProfileScreen";
+import AllProductScreen from "./AllProductScreen";
 import { MAIN, SECONDARY } from "../constants/Constants";
+import ProductScreen from "./ProductScreen";
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -49,6 +50,10 @@ const ProductsStackScreen = () => {
         headerShown: false,
       }}
     >
+      <ProductsStack.Screen
+        name="AllProductScreen"
+        component={AllProductScreen}
+      />
       <ProductsStack.Screen name="ProductScreen" component={ProductScreen} />
     </ProductsStack.Navigator>
   );

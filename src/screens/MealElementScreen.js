@@ -192,7 +192,9 @@ const MealElementScreen = ({ navigation, route }) => {
       <View style={{ flex: 1 }}>
         <ScreenHeader /*                                 Шапка*/
           canGoBack={true}
-          title={route.params.item ? "Редактирование блюда" : "Создание блюда"}
+          title={
+            route.params.item ? "Редактирование продукта" : "Создание блюда"
+          }
           action={goToSearch}
           rightIcon="search-outline"
         />
