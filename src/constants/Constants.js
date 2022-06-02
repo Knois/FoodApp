@@ -19,4 +19,10 @@ export const measurementTypes = [
   "CUP",
 ];
 
-export const mealTypes = ["BREAKFAST", "LUNCH", "DINNER", "SUPPER", "LATE_SUPPER"];
+export const mealTypes = [
+  "BREAKFAST",
+  "LUNCH",
+  "DINNER",
+  "SUPPER",
+  "LATE_SUPPER",
+];

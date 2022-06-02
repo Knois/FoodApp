@@ -7,11 +7,13 @@ import {
   Alert,
 } from "react-native";
 import React, { useState, useLayoutEffect, useEffect, useContext } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 import ScreenHeader from "../components/ScreenHeader";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { TokenContext } from "../context/TokenContext";
 import ProductContainer from "../components/ProductContainer";
+import { useIsFocused } from "@react-navigation/native";
 
 const AllProductScreen = ({ navigation, route }) => {
   const { token } = useContext(TokenContext);
@@ -53,7 +55,7 @@ const AllProductScreen = ({ navigation, route }) => {
     }
   };
 
-  const getAll = async () => {
+  const getMy = async () => {
     setLoading(true);
 
     const url =
@@ -80,9 +82,11 @@ const AllProductScreen = ({ navigation, route }) => {
     navigation.navigate("ProductScreen", { item: item });
   };
 
+  let isFocused = useIsFocused();
+
   useLayoutEffect(() => {
-    getAll();
-  }, []);
+    if (isFocused) getMy();
+  }, [isFocused]);
 
   useEffect(() => {
     searchByName();
@@ -98,7 +102,7 @@ const AllProductScreen = ({ navigation, route }) => {
       />
       <View style={{ margin: 10, flex: 1 }}>
         {!showMy && (
-          <TextInput /*                                 Ввод названия блюда*/
+          <TextInput /*                                 Ввод названия продукта*/
             style={{
               textAlign: "center",
               borderWidth: 0.5,
@@ -131,7 +135,6 @@ const AllProductScreen = ({ navigation, route }) => {
               data={showMy ? dataAll : dataSearch}
               keyExtractor={(item) => item.id}
               renderItem={(item) => {
-                console.log(item.item);
                 return (
                   <ProductContainer
                     item={item.item}
@@ -143,6 +146,26 @@ const AllProductScreen = ({ navigation, route }) => {
           </>
         )}
       </View>
+      <TouchableOpacity /*                                                    Кнопка добавления элементов приема пищи*/
+        style={{
+          backgroundColor: "#d8d6ed",
+          width: 50,
+          height: 50,
+          alignItems: "center",
+          justifyContent: "center",
+          alignSelf: "center",
+          marginBottom: 20,
+          borderRadius: 10,
+          margin: 5,
+        }}
+        onPress={() => {
+          navigation.navigate("ProductScreen", {
+            item: null,
+          });
+        }}
+      >
+        <Ionicons name="add-outline" size={40} color="#645fb1" />
+      </TouchableOpacity>
     </View>
   );
 };

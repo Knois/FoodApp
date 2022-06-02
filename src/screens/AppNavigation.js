@@ -4,7 +4,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { StatusBar } from "expo-status-bar";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+
+import { setProductCategories } from "../redux/slices/productCategoriesSlice";
 
 import MainScreen from "./MainScreen";
 import MealScreen from "./MealScreen";
@@ -18,6 +20,7 @@ import Registration from "./auth/Registration";
 import AllProductScreen from "./AllProductScreen";
 import { MAIN, SECONDARY } from "../constants/Constants";
 import ProductScreen from "./ProductScreen";
+import { TokenContext } from "../context/TokenContext";
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -55,6 +58,7 @@ const ProductsStackScreen = () => {
         component={AllProductScreen}
       />
       <ProductsStack.Screen name="ProductScreen" component={ProductScreen} />
+      <ProductsStack.Screen name="CameraScreen" component={CameraScreen} />
     </ProductsStack.Navigator>
   );
 };
@@ -74,9 +78,35 @@ const AuthStackScreen = () => {
 };
 
 const AppNavigation = () => {
+  const dispatch = useDispatch();
   const window = useWindowDimensions();
-
+  const { token } = useContext(TokenContext);
   const isAuth = useSelector((state) => state.isAuth.value);
+
+  const getAllProductCategories = async () => {
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/product_category?page=0&size=99999",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const json = await response.json();
+      if (json.content) {
+        dispatch(setProductCategories(json.content));
+      }
+    } catch (error) {
+    } finally {
+    }
+  };
+
+  if (isAuth) {
+    getAllProductCategories();
+  }
 
   return (
     <NavigationContainer>

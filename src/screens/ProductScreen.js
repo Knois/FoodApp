@@ -6,11 +6,13 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  FlatList,
 } from "react-native";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useLayoutEffect } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
+import { useSelector } from "react-redux";
 
 import { measurementTypes } from "../constants/Constants";
 import ScreenHeader from "../components/ScreenHeader";
@@ -18,7 +20,11 @@ import { TokenContext } from "../context/TokenContext";
 
 const ProductScreen = ({ navigation, route }) => {
   const { token } = useContext(TokenContext);
+  const productCategories = useSelector((state) => state.productCategories.arr);
+
   const item = route.params.item;
+  const userID = item ? item.user_id : null;
+  const itemID = item ? item.id : null;
 
   const [calories, setCalories] = useState(item ? String(item.calories) : "0");
   const [carbohydrates, setCarbohydrates] = useState(
@@ -36,7 +42,13 @@ const ProductScreen = ({ navigation, route }) => {
   const [proteins, setProteins] = useState(item ? String(item.proteins) : "0");
   const [quantity, setQuantity] = useState(item ? String(item.quantity) : "0");
 
-  const [isVisible, setVisible] = useState(false);
+  const [isVisibleOne, setVisibleOne] = useState(false);
+  const [isVisibleTwo, setVisibleTwo] = useState(false);
+
+  const [product_category, setProduct_category] = useState({
+    id: "other",
+    name: "Остальное",
+  });
 
   const createErrorAlert = (message) => {
     Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
@@ -49,21 +61,18 @@ const ProductScreen = ({ navigation, route }) => {
       calories: calories ? calories : "0",
       carbohydrates: carbohydrates ? carbohydrates : "0",
       fats: fats ? fats : "0",
-      image_base64: image_base64,
-      image_url: image_url,
+      image_base64: image_base64 ? image_base64 : null,
+      image_url: image_url ? image_url : null,
       measurement_type: measurement_type,
       name: name ? name.trim() : "Без названия",
       proteins: proteins ? proteins : "0",
       quantity: quantity ? quantity : "0",
+      product_category: {
+        id: product_category.id,
+      },
     };
-
-    if (mealID) {
-      obj.meal = {
-        id: mealID,
-      };
-    }
-    if (mealElementID) {
-      obj.id = mealElementID;
+    if (itemID) {
+      obj.id = itemID;
     }
 
     return obj;
@@ -102,12 +111,12 @@ const ProductScreen = ({ navigation, route }) => {
     setQuantity("" + obj.quantity);
   };
 
-  const createMealElementOnServer = async (obj) => {
+  const createProduct = async (obj) => {
     let formattedObj = await UrlToBase64(obj);
 
     try {
       const response = await fetch(
-        "http://80.87.201.75:8079/gateway/my-food/meal_element",
+        "http://80.87.201.75:8079/gateway/my-food/product",
         {
           method: "POST",
           headers: {
@@ -123,16 +132,17 @@ const ProductScreen = ({ navigation, route }) => {
         navigation.goBack();
       }
     } catch (error) {
-      createErrorAlert("Ошибка при создании элемента приема пищи:\n\n" + name);
+      createErrorAlert("Ошибка при создании продукта");
     } finally {
     }
   };
 
-  const updateMealElementOnServer = async (obj) => {
+  const updateProduct = async (obj) => {
     let formattedObj = await UrlToBase64(obj);
+
     try {
       const response = await fetch(
-        "http://80.87.201.75:8079/gateway/my-food/meal_element",
+        "http://80.87.201.75:8079/gateway/my-food/product",
         {
           method: "PUT",
           headers: {
@@ -147,15 +157,31 @@ const ProductScreen = ({ navigation, route }) => {
         navigation.goBack();
       }
     } catch (error) {
-      createErrorAlert("Ошибка при обновлении элемента приема пищи!");
+      createErrorAlert("Ошибка при обновлении продукта!");
     } finally {
     }
   };
 
-  const goToSearch = () => {
-    navigation.navigate("SearchScreen", {
-      copyToMealElement: copyToMealElement,
-    });
+  const deleteProduct = async () => {
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/product/" + item.id,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status == 200) {
+        navigation.goBack();
+      }
+    } catch (error) {
+      createErrorAlert("Ошибка при удалении продукта!");
+    } finally {
+    }
   };
 
   const goToCamera = () =>
@@ -164,8 +190,12 @@ const ProductScreen = ({ navigation, route }) => {
       setImage_url: setImage_url,
     });
 
-  const toggleModal = () => {
-    setVisible(!isVisible);
+  const toggleModalOne = () => {
+    setVisibleOne(!isVisibleOne);
+  };
+
+  const toggleModalTwo = () => {
+    setVisibleTwo(!isVisibleTwo);
   };
 
   let imageKey = new Date();
@@ -178,7 +208,6 @@ const ProductScreen = ({ navigation, route }) => {
         uri: image_url + "?random_number=" + imageKey,
         headers: {
           Authorization: "Bearer " + token,
-          "Content-Type": "application/json",
           Pragma: "no-cache",
         },
       }
@@ -192,11 +221,11 @@ const ProductScreen = ({ navigation, route }) => {
           title={
             route.params.item ? "Редактирование продукта" : "Создание продукта"
           }
-          action="none"
-          rightIcon="search-outline"
+          action={userID ? deleteProduct : "none"}
+          rightIcon="trash-outline"
         />
         <ScrollView style={{ margin: 10, flex: 1 }}>
-          <TouchableOpacity onPress={goToCamera}>
+          <TouchableOpacity onPress={item && !userID ? null : goToCamera}>
             <Image
               style={{
                 marginBottom: 5,
@@ -240,7 +269,7 @@ const ProductScreen = ({ navigation, route }) => {
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "#645fb1" }}>Калории :</Text>
+            <Text style={{ color: "#645fb1" }}>Калории:</Text>
             <TextInput /*                                                   Ввод калорий*/
               style={{
                 textAlign: "center",
@@ -270,7 +299,7 @@ const ProductScreen = ({ navigation, route }) => {
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "#645fb1" }}>Углеводы :</Text>
+            <Text style={{ color: "#645fb1" }}>Углеводы:</Text>
             <TextInput /*                                                   Ввод углеводов*/
               style={{
                 textAlign: "center",
@@ -300,7 +329,7 @@ const ProductScreen = ({ navigation, route }) => {
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "#645fb1" }}>Жиры :</Text>
+            <Text style={{ color: "#645fb1" }}>Жиры:</Text>
             <TextInput /*                                                   Ввод жиров*/
               style={{
                 textAlign: "center",
@@ -330,7 +359,7 @@ const ProductScreen = ({ navigation, route }) => {
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "#645fb1" }}>Белки :</Text>
+            <Text style={{ color: "#645fb1" }}>Белки:</Text>
             <TextInput /*                                                   Ввод белков*/
               style={{
                 textAlign: "center",
@@ -360,7 +389,7 @@ const ProductScreen = ({ navigation, route }) => {
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "#645fb1" }}>Количество :</Text>
+            <Text style={{ color: "#645fb1" }}>Количество:</Text>
             <TextInput /*                                                   Ввод количества*/
               style={{
                 textAlign: "center",
@@ -390,10 +419,10 @@ const ProductScreen = ({ navigation, route }) => {
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "#645fb1" }}>Тип приема пищи:</Text>
+            <Text style={{ color: "#645fb1" }}>Единицы измерения:</Text>
             <TouchableOpacity /*                                 Открывает модальное окно с выбором measurement_type*/
               onPress={() => {
-                toggleModal();
+                toggleModalOne();
               }}
               style={{
                 borderWidth: 0.5,
@@ -411,45 +440,67 @@ const ProductScreen = ({ navigation, route }) => {
               </Text>
             </TouchableOpacity>
           </View>
+          <View
+            style={{
+              marginVertical: 5,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "#645fb1" }}>Категория:</Text>
+            <TouchableOpacity /*                                 Открывает модальное окно с выбором product_category*/
+              onPress={() => {
+                toggleModalTwo();
+              }}
+              style={{
+                borderWidth: 0.5,
+                padding: 5,
+                borderRadius: 5,
+                borderColor: "#645fb1",
+                width: 200,
+                height: 40,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
+                {product_category.name}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
-        <TouchableOpacity /*                                                    Кнопка добавления/обновления элемента приема пищи*/
-          style={{
-            backgroundColor: "#d8d6ed",
-            width: 50,
-            height: 50,
-            alignItems: "center",
-            justifyContent: "center",
-            alignSelf: "center",
-            marginBottom: 20,
-            borderRadius: 10,
-            margin: 5,
-          }}
-          onPress={() => {
-            if (mealID) {
-              createMealElementOnServer(stateToObj());
-            } else {
-              if (mealElementID) {
-                updateMealElementOnServer(stateToObj());
-              } else {
-                index ? action(stateToObj(), index) : action(stateToObj());
-                navigation.goBack();
-              }
-            }
-          }}
-        >
-          <Ionicons name="checkmark" size={40} color="#645fb1" />
-        </TouchableOpacity>
+        {(!item || (item && userID)) && (
+          <TouchableOpacity /*                                                    Кнопка добавления/обновления элемента приема пищи*/
+            style={{
+              backgroundColor: "#d8d6ed",
+              width: 50,
+              height: 50,
+              alignItems: "center",
+              justifyContent: "center",
+              alignSelf: "center",
+              marginBottom: 20,
+              borderRadius: 10,
+              margin: 5,
+            }}
+            onPress={() => {
+              item ? updateProduct(stateToObj()) : createProduct(stateToObj());
+            }}
+          >
+            <Ionicons name="checkmark" size={40} color="#645fb1" />
+          </TouchableOpacity>
+        )}
       </View>
 
       <Modal /*                                 Модальное окно, которое откроет выбор measurement_type*/
         hideModalContentWhileAnimating={true}
         onBackButtonPress={() => {
-          toggleModal();
+          toggleModalOne();
         }}
         onBackdropPress={() => {
-          toggleModal();
+          toggleModalOne();
         }}
-        isVisible={isVisible}
+        isVisible={isVisibleOne}
         animationIn="slideInUp"
         animationInTiming={500}
         animationOutTiming={500}
@@ -476,13 +527,60 @@ const ProductScreen = ({ navigation, route }) => {
                 }}
                 onPress={() => {
                   setMeasurement_type(el);
-                  toggleModal();
+                  toggleModalOne();
                 }}
               >
                 <Text>{el}</Text>
               </TouchableOpacity>
             );
           })}
+        </View>
+      </Modal>
+      <Modal /*                                 Модальное окно, которое откроет выбор measurement_type*/
+        hideModalContentWhileAnimating={true}
+        onBackButtonPress={() => {
+          toggleModalTwo();
+        }}
+        onBackdropPress={() => {
+          toggleModalTwo();
+        }}
+        isVisible={isVisibleTwo}
+        animationIn="slideInUp"
+        animationInTiming={500}
+        animationOutTiming={500}
+        backdropOpacity={0.7}
+        backdropTransitionInTiming={1}
+        backdropTransitionOutTiming={1}
+      >
+        <View
+          style={{
+            width: 200,
+            backgroundColor: "white",
+            alignSelf: "center",
+            borderRadius: 20,
+          }}
+        >
+          <FlatList
+            data={productCategories}
+            renderItem={(item) => {
+              return (
+                <TouchableOpacity
+                  key={Math.random() * 9999}
+                  style={{
+                    height: 50,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={() => {
+                    setProduct_category(item.item);
+                    toggleModalTwo();
+                  }}
+                >
+                  <Text>{item.item.name}</Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
         </View>
       </Modal>
     </>
