@@ -6,6 +6,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { StatusBar } from "expo-status-bar";
 import { useSelector, useDispatch } from "react-redux";
 
+import { setUserInfo } from "../redux/slices/auth/userInfoSlice";
 import { setProductCategories } from "../redux/slices/productCategoriesSlice";
 
 import MainScreen from "./MainScreen";
@@ -20,6 +21,7 @@ import AllProductScreen from "./AllProductScreen";
 import { MAIN, SECONDARY } from "../constants/Constants";
 import ProductScreen from "./ProductScreen";
 import { TokenContext } from "../context/TokenContext";
+import SettingsScreen from "./SettingsScreen";
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -75,6 +77,19 @@ const AuthStackScreen = () => {
   );
 };
 
+const ProfileStackScreen = () => {
+  return (
+    <AuthStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <AuthStack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <AuthStack.Screen name="SettingsScreen" component={SettingsScreen} />
+    </AuthStack.Navigator>
+  );
+};
+
 const AppNavigation = () => {
   const dispatch = useDispatch();
   const window = useWindowDimensions();
@@ -102,8 +117,30 @@ const AppNavigation = () => {
     }
   };
 
+  const getUserInfo = async () => {
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/auth/user",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const json = await response.json();
+      if (json) {
+        dispatch(setUserInfo(json));
+      }
+    } catch (error) {
+    } finally {
+    }
+  };
+
   if (isAuth) {
     getAllProductCategories();
+    getUserInfo();
   }
 
   return (
@@ -145,7 +182,7 @@ const AppNavigation = () => {
           />
           <Drawer.Screen
             name="Профиль"
-            component={ProfileScreen}
+            component={ProfileStackScreen}
             options={{
               drawerActiveTintColor: "#fff",
               drawerActiveBackgroundColor: MAIN,

@@ -26,3 +26,15 @@ export const mealTypes = [
   "SUPPER",
   "LATE_SUPPER",
 ];
+
+export const genderArray = ["MALE", "FEMALE"];
+
+export const physicalActivityLevelArray = [
+  "FIRST",
+  "SECOND",
+  "THIRD",
+  "FOURTH",
+  "FIFTH",
+];
+
+export const targetWeightTypeArray = ["GAIN", "LOSE", "SAVE"];

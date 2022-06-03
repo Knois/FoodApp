@@ -1,33 +1,55 @@
-import { View, Text, TouchableOpacity, Alert } from "react-native";
-import React, { useContext, useState, useLayoutEffect } from "react";
-import * as SecureStore from "expo-secure-store";
-import { Ionicons } from "@expo/vector-icons";
-import Modal from "react-native-modal";
-import { useIsFocused } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
-import { setIsAuthFalse } from "../redux/slices/auth/isAuthSlice";
+import { View, Alert } from "react-native";
+import React, { useContext, useState } from "react";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useDispatch, useSelector } from "react-redux";
+
+import { setUserInfo } from "../redux/slices/auth/userInfoSlice";
 
 import ScreenHeader from "../components/ScreenHeader";
-import { MAIN, SECONDARY } from "../constants/Constants";
-import UpdateUserForm from "../components/UpdateUserForm";
+import {
+  genderArray,
+  physicalActivityLevelArray,
+  targetWeightTypeArray,
+} from "../constants/Constants";
 import { TokenContext } from "../context/TokenContext";
+import ProfileInput from "../components/profile/ProfileInput";
+import ProfileArrayPicker from "../components/profile/ProfileArrayPicker";
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
+
+  const userInfo = useSelector((state) => state.userInfo.value);
 
   const { token } = useContext(TokenContext);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [birthday, setBirthday] = useState("");
-
-  const [isVisible, setVisible] = useState(false);
-
-  let isFocused = useIsFocused();
-
-  const toggleModal = () => {
-    setVisible(!isVisible);
-  };
+  const [email, setEmail] = useState(userInfo ? userInfo.email : "");
+  const [name, setName] = useState(
+    userInfo ? userInfo.user_properties.name : ""
+  );
+  const [gender, setGender] = useState(
+    userInfo ? userInfo.user_properties.gender : ""
+  );
+  const [weight, setWeight] = useState(
+    userInfo ? userInfo.user_properties.weight : ""
+  );
+  const [height, setHeight] = useState(
+    userInfo ? userInfo.user_properties.height : ""
+  );
+  const [birthday, setBirthday] = useState(
+    userInfo ? userInfo.user_properties.birthday : ""
+  );
+  const [physicalActivityLevel, setPhysicalActivityLevel] = useState(
+    userInfo ? userInfo.user_properties.physicalActivityLevel : ""
+  );
+  const [targetWeight, setTargetWeight] = useState(
+    userInfo ? userInfo.user_properties.targetWeight : ""
+  );
+  const [targetWeightType, setTargetWeightType] = useState(
+    userInfo ? userInfo.user_properties.targetWeightType : ""
+  );
+  const [dayLimitCal, setDayLimitCal] = useState(
+    userInfo ? userInfo.user_properties.dayLimitCal : ""
+  );
 
   const createErrorAlert = (message) => {
     Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
@@ -35,34 +57,23 @@ const ProfileScreen = () => {
     });
   };
 
-  const deleteToken = async () => {
-    await SecureStore.deleteItemAsync("token");
-  };
-
-  const signOut = () => {
-    deleteToken().then(() => dispatch(setIsAuthFalse()));
-  };
-
-  const getUser = async () => {
+  const getUserInfo = async () => {
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/auth/user",
         {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
             Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
           },
         }
       );
       const json = await response.json();
       if (json) {
-        setName(json.name);
-        setEmail(json.email);
-        setBirthday(json.birthday);
+        dispatch(setUserInfo(json));
       }
     } catch (error) {
-      createErrorAlert("Ошибка получения данных профиля");
     } finally {
     }
   };
@@ -81,15 +92,9 @@ const ProfileScreen = () => {
         }
       );
       const json = await response.json();
-      console.log(response.status);
-      console.log(json);
+
       if (json.id) {
-        await SecureStore.setItemAsync("email", obj.email);
-        obj.password
-          ? await SecureStore.setItemAsync("password", obj.password)
-          : null;
-        await getUser();
-        toggleModal();
+        getUserInfo();
       }
     } catch (error) {
       createErrorAlert("Ошибка при обновлении профиля");
@@ -97,9 +102,9 @@ const ProfileScreen = () => {
     }
   };
 
-  useLayoutEffect(() => {
-    if (email == "" && isFocused) getUser();
-  }, [isFocused]);
+  const goToSettingsScreen = () => {
+    navigation.navigate("SettingsScreen");
+  };
 
   return (
     <>
@@ -107,108 +112,106 @@ const ProfileScreen = () => {
         <ScreenHeader
           canGoBack={false}
           title="Профиль"
-          action={toggleModal}
-          rightIcon="pencil"
+          action={goToSettingsScreen}
+          rightIcon="settings-outline"
         />
-        <View style={{ margin: 10, flex: 1 }}>
-          <View
-            style={{
-              marginVertical: 5,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
+        <KeyboardAwareScrollView style={{ margin: 10, flex: 1 }}>
+          <ProfileInput
+            title="Email"
+            value={email}
+            setValue={setEmail}
+            defaultValue={userInfo.email}
+            action={() => {
+              updateUser({ email });
             }}
-          >
-            <Text style={{ color: MAIN }}>Имя:</Text>
-            <Text style={{ color: MAIN, fontWeight: "bold" }}>{name}</Text>
-          </View>
-          <View
-            style={{
-              marginVertical: 5,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
+            noEdit={true}
+          />
+          <ProfileInput
+            title="Имя"
+            value={name}
+            setValue={setName}
+            defaultValue={userInfo.user_properties.name}
+            action={() => {
+              updateUser({ name });
             }}
-          >
-            <Text style={{ color: MAIN }}>Email:</Text>
-            <Text style={{ color: MAIN, fontWeight: "bold" }}>{email}</Text>
-          </View>
-          <View
-            style={{
-              marginVertical: 5,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
+          />
+          <ProfileArrayPicker
+            title="Пол"
+            value={gender}
+            setValue={setGender}
+            defaultValue={userInfo.user_properties.gender}
+            action={() => {
+              updateUser({ gender });
             }}
-          >
-            <Text style={{ color: MAIN }}>Дата рождения:</Text>
-            <Text style={{ color: MAIN, fontWeight: "bold" }}>{birthday}</Text>
-          </View>
-        </View>
-
-        <TouchableOpacity /*                                 Кнопка выхода из профиля      */
-          style={{
-            borderWidth: 2,
-            borderColor: SECONDARY,
-            marginTop: 25,
-            marginBottom: 50,
-            flexDirection: "row",
-            backgroundColor: MAIN,
-            justifyContent: "center",
-            alignSelf: "center",
-            padding: 10,
-            alignItems: "center",
-            borderRadius: 20,
-            width: "60%",
-          }}
-          onPress={signOut}
-        >
-          <Ionicons name="ios-power" size={30} color="#FFF" />
-          <Text
-            style={{
-              color: "#fff",
-              fontWeight: "bold",
-              fontSize: 16,
-              marginLeft: 10,
+            data={genderArray}
+          />
+          <ProfileInput
+            title="Вес"
+            value={weight}
+            setValue={setWeight}
+            defaultValue={userInfo.user_properties.weight}
+            action={() => {
+              updateUser({ weight });
             }}
-          >
-            Выход
-          </Text>
-        </TouchableOpacity>
+          />
+          <ProfileInput
+            title="Рост"
+            value={height}
+            setValue={setHeight}
+            defaultValue={userInfo.user_properties.height}
+            action={() => {
+              updateUser({ height });
+            }}
+          />
+          <ProfileInput
+            title="Возраст"
+            value={birthday}
+            setValue={setBirthday}
+            defaultValue={userInfo.user_properties.birthday}
+            action={() => {
+              updateUser({ birthday });
+            }}
+          />
+          <ProfileArrayPicker
+            title="Уровень активности"
+            value={physicalActivityLevel}
+            setValue={setPhysicalActivityLevel}
+            defaultValue={userInfo.user_properties.physicalActivityLevel}
+            action={() => {
+              updateUser({ physicalActivityLevel });
+            }}
+            data={physicalActivityLevelArray}
+          />
+          <ProfileInput
+            title="Цель"
+            value={targetWeight}
+            setValue={setTargetWeight}
+            defaultValue={userInfo.user_properties.targetWeight}
+            action={() => {
+              updateUser({ targetWeight });
+            }}
+          />
+          <ProfileArrayPicker
+            title="Тип достижения цели"
+            value={targetWeightType}
+            setValue={setTargetWeightType}
+            defaultValue={userInfo.user_properties.targetWeightType}
+            action={() => {
+              updateUser({ targetWeightType });
+            }}
+            data={targetWeightTypeArray}
+          />
+          <ProfileInput
+            title="Ежедневный лимит калорий"
+            value={dayLimitCal}
+            setValue={setDayLimitCal}
+            defaultValue={userInfo.user_properties.dayLimitCal}
+            action={() => {
+              updateUser({ dayLimitCal });
+            }}
+          />
+        </KeyboardAwareScrollView>
       </View>
-
-      <Modal /*                                 Модальное окно c редактированием профиля      */
-        hideModalContentWhileAnimating={true}
-        onBackButtonPress={() => {
-          toggleModal();
-        }}
-        onBackdropPress={() => null}
-        isVisible={isVisible}
-        animationIn="slideInUp"
-        animationInTiming={1000}
-        animationOutTiming={1000}
-        backdropOpacity={0.7}
-        backdropTransitionInTiming={1000}
-        backdropTransitionOutTiming={1000}
-        style={{ width: "95%", alignSelf: "center" }}
-      >
-        <UpdateUserForm
-          params={{ name, birthday, email }}
-          action={updateUser}
-        />
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#645fb1",
-            padding: 10,
-            alignItems: "center",
-          }}
-          onPress={() => {
-            toggleModal();
-          }}
-        >
-          <Text style={{ color: "white" }}>Назад</Text>
-        </TouchableOpacity>
-      </Modal>
     </>
   );
 };
