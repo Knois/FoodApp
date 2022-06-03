@@ -7,90 +7,23 @@ import PasswordInput from "./PasswordInput";
 import SignInButton from "./SignInButton";
 import SignInLink from "./SignInLink";
 
-const SighInForm = ({ action, navigation, formType, email, setEmail }) => {
-  const [birthday, setBirthday] = useState("2022-05-17");
+const SighInForm = ({
+  actionButton,
+  actionLink,
+  email,
+  setEmail,
+  hasProfile,
+}) => {
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
 
   const handleSubmit = () => {
-    formType == "signIn"
-      ? SecureStore.setItemAsync("email", email)
-          .then(SecureStore.setItemAsync("password", password))
-          .then(action({ password: password, email: email }))
-      : SecureStore.setItemAsync("email", email)
-          .then(SecureStore.setItemAsync("password", password))
-          .then(
-            action({
-              password: password,
-              email: email,
-              birthday: birthday,
-              name: name,
-            })
-          );
+    SecureStore.setItemAsync("email", email)
+      .then(SecureStore.setItemAsync("password", password))
+      .then(actionButton({ password: password, email: email }));
   };
 
   return (
     <View>
-      {formType == "signUp" && (
-        <>
-          <Text
-            style={{
-              marginVertical: 10,
-              marginLeft: 10,
-              fontSize: 15,
-              color: MAIN,
-            }}
-          >
-            Имя:
-          </Text>
-          <TextInput
-            onChangeText={(text) => setName(text)}
-            value={name}
-            textContentType="username"
-            autoComplete="username"
-            autoCapitalize="sentences"
-            style={{
-              borderColor: MAIN,
-              borderWidth: 2,
-              padding: 15,
-              borderRadius: 10,
-              marginBottom: 10,
-              color: "#645fb1",
-              fontWeight: "bold",
-              backgroundColor: SECONDARY,
-            }}
-            maxLength={50}
-          />
-          <Text
-            style={{
-              marginVertical: 10,
-              marginLeft: 10,
-              fontSize: 15,
-              color: MAIN,
-            }}
-          >
-            Дата рождения:
-          </Text>
-          <TextInput
-            onChangeText={(text) => setBirthday(text)}
-            value={birthday}
-            textContentType="username"
-            autoComplete="username"
-            autoCapitalize="sentences"
-            style={{
-              borderColor: MAIN,
-              borderWidth: 2,
-              padding: 15,
-              borderRadius: 10,
-              marginBottom: 10,
-              color: "#645fb1",
-              fontWeight: "bold",
-              backgroundColor: SECONDARY,
-            }}
-            maxLength={50}
-          />
-        </>
-      )}
       <Text
         style={{
           marginVertical: 10,
@@ -131,8 +64,8 @@ const SighInForm = ({ action, navigation, formType, email, setEmail }) => {
         Пароль:
       </Text>
       <PasswordInput password={password} setPassword={setPassword} />
-      <SignInButton handleSubmit={handleSubmit} formType={formType} />
-      <SignInLink navigation={navigation} formType={formType} />
+      <SignInButton handleSubmit={handleSubmit} hasProfile={hasProfile} />
+      <SignInLink hasProfile={hasProfile} actionLink={actionLink} />
     </View>
   );
 };

@@ -15,6 +15,8 @@ const SignIn = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const { setToken } = useContext(TokenContext);
+
+  const [hasProfile, setHasProfile] = useState(true);
   const [isLoading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
 
@@ -56,6 +58,36 @@ const SignIn = ({ navigation }) => {
     }
   };
 
+  const createUser = async (obj) => {
+    if (!isLoading) setLoading(true);
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/auth/user",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj),
+        }
+      );
+      const json = await response.json();
+      console.log(json);
+      if (json.id) {
+        await createJwt({ email: obj.email, password: obj.password });
+      }
+    } catch (error) {
+      setLoading(false);
+      createErrorAlert("Ошибка при попытке регистрации");
+    } finally {
+    }
+  };
+
+  const toggleHasProfile = () => {
+    setHasProfile(!hasProfile);
+  };
+
+  
   return (
     <>
       {isLoading ? (
@@ -73,12 +105,12 @@ const SignIn = ({ navigation }) => {
               color: MAIN,
             }}
           >
-            Вход
+            {hasProfile ? "Вход" : "Регистрация"}
           </Text>
           <SighInForm
-            action={createJwt}
-            formType="signIn"
-            navigation={navigation}
+            actionButton={hasProfile ? createJwt : createUser}
+            hasProfile={hasProfile}
+            actionLink={toggleHasProfile}
             email={email}
             setEmail={setEmail}
           />

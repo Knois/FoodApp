@@ -3,7 +3,7 @@ import React from "react";
 
 import { MAIN } from "../../constants/Constants";
 
-const SignInButton = ({ handleSubmit, formType }) => {
+const SignInButton = ({ handleSubmit, hasProfile }) => {
   return (
     <TouchableOpacity
       style={{
@@ -15,13 +15,13 @@ const SignInButton = ({ handleSubmit, formType }) => {
       }}
       onPress={handleSubmit}
     >
-      {formType == "signUp" ? (
+      {hasProfile ? (
         <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 15 }}>
-          Зарегистрироваться
+          Войти
         </Text>
       ) : (
         <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 15 }}>
-          Войти
+          Зарегистрироваться
         </Text>
       )}
     </TouchableOpacity>

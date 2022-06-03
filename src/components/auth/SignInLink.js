@@ -3,26 +3,19 @@ import React from "react";
 
 import { MAIN, SECONDARY } from "../../constants/Constants";
 
-const SignInLink = ({ navigation, formType }) => {
+const SignInLink = ({ hasProfile, actionLink }) => {
   return (
     <View style={{ flexDirection: "row", justifyContent: "center" }}>
       <Text style={{ color: SECONDARY, fontWeight: "bold" }}>
-        {formType == "signUp"
-          ? "Уже зарегистрированы? "
-          : "Еще не зарегистрированы? "}
+        {hasProfile ? "Еще не зарегистрированы? " : "Уже зарегистрированы? "}
       </Text>
       <TouchableOpacity
-        onPress={() =>
-          navigation.reset({
-            index: 1,
-            routes: [
-              { name: formType !== "signUp" ? "Registration" : "SignIn" },
-            ],
-          })
-        }
+        onPress={() => {
+          actionLink();
+        }}
       >
         <Text style={{ color: MAIN, fontWeight: "bold" }}>
-          {formType == "signUp" ? "Войти" : "Регистрация"}
+          {hasProfile ? "Регистрация" : "Войти"}
         </Text>
       </TouchableOpacity>
     </View>

@@ -16,7 +16,6 @@ import ProfileScreen from "./ProfileScreen";
 import CameraScreen from "./CameraScreen";
 import AuthLoading from "./auth/AuthLoading";
 import SignIn from "./auth/SignIn";
-import Registration from "./auth/Registration";
 import AllProductScreen from "./AllProductScreen";
 import { MAIN, SECONDARY } from "../constants/Constants";
 import ProductScreen from "./ProductScreen";
@@ -72,7 +71,6 @@ const AuthStackScreen = () => {
     >
       <AuthStack.Screen name="AuthLoading" component={AuthLoading} />
       <AuthStack.Screen name="SignIn" component={SignIn} />
-      <AuthStack.Screen name="Registration" component={Registration} />
     </AuthStack.Navigator>
   );
 };
