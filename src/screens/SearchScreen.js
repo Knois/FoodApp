@@ -9,6 +9,7 @@ import {
 import React, { useState, useLayoutEffect, useContext } from "react";
 
 import ScreenHeader from "../components/ScreenHeader";
+import ProductContainer from "../components/ProductContainer";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { TokenContext } from "../context/TokenContext";
 
@@ -49,6 +50,11 @@ const SearchScreen = ({ navigation, route }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const action = (obj) => {
+    copyToMealElement(obj);
+    navigation.goBack();
   };
 
   useLayoutEffect(() => {
@@ -96,52 +102,10 @@ const SearchScreen = ({ navigation, route }) => {
               keyExtractor={(item) => item.id}
               renderItem={(item) => {
                 return (
-                  <TouchableOpacity
-                    style={{
-                      borderWidth: 0.5,
-                      marginVertical: 5,
-                      padding: 5,
-                      borderRadius: 5,
-                      borderColor: "#645fb1",
-                    }}
-                    onPress={() => {
-                      copyToMealElement(item.item);
-                      navigation.goBack();
-                    }}
-                  >
-                    <View style={{ flexDirection: "column" }}>
-                      <Text
-                        style={{
-                          textAlign: "center",
-                          color: "#645fb1",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {item.item.name}
-                      </Text>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignSelf: "center",
-                          marginTop: 5,
-                        }}
-                      >
-                        <Text style={{ width: "20%", color: "#645fb1" }}>
-                          К : {item.item.calories}
-                        </Text>
-                        <Text style={{ width: "20%", color: "#645fb1" }}>
-                          Б : {item.item.proteins}
-                        </Text>
-                        <Text style={{ width: "20%", color: "#645fb1" }}>
-                          Ж : {item.item.fats}
-                        </Text>
-                        <Text style={{ width: "20%", color: "#645fb1" }}>
-                          У : {item.item.carbohydrates}
-                        </Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
+                  <ProductContainer
+                    item={item.item}
+                    action={() => action(item.item)}
+                  />
                 );
               }}
             />
