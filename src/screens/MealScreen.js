@@ -57,7 +57,12 @@ const MealScreen = ({ navigation, route }) => {
         try {
           const { uri } = await FileSystem.downloadAsync(
             el.image_url,
-            FileSystem.documentDirectory + "bufferimg.jpg"
+            FileSystem.documentDirectory + "bufferimg.jpg",
+            {
+              headers: {
+                Authorization: "Bearer " + token,
+              },
+            }
           );
           image = await FileSystem.readAsStringAsync(uri, {
             encoding: "base64",

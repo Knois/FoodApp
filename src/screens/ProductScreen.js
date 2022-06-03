@@ -8,7 +8,7 @@ import {
   Alert,
   FlatList,
 } from "react-native";
-import React, { useState, useContext, useLayoutEffect } from "react";
+import React, { useState, useContext } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
@@ -85,7 +85,12 @@ const ProductScreen = ({ navigation, route }) => {
       try {
         const { uri } = await FileSystem.downloadAsync(
           formattedObj.image_url,
-          FileSystem.documentDirectory + "bufferimg.jpg"
+          FileSystem.documentDirectory + "bufferimg.jpg",
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
         );
         image = await FileSystem.readAsStringAsync(uri, {
           encoding: "base64",

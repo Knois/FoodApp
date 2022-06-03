@@ -80,7 +80,12 @@ const MealElementScreen = ({ navigation, route }) => {
       try {
         const { uri } = await FileSystem.downloadAsync(
           formattedObj.image_url,
-          FileSystem.documentDirectory + "bufferimg.jpg"
+          FileSystem.documentDirectory + "bufferimg.jpg",
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
         );
         image = await FileSystem.readAsStringAsync(uri, {
           encoding: "base64",
@@ -171,6 +176,7 @@ const MealElementScreen = ({ navigation, route }) => {
   const toggleModal = () => {
     setVisible(!isVisible);
   };
+
   let imageKey = new Date();
   let imageUri = image_base64
     ? {
