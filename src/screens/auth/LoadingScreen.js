@@ -7,10 +7,17 @@ import { setIsAuthTrue } from "../../redux/slices/auth/isAuthSlice";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import { TokenContext } from "../../context/TokenContext";
 
-const AuthLoading = ({ navigation }) => {
+const LoadingScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const { setToken } = useContext(TokenContext);
+
+  const changeScreen = () => {
+    navigation.reset({
+      index: 1,
+      routes: [{ name: "FormScreen" }],
+    });
+  };
 
   const createErrorAlert = (message) => {
     Alert.alert(
@@ -19,24 +26,13 @@ const AuthLoading = ({ navigation }) => {
       [
         {
           text: "ОК",
-          onPress: () =>
-            navigation.reset({
-              index: 1,
-              routes: [{ name: "SignIn" }],
-            }),
+          onPress: () => changeScreen(),
         },
       ],
       {
         cancelable: false,
       }
     );
-  };
-
-  const changeScreen = () => {
-    navigation.reset({
-      index: 1,
-      routes: [{ name: "SignIn" }],
-    });
   };
 
   const deleteToken = async () => {
@@ -92,4 +88,4 @@ const AuthLoading = ({ navigation }) => {
   );
 };
 
-export default AuthLoading;
+export default LoadingScreen;

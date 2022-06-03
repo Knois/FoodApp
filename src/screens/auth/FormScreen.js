@@ -11,7 +11,7 @@ import LoadingIndicator from "../../components/LoadingIndicator";
 import { MAIN } from "../../constants/Constants";
 import { TokenContext } from "../../context/TokenContext";
 
-const SignIn = ({ navigation }) => {
+const FormScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const { setToken } = useContext(TokenContext);
@@ -87,7 +87,6 @@ const SignIn = ({ navigation }) => {
     setHasProfile(!hasProfile);
   };
 
-  
   return (
     <>
       {isLoading ? (
@@ -120,4 +119,4 @@ const SignIn = ({ navigation }) => {
   );
 };
 
-export default SignIn;
+export default FormScreen;

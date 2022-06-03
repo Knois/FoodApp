@@ -14,8 +14,8 @@ import MealElementScreen from "./MealElementScreen";
 import SearchScreen from "./SearchScreen";
 import ProfileScreen from "./ProfileScreen";
 import CameraScreen from "./CameraScreen";
-import AuthLoading from "./auth/AuthLoading";
-import SignIn from "./auth/SignIn";
+import LoadingScreen from "./auth/LoadingScreen";
+import FormScreen from "./auth/FormScreen";
 import AllProductScreen from "./AllProductScreen";
 import { MAIN, SECONDARY } from "../constants/Constants";
 import ProductScreen from "./ProductScreen";
@@ -69,8 +69,8 @@ const AuthStackScreen = () => {
         headerShown: false,
       }}
     >
-      <AuthStack.Screen name="AuthLoading" component={AuthLoading} />
-      <AuthStack.Screen name="SignIn" component={SignIn} />
+      <AuthStack.Screen name="LoadingScreen" component={LoadingScreen} />
+      <AuthStack.Screen name="FormScreen" component={FormScreen} />
     </AuthStack.Navigator>
   );
 };
