@@ -56,6 +56,22 @@ const ProductScreen = ({ navigation, route }) => {
     });
   };
 
+  const createTwoButtonAlert = () =>
+    Alert.alert(
+      "Удаление продукта",
+      "Подтверждаете удаление?",
+      [
+        {
+          text: "Отмена",
+          style: "cancel",
+        },
+        { text: "ОК", onPress: () => deleteProduct() },
+      ],
+      {
+        cancelable: true,
+      }
+    );
+
   const stateToObj = () => {
     let obj = {
       calories: calories ? calories : "0",
@@ -226,7 +242,7 @@ const ProductScreen = ({ navigation, route }) => {
           title={
             route.params.item ? "Редактирование продукта" : "Создание продукта"
           }
-          action={userID ? deleteProduct : "none"}
+          action={userID ? createTwoButtonAlert : "none"}
           rightIcon="trash-outline"
         />
         <ScrollView style={{ margin: 10, flex: 1 }}>
