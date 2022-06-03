@@ -1,11 +1,10 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
-import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+
 import { MAIN } from "../constants/Constants";
 
 const ProductContainer = ({ item, action }) => {
-  const navigation = useNavigation();
   return (
     <TouchableOpacity
       style={{

@@ -1,11 +1,4 @@
-import {
-  View,
-  TextInput,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, TextInput, Text, FlatList, Alert } from "react-native";
 import React, { useState, useLayoutEffect, useContext } from "react";
 
 import ScreenHeader from "../components/ScreenHeader";
