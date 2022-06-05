@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import ScreenHeader from "../components/ScreenHeader";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { TokenContext } from "../context/TokenContext";
-import ProductContainer from "../components/ProductContainer";
+import ContainerProduct from "../components/ContainerProduct";
 import { useIsFocused } from "@react-navigation/native";
 
 const AllProductScreen = ({ navigation, route }) => {
@@ -136,7 +136,7 @@ const AllProductScreen = ({ navigation, route }) => {
               keyExtractor={(item) => item.id}
               renderItem={(item) => {
                 return (
-                  <ProductContainer
+                  <ContainerProduct
                     item={item.item}
                     action={goToProductScreen}
                   />

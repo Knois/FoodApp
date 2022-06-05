@@ -10,7 +10,7 @@ import React, { useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { TokenContext } from "../context/TokenContext";
 
-const MealEl = ({
+const ContainerMealElement = ({
   item,
   index,
   updateMealElement,
@@ -208,4 +208,4 @@ const MealEl = ({
   );
 };
 
-export default MealEl;
+export default ContainerMealElement;

@@ -15,7 +15,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { timeNow, toNormalDate } from "../methods/DateMethods";
 import { getSumCaloriesFromArray } from "../methods/InformationMethods";
 import LoadingIndicator from "../components/LoadingIndicator";
-import MealEl from "../components/MealEl";
+import ContainerMealElement from "../components/ContainerMealElement";
 import ScreenHeader from "../components/ScreenHeader";
 import { mealTypes } from "../constants/Constants";
 import { TokenContext } from "../context/TokenContext";
@@ -368,7 +368,7 @@ const MealScreen = ({ navigation, route }) => {
               keyExtractor={(item, index) => index}
               renderItem={({ item, index }) => {
                 return (
-                  <MealEl
+                  <ContainerMealElement
                     item={item}
                     index={index}
                     updateMealElement={updateMealElement}

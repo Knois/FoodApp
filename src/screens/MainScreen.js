@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import DatePicker from "react-native-modern-datepicker";
 
-import MealContainer from "../components/MealContainer";
+import ContainerMeal from "../components/ContainerMeal";
 import {
   dateFormatted,
   dateToNormalDate,
@@ -200,7 +200,7 @@ const MainScreen = ({ navigation, route }) => {
                   keyExtractor={(item) => item.id}
                   renderItem={(item) => {
                     return (
-                      <MealContainer
+                      <ContainerMeal
                         item={item.item}
                         navigation={navigation}
                         action={createTwoButtonAlert}

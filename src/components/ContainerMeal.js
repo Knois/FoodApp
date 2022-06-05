@@ -11,7 +11,7 @@ import {
 import LoadingIndicator from "./LoadingIndicator";
 import { TokenContext } from "../context/TokenContext";
 
-const MealContainer = ({ item, navigation, action }) => {
+const ContainerMeal = ({ item, navigation, action }) => {
   const { token } = useContext(TokenContext);
 
   const [mealElements, setMealElements] = useState([]);
@@ -145,4 +145,4 @@ const MealContainer = ({ item, navigation, action }) => {
   );
 };
 
-export default MealContainer;
+export default ContainerMeal;

@@ -2,7 +2,7 @@ import { View, TextInput, Text, FlatList, Alert } from "react-native";
 import React, { useState, useLayoutEffect, useContext } from "react";
 
 import ScreenHeader from "../components/ScreenHeader";
-import ProductContainer from "../components/ProductContainer";
+import ContainerProduct from "../components/ContainerProduct";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { TokenContext } from "../context/TokenContext";
 
@@ -95,7 +95,7 @@ const SearchScreen = ({ navigation, route }) => {
               keyExtractor={(item) => item.id}
               renderItem={(item) => {
                 return (
-                  <ProductContainer
+                  <ContainerProduct
                     item={item.item}
                     action={() => action(item.item)}
                   />
