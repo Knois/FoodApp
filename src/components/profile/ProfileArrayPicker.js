@@ -40,7 +40,18 @@ const ProfileArrayPicker = ({
             alignSelf: "center",
             flex: 2,
           }}
-        ></View>
+        >
+          {defaultValue != value && (
+            <TouchableOpacity
+              style={{ alignSelf: "center" }}
+              onPress={() => {
+                setValue(defaultValue);
+              }}
+            >
+              <Ionicons name="close-outline" size={30} color="red" />
+            </TouchableOpacity>
+          )}
+        </View>
         <View style={{ flex: 8 }}>
           <TouchableOpacity
             onPress={() => {
@@ -75,11 +86,12 @@ const ProfileArrayPicker = ({
         >
           {defaultValue != value && (
             <TouchableOpacity
+              style={{ alignSelf: "center" }}
               onPress={() => {
                 action();
               }}
             >
-              <Ionicons name="checkmark" size={40} color="#645fb1" />
+              <Ionicons name="checkmark" size={30} color="green" />
             </TouchableOpacity>
           )}
         </View>

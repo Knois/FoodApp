@@ -4,14 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { MAIN } from "../../constants/Constants";
 
-const ProfileInput = ({
-  title,
-  value,
-  setValue,
-  defaultValue,
-  action,
-  noEdit,
-}) => {
+const ProfileInput = ({ title, value, setValue, defaultValue, action }) => {
   return (
     <View
       style={{
@@ -25,8 +18,8 @@ const ProfileInput = ({
           flexDirection: "row",
           justifyContent: "center",
           alignSelf: "center",
-          width: "100%",
-          borderBottomWidth: noEdit ? 0 : 1,
+          width: "52%",
+          borderBottomWidth: 1,
           borderBottomColor: MAIN,
         }}
       >
@@ -35,9 +28,21 @@ const ProfileInput = ({
             alignSelf: "center",
             flex: 2,
           }}
-        ></View>
+        >
+          {defaultValue != value && (
+            <TouchableOpacity
+              style={{ alignSelf: "center" }}
+              onPress={() => {
+                setValue(defaultValue);
+              }}
+            >
+              <Ionicons name="close-outline" size={30} color="red" />
+            </TouchableOpacity>
+          )}
+        </View>
         <TextInput
-          editable={!noEdit}
+          maxLength={5}
+          keyboardType="numeric"
           onChangeText={(text) => setValue(text)}
           value={value ? String(value) : ""}
           style={{
@@ -57,11 +62,12 @@ const ProfileInput = ({
         >
           {defaultValue != value && (
             <TouchableOpacity
+              style={{ alignSelf: "center" }}
               onPress={() => {
                 action();
               }}
             >
-              <Ionicons name="checkmark" size={40} color="#645fb1" />
+              <Ionicons name="checkmark" size={30} color="green" />
             </TouchableOpacity>
           )}
         </View>

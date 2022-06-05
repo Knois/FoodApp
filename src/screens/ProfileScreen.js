@@ -1,4 +1,4 @@
-import { View, Alert } from "react-native";
+import { View, Alert, Text } from "react-native";
 import React, { useContext, useState } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,6 +8,7 @@ import { setUserInfo } from "../redux/slices/auth/userInfoSlice";
 import ScreenHeader from "../components/ScreenHeader";
 import {
   genderArray,
+  MAIN,
   physicalActivityLevelArray,
   targetWeightTypeArray,
 } from "../constants/Constants";
@@ -22,18 +23,14 @@ const ProfileScreen = ({ navigation }) => {
 
   const { token } = useContext(TokenContext);
 
-  const [email, setEmail] = useState(userInfo ? userInfo.email : "");
-  const [name, setName] = useState(
-    userInfo ? userInfo.user_properties.name : ""
-  );
   const [gender, setGender] = useState(
     userInfo ? userInfo.user_properties.gender : ""
   );
   const [weight, setWeight] = useState(
-    userInfo ? userInfo.user_properties.weight : ""
+    userInfo ? userInfo.user_properties.weight : "0"
   );
   const [height, setHeight] = useState(
-    userInfo ? userInfo.user_properties.height : ""
+    userInfo ? userInfo.user_properties.height : "0"
   );
   const [birthday, setBirthday] = useState(
     userInfo ? userInfo.user_properties.birthday : ""
@@ -42,13 +39,13 @@ const ProfileScreen = ({ navigation }) => {
     userInfo ? userInfo.user_properties.physicalActivityLevel : ""
   );
   const [targetWeight, setTargetWeight] = useState(
-    userInfo ? userInfo.user_properties.targetWeight : ""
+    userInfo ? userInfo.user_properties.targetWeight : "0"
   );
   const [targetWeightType, setTargetWeightType] = useState(
     userInfo ? userInfo.user_properties.targetWeightType : ""
   );
   const [dayLimitCal, setDayLimitCal] = useState(
-    userInfo ? userInfo.user_properties.dayLimitCal : ""
+    userInfo ? userInfo.user_properties.dayLimitCal : "0"
   );
 
   const createErrorAlert = (message) => {
@@ -115,26 +112,17 @@ const ProfileScreen = ({ navigation }) => {
           action={goToSettingsScreen}
           rightIcon="settings-outline"
         />
-        <KeyboardAwareScrollView style={{ margin: 10, flex: 1 }}>
-          <ProfileInput
-            title="Email"
-            value={email}
-            setValue={setEmail}
-            defaultValue={userInfo.email}
-            action={() => {
-              updateUser({ email });
-            }}
-            noEdit={true}
-          />
-          <ProfileInput
-            title="Имя"
-            value={name}
-            setValue={setName}
-            defaultValue={userInfo.user_properties.name}
-            action={() => {
-              updateUser({ name });
-            }}
-          />
+        <KeyboardAwareScrollView
+          style={{ margin: 10, flex: 1, paddingHorizontal: 10 }}
+        >
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={{ color: MAIN }}>Имя:</Text>
+            <Text style={{ color: MAIN, fontWeight: "bold" }}>
+              {userInfo.user_properties.name}
+            </Text>
+          </View>
           <ProfileArrayPicker
             title="Пол"
             value={gender}
@@ -146,7 +134,7 @@ const ProfileScreen = ({ navigation }) => {
             data={genderArray}
           />
           <ProfileInput
-            title="Вес"
+            title="Вес (кг)"
             value={weight}
             setValue={setWeight}
             defaultValue={userInfo.user_properties.weight}
@@ -155,7 +143,7 @@ const ProfileScreen = ({ navigation }) => {
             }}
           />
           <ProfileInput
-            title="Рост"
+            title="Рост (см)"
             value={height}
             setValue={setHeight}
             defaultValue={userInfo.user_properties.height}
@@ -183,7 +171,7 @@ const ProfileScreen = ({ navigation }) => {
             data={physicalActivityLevelArray}
           />
           <ProfileInput
-            title="Цель"
+            title="Цель (кг)"
             value={targetWeight}
             setValue={setTargetWeight}
             defaultValue={userInfo.user_properties.targetWeight}
@@ -202,7 +190,7 @@ const ProfileScreen = ({ navigation }) => {
             data={targetWeightTypeArray}
           />
           <ProfileInput
-            title="Ежедневный лимит калорий"
+            title="Ежедневный лимит калорий (ккал)"
             value={dayLimitCal}
             setValue={setDayLimitCal}
             defaultValue={userInfo.user_properties.dayLimitCal}
