@@ -21,6 +21,7 @@ import {
 import LoadingIndicator from "../components/LoadingIndicator";
 import ScreenHeader from "../components/ScreenHeader";
 import { TokenContext } from "../context/TokenContext";
+import BackModalButton from "../components/BackModalButton";
 
 const MainScreen = ({ navigation, route }) => {
   const { token } = useContext(TokenContext);
@@ -275,18 +276,7 @@ const MainScreen = ({ navigation, route }) => {
                 borderColor: "#645fb1",
               }}
             />
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#645fb1",
-                padding: 10,
-                alignItems: "center",
-              }}
-              onPress={() => {
-                toggleModal();
-              }}
-            >
-              <Text style={{ color: "white" }}>Закрыть календарь</Text>
-            </TouchableOpacity>
+            <BackModalButton action={toggleModal} />
           </Modal>
         </>
       </View>

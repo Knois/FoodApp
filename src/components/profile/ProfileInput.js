@@ -4,7 +4,14 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { MAIN } from "../../constants/Constants";
 
-const ProfileInput = ({ title, value, setValue, defaultValue, action }) => {
+const ProfileInput = ({
+  title,
+  value,
+  setValue,
+  defaultValue,
+  action,
+  limit,
+}) => {
   return (
     <View
       style={{
@@ -41,9 +48,9 @@ const ProfileInput = ({ title, value, setValue, defaultValue, action }) => {
           )}
         </View>
         <TextInput
-          maxLength={5}
+          maxLength={limit ? limit : 3}
           keyboardType="numeric"
-          onChangeText={(text) => setValue(text)}
+          onChangeText={(text) => setValue(text.replace(/[^0-9]/g, ""))}
           value={value ? String(value) : ""}
           style={{
             height: 40,

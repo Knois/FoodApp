@@ -116,13 +116,30 @@ const ProfileScreen = ({ navigation }) => {
           style={{ margin: 10, flex: 1, paddingHorizontal: 10 }}
         >
           <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginVertical: 5,
+            }}
+          >
+            <Text style={{ color: MAIN }}>Email:</Text>
+            <Text style={{ color: MAIN, fontWeight: "bold" }}>
+              {userInfo.email}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginVertical: 5,
+            }}
           >
             <Text style={{ color: MAIN }}>Имя:</Text>
             <Text style={{ color: MAIN, fontWeight: "bold" }}>
               {userInfo.user_properties.name}
             </Text>
           </View>
+
           <ProfileArrayPicker
             title="Пол"
             value={gender}
@@ -197,6 +214,7 @@ const ProfileScreen = ({ navigation }) => {
             action={() => {
               updateUser({ dayLimitCal });
             }}
+            limit={5}
           />
         </KeyboardAwareScrollView>
       </View>

@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, Alert } from "react-native";
 import React, { useContext, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { Ionicons } from "@expo/vector-icons";
+import Modal from "react-native-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserInfo } from "../redux/slices/auth/userInfoSlice";
 
@@ -10,11 +11,20 @@ import { setIsAuthFalse } from "../redux/slices/auth/isAuthSlice";
 import ScreenHeader from "../components/ScreenHeader";
 import { MAIN, SECONDARY } from "../constants/Constants";
 import { TokenContext } from "../context/TokenContext";
+import UpdateUserForm from "../components/profile/UpdateUserForm";
+import BackModalButton from "../components/BackModalButton";
 
 const SettingsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const userInfo = useSelector((state) => state.userInfo.value);
+
+  const [isVisible, setIsVisible] = useState(false);
+  const [mode, setMode] = useState("");
+
+  const toggleModal = () => {
+    setIsVisible(!isVisible);
+  };
 
   const deleteToken = async () => {
     await SecureStore.deleteItemAsync("token");
@@ -40,6 +50,11 @@ const SettingsScreen = ({ navigation }) => {
     deleteToken().then(() => dispatch(setIsAuthFalse()));
   };
 
+  const openModal = (string) => {
+    if (string !== mode) setMode(string);
+    toggleModal();
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <ScreenHeader canGoBack={true} title="Настройки" action="none" />
@@ -58,7 +73,9 @@ const SettingsScreen = ({ navigation }) => {
           width: "80%",
           height: 60,
         }}
-        onPress={null}
+        onPress={() => {
+          openModal("name");
+        }}
       >
         <View style={{ flex: 2, alignItems: "center" }}>
           <Ionicons name="ios-person-circle-outline" size={30} color={MAIN} />
@@ -93,7 +110,9 @@ const SettingsScreen = ({ navigation }) => {
           width: "80%",
           height: 60,
         }}
-        onPress={null}
+        onPress={() => {
+          openModal("email");
+        }}
       >
         <View style={{ flex: 2, alignItems: "center" }}>
           <Ionicons name="mail-outline" size={30} color={MAIN} />
@@ -127,7 +146,9 @@ const SettingsScreen = ({ navigation }) => {
           width: "80%",
           height: 60,
         }}
-        onPress={null}
+        onPress={() => {
+          openModal("password");
+        }}
       >
         <View style={{ flex: 2, alignItems: "center" }}>
           <Ionicons name="ios-key-outline" size={30} color={MAIN} />
@@ -180,6 +201,26 @@ const SettingsScreen = ({ navigation }) => {
         </View>
         <View style={{ flex: 2, alignItems: "center" }} />
       </TouchableOpacity>
+
+      <Modal /*                                 Модальное окно      */
+        hideModalContentWhileAnimating={true}
+        onBackButtonPress={() => {
+          toggleModal();
+        }}
+        onBackdropPress={() => {
+          null;
+        }}
+        isVisible={isVisible}
+        animationIn="slideInUp"
+        animationInTiming={500}
+        animationOutTiming={500}
+        backdropOpacity={0.7}
+        backdropTransitionInTiming={1}
+        backdropTransitionOutTiming={1}
+      >
+        <UpdateUserForm mode={mode} params={userInfo} />
+        <BackModalButton action={toggleModal} />
+      </Modal>
     </View>
   );
 };
