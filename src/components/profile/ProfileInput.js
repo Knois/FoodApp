@@ -56,7 +56,7 @@ const ProfileInput = ({
               fontWeight: "bold",
               alignSelf: "center",
               textAlign: "center",
-              width: "80%",
+              width: "100%",
               borderBottomWidth: 1,
               borderBottomColor: MAIN,
             }}

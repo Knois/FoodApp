@@ -44,3 +44,8 @@ export const birthdayToAge = (smth) => {
   let age = moment(new Date()).diff(smth, "years");
   return age;
 };
+
+export const today = () => {
+  let date = moment(new Date()).format("YYYY-MM-DD");
+  return date;
+};

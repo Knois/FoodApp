@@ -65,7 +65,7 @@ const ProfileArrayPicker = ({
               borderRadius: 10,
               borderColor: MAIN,
               height: 40,
-              width: "80%",
+              width: "100%",
             }}
           >
             <Text

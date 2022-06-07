@@ -15,6 +15,7 @@ import ProfileInput from "../components/profile/ProfileInput";
 import ProfileArrayPicker from "../components/profile/ProfileArrayPicker";
 import ProfileAgePicker from "../components/profile/ProfileAgePicker";
 import { setUserInfoProperties } from "../redux/slices/auth/userInfoProperties";
+import ProfileObjPicker from "../components/profile/ProfileObjPicker";
 
 const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -59,7 +60,6 @@ const ProfileScreen = ({ navigation }) => {
 
   const getUserInfoProperties = async () => {
     try {
-      console.log("start");
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/user_profile",
         {
@@ -126,6 +126,7 @@ const ProfileScreen = ({ navigation }) => {
               flexDirection: "row",
               justifyContent: "space-between",
               marginVertical: 5,
+              alignItems: "center",
             }}
           >
             <Text style={{ color: MAIN }}>Email:</Text>
@@ -138,6 +139,7 @@ const ProfileScreen = ({ navigation }) => {
               flexDirection: "row",
               justifyContent: "space-between",
               marginVertical: 5,
+              alignItems: "center",
             }}
           >
             <Text style={{ color: MAIN }}>Имя:</Text>
@@ -182,7 +184,7 @@ const ProfileScreen = ({ navigation }) => {
               updateUserInfoProperties({ birthday });
             }}
           />
-          <ProfileArrayPicker
+          <ProfileObjPicker
             title="Уровень активности"
             value={physicalActivityLevel}
             setValue={setPhysicalActivityLevel}
@@ -201,7 +203,7 @@ const ProfileScreen = ({ navigation }) => {
               updateUserInfoProperties({ targetWeight });
             }}
           />
-          <ProfileArrayPicker
+          <ProfileObjPicker
             title="Тип достижения цели"
             value={targetWeightType}
             setValue={setTargetWeightType}
@@ -221,6 +223,45 @@ const ProfileScreen = ({ navigation }) => {
             }}
             limit={5}
           />
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginVertical: 5,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: MAIN, width: "60%" }}>
+              Рекомендованный лимит:
+            </Text>
+            <Text style={{ color: MAIN, fontWeight: "bold" }}>00000</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginVertical: 5,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: MAIN, width: "60%" }}>
+              Суточная норма калорий:
+            </Text>
+            <Text style={{ color: MAIN, fontWeight: "bold" }}>00000</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginVertical: 5,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: MAIN, width: "60%" }}>
+              ИМТ (Индекс массы тела):
+            </Text>
+            <Text style={{ color: MAIN, fontWeight: "bold" }}>00000</Text>
+          </View>
         </KeyboardAwareScrollView>
       </View>
     </>

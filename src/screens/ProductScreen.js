@@ -558,7 +558,7 @@ const ProductScreen = ({ navigation, route }) => {
           })}
         </View>
       </Modal>
-      <Modal /*                                 Модальное окно, которое откроет выбор measurement_type*/
+      <Modal /*                                 Модальное окно, которое откроет выбор категории*/
         hideModalContentWhileAnimating={true}
         onBackButtonPress={() => {
           toggleModalTwo();

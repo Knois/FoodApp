@@ -1,19 +1,33 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, FlatList } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import DatePicker from "react-native-modern-datepicker";
 import Modal from "react-native-modal";
 
 import { MAIN } from "../../constants/Constants";
-import BackModalButton from "../BackModalButton";
-import { birthdayToAge, dateFormatted, today } from "../../methods/DateMethods";
-import TitleModal from "../TitleModal";
 
-const ProfileAgePicker = ({ title, value, setValue, defaultValue, action }) => {
+const ProfileObjPicker = ({
+  title,
+  value,
+  setValue,
+  defaultValue,
+  action,
+  data,
+}) => {
   const [isVisible, setIsVisible] = useState(false);
 
   const toggleModal = () => {
     setIsVisible(!isVisible);
+  };
+
+  const getNameByKey = (array, key) => {
+    if (array) {
+      for (let i = 0; i < array.length; i++) {
+        if (array[i].param === key) {
+          return array[i].name;
+        }
+      }
+    }
+    return "";
   };
 
   return (
@@ -71,7 +85,7 @@ const ProfileAgePicker = ({ title, value, setValue, defaultValue, action }) => {
                 fontWeight: "bold",
               }}
             >
-              {value ? birthdayToAge(value) : ""}
+              {value ? getNameByKey(data, value) : ""}
             </Text>
           </TouchableOpacity>
         </View>
@@ -93,7 +107,7 @@ const ProfileAgePicker = ({ title, value, setValue, defaultValue, action }) => {
           )}
         </View>
       </View>
-      <Modal /*                                 Модальное окно с календарем       */
+      <Modal /*                                 Модальное окно, которое откроет выбор meal_type*/
         hideModalContentWhileAnimating={true}
         onBackButtonPress={() => {
           toggleModal();
@@ -102,39 +116,47 @@ const ProfileAgePicker = ({ title, value, setValue, defaultValue, action }) => {
           toggleModal();
         }}
         isVisible={isVisible}
-        animationIn="slideInUp"
+        animationIn="pulse"
+        animationOut="slideOutUp"
         animationInTiming={500}
         animationOutTiming={500}
         backdropOpacity={0.7}
         backdropTransitionInTiming={500}
-        backdropTransitionOutTiming={500}
+        backdropTransitionOutTiming={1}
       >
-        <TitleModal title="Укажите дату рождения" />
-        <DatePicker
-          onDateChange={(date) => {
-            setValue(dateFormatted(date));
-            toggleModal();
+        <View
+          style={{
+            width: 200,
+            backgroundColor: "white",
+            alignSelf: "center",
+            borderRadius: 20,
           }}
-          minimumDate="1920-01-01"
-          maximumDate={today()}
-          current={value}
-          selected={value}
-          mode="calendar"
-          options={{
-            headerAnimationDistance: 100,
-            daysAnimationDistance: 100,
-            textHeaderColor: "#645fb1",
-            textDefaultColor: "#645fb1",
-            selectedTextColor: "white",
-            mainColor: "#645fb1",
-            textSecondaryColor: "#645fb1",
-            borderColor: "#645fb1",
-          }}
-        />
-        <BackModalButton action={toggleModal} />
+        >
+          <FlatList
+            data={data}
+            keyExtractor={(item) => {
+              return Math.random() * 9999;
+            }}
+            renderItem={(item) => (
+              <TouchableOpacity
+                style={{
+                  height: 50,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  setValue(item.item.param);
+                  toggleModal();
+                }}
+              >
+                <Text>{item.item.name}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
       </Modal>
     </View>
   );
 };
 
-export default ProfileAgePicker;
+export default ProfileObjPicker;

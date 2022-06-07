@@ -22,6 +22,7 @@ import LoadingIndicator from "../components/LoadingIndicator";
 import ScreenHeader from "../components/ScreenHeader";
 import { TokenContext } from "../context/TokenContext";
 import BackModalButton from "../components/BackModalButton";
+import TitleModal from "../components/TitleModal";
 
 const MainScreen = ({ navigation, route }) => {
   const { token } = useContext(TokenContext);
@@ -249,6 +250,7 @@ const MainScreen = ({ navigation, route }) => {
             backdropTransitionInTiming={1}
             backdropTransitionOutTiming={1}
           >
+            <TitleModal title="Укажите дату" />
             <DatePicker
               onDateChange={(date) => {
                 if (dateFormatted(date) == urlDate) {
