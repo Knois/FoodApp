@@ -39,3 +39,8 @@ export const timeNow = (smth) => {
   let time = moment(smth ? smth : new Date()).format(smth ? "HH:mm" : "HH:mm");
   return time;
 };
+
+export const birthdayToAge = (smth) => {
+  let age = moment(new Date()).diff(smth, "years");
+  return age;
+};

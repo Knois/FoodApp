@@ -14,16 +14,51 @@ const SighInForm = ({
   setEmail,
   hasProfile,
 }) => {
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = () => {
     SecureStore.setItemAsync("email", email)
       .then(SecureStore.setItemAsync("password", password))
-      .then(actionButton({ password: password, email: email }));
+      .then(
+        actionButton(
+          hasProfile ? { password, email } : { password, email, name }
+        )
+      );
   };
 
   return (
     <View>
+      {!hasProfile && (
+        <>
+          <Text
+            style={{
+              marginVertical: 10,
+              marginLeft: 10,
+              fontSize: 15,
+              color: MAIN,
+            }}
+          >
+            Имя:
+          </Text>
+          <TextInput
+            onChangeText={(text) => setName(text)}
+            value={name}
+            autoCapitalize="sentences"
+            style={{
+              borderColor: MAIN,
+              borderWidth: 2,
+              padding: 15,
+              borderRadius: 10,
+              marginBottom: 10,
+              color: "#645fb1",
+              fontWeight: "bold",
+              backgroundColor: SECONDARY,
+            }}
+            maxLength={50}
+          />
+        </>
+      )}
       <Text
         style={{
           marginVertical: 10,

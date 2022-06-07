@@ -25,9 +25,6 @@ const ProfileInput = ({
           flexDirection: "row",
           justifyContent: "center",
           alignSelf: "center",
-          width: "52%",
-          borderBottomWidth: 1,
-          borderBottomColor: MAIN,
         }}
       >
         <View
@@ -47,20 +44,24 @@ const ProfileInput = ({
             </TouchableOpacity>
           )}
         </View>
-        <TextInput
-          maxLength={limit ? limit : 3}
-          keyboardType="numeric"
-          onChangeText={(text) => setValue(text.replace(/[^0-9]/g, ""))}
-          value={value ? String(value) : ""}
-          style={{
-            height: 40,
-            color: MAIN,
-            fontWeight: "bold",
-            flex: 8,
-            alignSelf: "center",
-            textAlign: "center",
-          }}
-        />
+        <View style={{ flex: 8 }}>
+          <TextInput
+            maxLength={limit ? limit : 3}
+            keyboardType="numeric"
+            onChangeText={(text) => setValue(text.replace(/[^0-9]/g, ""))}
+            value={value ? String(value) : ""}
+            style={{
+              height: 40,
+              color: MAIN,
+              fontWeight: "bold",
+              alignSelf: "center",
+              textAlign: "center",
+              width: "80%",
+              borderBottomWidth: 1,
+              borderBottomColor: MAIN,
+            }}
+          />
+        </View>
         <View
           style={{
             alignSelf: "center",

@@ -3,6 +3,7 @@ import {
   TextInput,
   View,
   FlatList,
+  ScrollView,
   TouchableOpacity,
   Alert,
 } from "react-native";
@@ -411,11 +412,12 @@ const MealScreen = ({ navigation, route }) => {
               toggleModal();
             }}
             isVisible={isVisible}
-            animationIn="slideInUp"
+            animationIn="pulse"
+            animationOut="slideOutUp"
             animationInTiming={500}
             animationOutTiming={500}
             backdropOpacity={0.7}
-            backdropTransitionInTiming={1}
+            backdropTransitionInTiming={500}
             backdropTransitionOutTiming={1}
           >
             <View

@@ -15,3 +15,7 @@ export const stringToNormalCase = (str) => {
   let lowerCaseString = str.slice(0).toLowerCase();
   return lowerCaseString[0].toUpperCase() + lowerCaseString.slice(1);
 };
+
+export const getRecommendedCaloriesPerDay = () => {};
+
+export const getBodyMassIndex = () => {};

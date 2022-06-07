@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import isAuthReducer from "../redux/slices/auth/isAuthSlice";
 import userInfoReducer from "../redux/slices/auth/userInfoSlice";
+import userInfoPropertiesReducer from "../redux/slices/auth/userInfoProperties";
 import productCategoriesReducer from "../redux/slices/productCategoriesSlice";
 
 export default configureStore({
@@ -8,5 +9,6 @@ export default configureStore({
     isAuth: isAuthReducer,
     productCategories: productCategoriesReducer,
     userInfo: userInfoReducer,
+    userInfoProperties: userInfoPropertiesReducer,
   },
 });

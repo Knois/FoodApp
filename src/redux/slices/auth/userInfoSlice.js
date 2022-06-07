@@ -6,18 +6,8 @@ export const userInfoSlice = createSlice({
     value: {
       email: "",
       id: "",
+      name: "",
       roles: ["ROLE_USER"],
-      user_properties: {
-        birthday: "",
-        gender: "",
-        height: "",
-        name: "",
-        weight: "",
-        dayLimitCal: "",
-        targetWeight: "",
-        targetWeightType: "",
-        physicalActivityLevel: "",
-      },
     },
   },
   reducers: {

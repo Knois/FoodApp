@@ -3,8 +3,6 @@ import React, { useContext, useState } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useDispatch, useSelector } from "react-redux";
 
-import { setUserInfo } from "../redux/slices/auth/userInfoSlice";
-
 import ScreenHeader from "../components/ScreenHeader";
 import {
   genderArray,
@@ -15,37 +13,42 @@ import {
 import { TokenContext } from "../context/TokenContext";
 import ProfileInput from "../components/profile/ProfileInput";
 import ProfileArrayPicker from "../components/profile/ProfileArrayPicker";
+import ProfileAgePicker from "../components/profile/ProfileAgePicker";
+import { setUserInfoProperties } from "../redux/slices/auth/userInfoProperties";
 
 const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const userInfo = useSelector((state) => state.userInfo.value);
+  const userInfoProperties = useSelector(
+    (state) => state.userInfoProperties.value
+  );
 
   const { token } = useContext(TokenContext);
 
   const [gender, setGender] = useState(
-    userInfo ? userInfo.user_properties.gender : ""
+    userInfo ? userInfoProperties.gender : ""
   );
   const [weight, setWeight] = useState(
-    userInfo ? userInfo.user_properties.weight : "0"
+    userInfo ? userInfoProperties.weight : "0"
   );
   const [height, setHeight] = useState(
-    userInfo ? userInfo.user_properties.height : "0"
+    userInfo ? userInfoProperties.height : "0"
   );
   const [birthday, setBirthday] = useState(
-    userInfo ? userInfo.user_properties.birthday : ""
+    userInfo ? userInfoProperties.birthday : ""
   );
   const [physicalActivityLevel, setPhysicalActivityLevel] = useState(
-    userInfo ? userInfo.user_properties.physicalActivityLevel : ""
+    userInfo ? userInfoProperties.physicalActivityLevel : ""
   );
   const [targetWeight, setTargetWeight] = useState(
-    userInfo ? userInfo.user_properties.targetWeight : "0"
+    userInfo ? userInfoProperties.targetWeight : "0"
   );
   const [targetWeightType, setTargetWeightType] = useState(
-    userInfo ? userInfo.user_properties.targetWeightType : ""
+    userInfo ? userInfoProperties.targetWeightType : ""
   );
   const [dayLimitCal, setDayLimitCal] = useState(
-    userInfo ? userInfo.user_properties.dayLimitCal : "0"
+    userInfo ? userInfoProperties.dayLimitCal : "0"
   );
 
   const createErrorAlert = (message) => {
@@ -54,10 +57,11 @@ const ProfileScreen = ({ navigation }) => {
     });
   };
 
-  const getUserInfo = async () => {
+  const getUserInfoProperties = async () => {
     try {
+      console.log("start");
       const response = await fetch(
-        "http://80.87.201.75:8079/gateway/auth/user",
+        "http://80.87.201.75:8079/gateway/my-food/user_profile",
         {
           method: "GET",
           headers: {
@@ -66,19 +70,21 @@ const ProfileScreen = ({ navigation }) => {
           },
         }
       );
+
       const json = await response.json();
+
       if (json) {
-        dispatch(setUserInfo(json));
+        dispatch(setUserInfoProperties(json));
       }
     } catch (error) {
     } finally {
     }
   };
 
-  const updateUser = async (obj) => {
+  const updateUserInfoProperties = async (obj) => {
     try {
       const response = await fetch(
-        "http://80.87.201.75:8079/gateway/auth/user",
+        "http://80.87.201.75:8079/gateway/my-food/user_profile",
         {
           method: "PUT",
           headers: {
@@ -90,8 +96,8 @@ const ProfileScreen = ({ navigation }) => {
       );
       const json = await response.json();
 
-      if (json.id) {
-        getUserInfo();
+      if (json) {
+        getUserInfoProperties();
       }
     } catch (error) {
       createErrorAlert("Ошибка при обновлении профиля");
@@ -136,17 +142,16 @@ const ProfileScreen = ({ navigation }) => {
           >
             <Text style={{ color: MAIN }}>Имя:</Text>
             <Text style={{ color: MAIN, fontWeight: "bold" }}>
-              {userInfo.user_properties.name}
+              {userInfo.name}
             </Text>
           </View>
-
           <ProfileArrayPicker
             title="Пол"
             value={gender}
             setValue={setGender}
-            defaultValue={userInfo.user_properties.gender}
+            defaultValue={userInfoProperties.gender}
             action={() => {
-              updateUser({ gender });
+              updateUserInfoProperties({ gender });
             }}
             data={genderArray}
           />
@@ -154,36 +159,36 @@ const ProfileScreen = ({ navigation }) => {
             title="Вес (кг)"
             value={weight}
             setValue={setWeight}
-            defaultValue={userInfo.user_properties.weight}
+            defaultValue={userInfoProperties.weight}
             action={() => {
-              updateUser({ weight });
+              updateUserInfoProperties({ weight });
             }}
           />
           <ProfileInput
             title="Рост (см)"
             value={height}
             setValue={setHeight}
-            defaultValue={userInfo.user_properties.height}
+            defaultValue={userInfoProperties.height}
             action={() => {
-              updateUser({ height });
+              updateUserInfoProperties({ height });
             }}
           />
-          <ProfileInput
+          <ProfileAgePicker
             title="Возраст"
             value={birthday}
             setValue={setBirthday}
-            defaultValue={userInfo.user_properties.birthday}
+            defaultValue={userInfoProperties.birthday}
             action={() => {
-              updateUser({ birthday });
+              updateUserInfoProperties({ birthday });
             }}
           />
           <ProfileArrayPicker
             title="Уровень активности"
             value={physicalActivityLevel}
             setValue={setPhysicalActivityLevel}
-            defaultValue={userInfo.user_properties.physicalActivityLevel}
+            defaultValue={userInfoProperties.physicalActivityLevel}
             action={() => {
-              updateUser({ physicalActivityLevel });
+              updateUserInfoProperties({ physicalActivityLevel });
             }}
             data={physicalActivityLevelArray}
           />
@@ -191,18 +196,18 @@ const ProfileScreen = ({ navigation }) => {
             title="Цель (кг)"
             value={targetWeight}
             setValue={setTargetWeight}
-            defaultValue={userInfo.user_properties.targetWeight}
+            defaultValue={userInfoProperties.targetWeight}
             action={() => {
-              updateUser({ targetWeight });
+              updateUserInfoProperties({ targetWeight });
             }}
           />
           <ProfileArrayPicker
             title="Тип достижения цели"
             value={targetWeightType}
             setValue={setTargetWeightType}
-            defaultValue={userInfo.user_properties.targetWeightType}
+            defaultValue={userInfoProperties.targetWeightType}
             action={() => {
-              updateUser({ targetWeightType });
+              updateUserInfoProperties({ targetWeightType });
             }}
             data={targetWeightTypeArray}
           />
@@ -210,9 +215,9 @@ const ProfileScreen = ({ navigation }) => {
             title="Ежедневный лимит калорий (ккал)"
             value={dayLimitCal}
             setValue={setDayLimitCal}
-            defaultValue={userInfo.user_properties.dayLimitCal}
+            defaultValue={userInfoProperties.dayLimitCal}
             action={() => {
-              updateUser({ dayLimitCal });
+              updateUserInfoProperties({ dayLimitCal });
             }}
             limit={5}
           />

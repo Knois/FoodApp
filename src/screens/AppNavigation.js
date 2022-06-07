@@ -22,6 +22,7 @@ import { MAIN, SECONDARY } from "../constants/Constants";
 import ProductScreen from "./ProductScreen";
 import { TokenContext } from "../context/TokenContext";
 import SettingsScreen from "./SettingsScreen";
+import { setUserInfoProperties } from "../redux/slices/auth/userInfoProperties";
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -134,6 +135,63 @@ const AppNavigation = () => {
         dispatch(setUserInfo(json));
       }
     } catch (error) {
+      createErrorAlert("Ошибка при получении профиля");
+    } finally {
+    }
+  };
+
+  const getUserInfoProperties = async () => {
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/user_profile",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status == 404) {
+        await createUserInfoProperties();
+      } else {
+        const json = await response.json();
+        dispatch(setUserInfoProperties(json));
+      }
+    } catch (error) {
+      createErrorAlert("Ошибка при получении свойств профиля");
+    } finally {
+    }
+  };
+
+  const createUserInfoProperties = async () => {
+    console.log("createUserInfoProperties start");
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/user_profile",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({
+            birthday: null,
+            gender: null,
+            height: null,
+            weight: null,
+            dayLimitCal: null,
+            targetWeight: null,
+            targetWeightType: null,
+            physicalActivityLevel: null,
+          }),
+        }
+      );
+
+      const json = await response.json();
+      getUserInfoProperties();
+    } catch (error) {
+      createErrorAlert("Ошибка при создании свойств профиля");
     } finally {
     }
   };
@@ -141,6 +199,7 @@ const AppNavigation = () => {
   if (isAuth) {
     getAllProductCategories();
     getUserInfo();
+    getUserInfoProperties();
   }
 
   return (
@@ -198,7 +257,6 @@ const AppNavigation = () => {
       ) : (
         <AuthStackScreen />
       )}
-
       <StatusBar style={"dark"} />
     </NavigationContainer>
   );

@@ -522,11 +522,12 @@ const ProductScreen = ({ navigation, route }) => {
           toggleModalOne();
         }}
         isVisible={isVisibleOne}
-        animationIn="slideInUp"
+        animationIn="pulse"
+        animationOut="slideOutUp"
         animationInTiming={500}
         animationOutTiming={500}
         backdropOpacity={0.7}
-        backdropTransitionInTiming={1}
+        backdropTransitionInTiming={500}
         backdropTransitionOutTiming={1}
       >
         <View
@@ -566,14 +567,15 @@ const ProductScreen = ({ navigation, route }) => {
           toggleModalTwo();
         }}
         isVisible={isVisibleTwo}
-        animationIn="slideInUp"
+        animationIn="pulse"
+        animationOut="slideOutUp"
         animationInTiming={500}
         animationOutTiming={500}
         backdropOpacity={0.7}
-        backdropTransitionInTiming={1}
+        backdropTransitionInTiming={500}
         backdropTransitionOutTiming={1}
       >
-        <View
+        <ScrollView
           style={{
             width: 200,
             backgroundColor: "white",
@@ -581,28 +583,25 @@ const ProductScreen = ({ navigation, route }) => {
             borderRadius: 20,
           }}
         >
-          <FlatList
-            data={productCategories}
-            renderItem={(item) => {
-              return (
-                <TouchableOpacity
-                  key={Math.random() * 9999}
-                  style={{
-                    height: 50,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                  onPress={() => {
-                    setProduct_category(item.item);
-                    toggleModalTwo();
-                  }}
-                >
-                  <Text>{item.item.name}</Text>
-                </TouchableOpacity>
-              );
-            }}
-          />
-        </View>
+          {productCategories.map((item) => {
+            return (
+              <TouchableOpacity
+                key={Math.random() * 9999}
+                style={{
+                  height: 50,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  setProduct_category(item);
+                  toggleModalTwo();
+                }}
+              >
+                <Text>{item.name}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </Modal>
     </>
   );

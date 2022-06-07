@@ -1,18 +1,15 @@
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import DatePicker from "react-native-modern-datepicker";
 import Modal from "react-native-modal";
 
 import { MAIN } from "../../constants/Constants";
+import BackModalButton from "../BackModalButton";
+import { birthdayToAge, dateFormatted } from "../../methods/DateMethods";
+import TitleModal from "../TitleModal";
 
-const ProfileArrayPicker = ({
-  title,
-  value,
-  setValue,
-  defaultValue,
-  action,
-  data,
-}) => {
+const ProfileAgePicker = ({ title, value, setValue, defaultValue, action }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   const toggleModal = () => {
@@ -74,7 +71,7 @@ const ProfileArrayPicker = ({
                 fontWeight: "bold",
               }}
             >
-              {value ? String(value) : ""}
+              {value ? birthdayToAge(value) : ""}
             </Text>
           </TouchableOpacity>
         </View>
@@ -96,7 +93,7 @@ const ProfileArrayPicker = ({
           )}
         </View>
       </View>
-      <Modal /*                                 Модальное окно, которое откроет выбор meal_type*/
+      <Modal /*                                 Модальное окно с календарем       */
         hideModalContentWhileAnimating={true}
         onBackButtonPress={() => {
           toggleModal();
@@ -105,47 +102,39 @@ const ProfileArrayPicker = ({
           toggleModal();
         }}
         isVisible={isVisible}
-        animationIn="pulse"
-        animationOut="slideOutUp"
+        animationIn="slideInUp"
         animationInTiming={500}
         animationOutTiming={500}
         backdropOpacity={0.7}
         backdropTransitionInTiming={500}
-        backdropTransitionOutTiming={1}
+        backdropTransitionOutTiming={500}
       >
-        <View
-          style={{
-            width: 200,
-            backgroundColor: "white",
-            alignSelf: "center",
-            borderRadius: 20,
+        <TitleModal title="Укажите дату рождения" />
+        <DatePicker
+          onDateChange={(date) => {
+            setValue(dateFormatted(date));
+            toggleModal();
           }}
-        >
-          <FlatList
-            data={data}
-            keyExtractor={(item) => {
-              return Math.random() * 9999;
-            }}
-            renderItem={(item) => (
-              <TouchableOpacity
-                style={{
-                  height: 50,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onPress={() => {
-                  setValue(item.item);
-                  toggleModal();
-                }}
-              >
-                <Text>{item.item}</Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+          minimumDate="1920-01-01"
+          maximumDate={"2999-01-01"}
+          current={value}
+          selected={value}
+          mode="calendar"
+          options={{
+            headerAnimationDistance: 100,
+            daysAnimationDistance: 100,
+            textHeaderColor: "#645fb1",
+            textDefaultColor: "#645fb1",
+            selectedTextColor: "white",
+            mainColor: "#645fb1",
+            textSecondaryColor: "#645fb1",
+            borderColor: "#645fb1",
+          }}
+        />
+        <BackModalButton action={toggleModal} />
       </Modal>
     </View>
   );
 };
 
-export default ProfileArrayPicker;
+export default ProfileAgePicker;
