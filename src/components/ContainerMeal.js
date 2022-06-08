@@ -80,7 +80,7 @@ const ContainerMeal = ({ item, navigation, action }) => {
             {stringToNormalCase(item.meal_type)} at {timeNow(item.date_time)}
           </Text>
           <Text style={{ fontSize: 16, fontWeight: "bold", color: "#9599a4" }}>
-            {getSumCaloriesFromArray(mealElements)} ккал/
+            {getSumCaloriesFromArray(mealElements)} ккал
           </Text>
         </View>
 
