@@ -29,15 +29,15 @@ export const mealTypes = [
 export const genderArray = ["MALE", "FEMALE"];
 
 export const physicalActivityLevelArray = [
-  { param: 1.2, name: "Сидячий образ жизни" },
-  { param: 1.375, name: "Тренировки 1-3 раза в неделю" },
-  { param: 1.55, name: "Тренировки 3-5 раз в неделю" },
-  { param: 1.725, name: "Ежедневные тренировки" },
-  { param: 1.9, name: "Тренировки 2 раза в день" },
+  { param: "1.2", name: "Сидячий образ жизни" },
+  { param: "1.375", name: "Тренировки 1-3 раза в неделю" },
+  { param: "1.55", name: "Тренировки 3-5 раз в неделю" },
+  { param: "1.725", name: "Ежедневные тренировки" },
+  { param: "1.9", name: "Тренировки 2 раза в день" },
 ];
 
 export const targetWeightTypeArray = [
-  { param: "GAIN", name: "Набрать вес" },
-  { param: "LOSE", name: "Сбросить вес" },
-  { param: "SAVE", name: "Сохранить вес" },
+  { param: "1.2", name: "Набрать вес" },
+  { param: "0.8", name: "Сбросить вес" },
+  { param: "1.0", name: "Сохранить вес" },
 ];

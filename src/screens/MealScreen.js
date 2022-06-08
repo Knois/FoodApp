@@ -34,7 +34,7 @@ const MealScreen = ({ navigation, route }) => {
       ? toNormalDate(route.params.date_time)
       : urlDate + " " + timeNow() + ":00"
   );
-  const [name, setName] = useState(route.params.name ? route.params.name : "");
+
   const [meal_elements, setMeal_elements] = useState(
     route.params.meal_elements ? route.params.meal_elements : []
   );
@@ -87,14 +87,12 @@ const MealScreen = ({ navigation, route }) => {
       return {
         date_time: date_time,
         meal_type: meal_type,
-        name: name ? name.trim() : "Без названия",
         id: mealID,
       };
     } else {
       return {
         date_time: date_time,
         meal_type: meal_type,
-        name: name ? name.trim() : "Без названия",
       };
     }
   };
@@ -270,27 +268,6 @@ const MealScreen = ({ navigation, route }) => {
             rightIcon="checkmark"
           />
           <View style={{ margin: 10, flex: 1 }}>
-            <TextInput /*                                 Ввод названия приема пищи*/
-              style={{
-                textAlign: "center",
-                borderWidth: 0.5,
-                borderRadius: 5,
-                borderColor: "#645fb1",
-                alignSelf: "center",
-                width: "100%",
-                height: 40,
-                paddingHorizontal: 10,
-                paddingVertical: 5,
-                color: "#645fb1",
-                fontWeight: name.length == 0 ? "normal" : "bold",
-              }}
-              onChangeText={(value) => {
-                setName(value);
-              }}
-              value={name}
-              autoCapitalize="sentences"
-              placeholder="Введите название приема пищи"
-            />
             <View
               style={{
                 marginVertical: 20,

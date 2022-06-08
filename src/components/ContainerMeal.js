@@ -69,24 +69,21 @@ const ContainerMeal = ({ item, navigation, action }) => {
           });
         }}
       >
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text
-            style={{
-              fontSize: 16,
-              fontWeight: "bold",
-              color: "#645fb1",
-              width: "70%",
-            }}
-          >
-            {stringToNormalCase(item.name)}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#645fb1" }}>
+            {stringToNormalCase(item.meal_type)} at {timeNow(item.date_time)}
           </Text>
           <Text style={{ fontSize: 16, fontWeight: "bold", color: "#9599a4" }}>
-            {getSumCaloriesFromArray(mealElements)} kcal
+            {getSumCaloriesFromArray(mealElements)} ккал
           </Text>
         </View>
-        <Text style={{ color: "#645fb1" }}>
-          {stringToNormalCase(item.meal_type)} at {timeNow(item.date_time)}
-        </Text>
+
         <View>
           {isLoading ? (
             <View style={{ height: 1 }}>

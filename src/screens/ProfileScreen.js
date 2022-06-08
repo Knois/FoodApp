@@ -16,6 +16,10 @@ import ProfileArrayPicker from "../components/profile/ProfileArrayPicker";
 import ProfileAgePicker from "../components/profile/ProfileAgePicker";
 import { setUserInfoProperties } from "../redux/slices/auth/userInfoProperties";
 import ProfileObjPicker from "../components/profile/ProfileObjPicker";
+import {
+  getBodyMassIndex,
+  getRecommendedCaloriesPerDay,
+} from "../methods/InformationMethods";
 
 const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -50,6 +54,18 @@ const ProfileScreen = ({ navigation }) => {
   );
   const [dayLimitCal, setDayLimitCal] = useState(
     userInfo ? userInfoProperties.dayLimitCal : "0"
+  );
+
+  let bodyMassIndex = getBodyMassIndex(weight, height);
+  let recommendedCaloriesPerDay = getRecommendedCaloriesPerDay(
+    gender,
+    weight,
+    height,
+    birthday,
+    physicalActivityLevel
+  );
+  let recommendedLimit = Math.round(
+    recommendedCaloriesPerDay * targetWeightType
   );
 
   const createErrorAlert = (message) => {
@@ -186,7 +202,7 @@ const ProfileScreen = ({ navigation }) => {
           />
           <ProfileObjPicker
             title="Уровень активности"
-            value={physicalActivityLevel}
+            value={String(physicalActivityLevel)}
             setValue={setPhysicalActivityLevel}
             defaultValue={userInfoProperties.physicalActivityLevel}
             action={() => {
@@ -205,7 +221,7 @@ const ProfileScreen = ({ navigation }) => {
           />
           <ProfileObjPicker
             title="Тип достижения цели"
-            value={targetWeightType}
+            value={String(targetWeightType)}
             setValue={setTargetWeightType}
             defaultValue={userInfoProperties.targetWeightType}
             action={() => {
@@ -234,7 +250,9 @@ const ProfileScreen = ({ navigation }) => {
             <Text style={{ color: MAIN, width: "60%" }}>
               Рекомендованный лимит:
             </Text>
-            <Text style={{ color: MAIN, fontWeight: "bold" }}>00000</Text>
+            <Text style={{ color: MAIN, fontWeight: "bold" }}>
+              {recommendedLimit}
+            </Text>
           </View>
           <View
             style={{
@@ -247,20 +265,24 @@ const ProfileScreen = ({ navigation }) => {
             <Text style={{ color: MAIN, width: "60%" }}>
               Суточная норма калорий:
             </Text>
-            <Text style={{ color: MAIN, fontWeight: "bold" }}>00000</Text>
+            <Text style={{ color: MAIN, fontWeight: "bold" }}>
+              {recommendedCaloriesPerDay}
+            </Text>
           </View>
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
+              flexDirection: "column",
               marginVertical: 5,
-              alignItems: "center",
             }}
           >
             <Text style={{ color: MAIN, width: "60%" }}>
               ИМТ (Индекс массы тела):
             </Text>
-            <Text style={{ color: MAIN, fontWeight: "bold" }}>00000</Text>
+            <Text
+              style={{ color: MAIN, fontWeight: "bold", alignSelf: "flex-end" }}
+            >
+              {bodyMassIndex}
+            </Text>
           </View>
         </KeyboardAwareScrollView>
       </View>
