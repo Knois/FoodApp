@@ -63,3 +63,17 @@ export const getBodyMassIndex = (weight, height) => {
     return 0;
   }
 };
+
+export const countCalories = (proteins, fats, carbohydrates) => {
+  let result = 0;
+  if (proteins) {
+    result = result + proteins * 4;
+  }
+  if (fats) {
+    result = result + fats * 9;
+  }
+  if (carbohydrates) {
+    result = result + carbohydrates * 4;
+  }
+  return result;
+};

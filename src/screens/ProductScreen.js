@@ -6,17 +6,16 @@ import {
   Image,
   TouchableOpacity,
   Alert,
-  FlatList,
 } from "react-native";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 import { useSelector } from "react-redux";
 
-import { measurementTypes } from "../constants/Constants";
 import ScreenHeader from "../components/ScreenHeader";
 import { TokenContext } from "../context/TokenContext";
+import { countCalories } from "../methods/InformationMethods";
 
 const ProductScreen = ({ navigation, route }) => {
   const { token } = useContext(TokenContext);
@@ -35,15 +34,12 @@ const ProductScreen = ({ navigation, route }) => {
     item ? item.image_base64 : null
   );
   const [image_url, setImage_url] = useState(item ? item.image_url : null);
-  const [measurement_type, setMeasurement_type] = useState(
-    item ? String(item.measurement_type) : "GRAM"
-  );
+
   const [name, setName] = useState(item ? String(item.name) : "");
   const [proteins, setProteins] = useState(item ? String(item.proteins) : "0");
   const [quantity, setQuantity] = useState(item ? String(item.quantity) : "0");
 
-  const [isVisibleOne, setVisibleOne] = useState(false);
-  const [isVisibleTwo, setVisibleTwo] = useState(false);
+  const [isVisible, setVisible] = useState(false);
 
   const [product_category, setProduct_category] = useState({
     id: "other",
@@ -79,7 +75,7 @@ const ProductScreen = ({ navigation, route }) => {
       fats: fats ? fats : "0",
       image_base64: image_base64 ? image_base64 : null,
       image_url: image_url ? image_url : null,
-      measurement_type: measurement_type,
+      measurement_type: "GRAM",
       name: name ? name.trim() : "Без названия",
       proteins: proteins ? proteins : "0",
       quantity: quantity ? quantity : "0",
@@ -119,17 +115,6 @@ const ProductScreen = ({ navigation, route }) => {
       }
     }
     return formattedObj;
-  };
-
-  const copyToMealElement = (obj) => {
-    setCalories("" + obj.calories);
-    setCarbohydrates("" + obj.carbohydrates);
-    setFats("" + obj.fats);
-    setImage_url("" + obj.image_url);
-    setMeasurement_type("" + obj.measurement_type);
-    setName("" + obj.name);
-    setProteins("" + obj.proteins);
-    setQuantity("" + obj.quantity);
   };
 
   const createProduct = async (obj) => {
@@ -211,12 +196,8 @@ const ProductScreen = ({ navigation, route }) => {
       setImage_url: setImage_url,
     });
 
-  const toggleModalOne = () => {
-    setVisibleOne(!isVisibleOne);
-  };
-
-  const toggleModalTwo = () => {
-    setVisibleTwo(!isVisibleTwo);
+  const toggleModal = () => {
+    setVisible(!isVisible);
   };
 
   let imageKey = new Date();
@@ -233,6 +214,11 @@ const ProductScreen = ({ navigation, route }) => {
         },
       }
     : require("../../assets/img/addPhoto.png");
+
+  useEffect(() => {
+    let countResult = countCalories(proteins, fats, carbohydrates);
+    setCalories(String(countResult));
+  }, [proteins, fats, carbohydrates]);
 
   return (
     <>
@@ -290,8 +276,8 @@ const ProductScreen = ({ navigation, route }) => {
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "#645fb1" }}>Калории:</Text>
-            <TextInput /*                                                   Ввод калорий*/
+            <Text style={{ color: "#645fb1" }}>Белки:</Text>
+            <TextInput /*                                                   Ввод белков*/
               style={{
                 textAlign: "center",
                 borderWidth: 0.5,
@@ -306,39 +292,9 @@ const ProductScreen = ({ navigation, route }) => {
                 fontWeight: "bold",
               }}
               onChangeText={(value) => {
-                setCalories(value);
+                setProteins(value);
               }}
-              value={calories}
-              keyboardType="numeric"
-            />
-          </View>
-          <View
-            style={{
-              marginVertical: 5,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "#645fb1" }}>Углеводы:</Text>
-            <TextInput /*                                                   Ввод углеводов*/
-              style={{
-                textAlign: "center",
-                borderWidth: 0.5,
-                borderRadius: 5,
-                borderColor: "#645fb1",
-                alignSelf: "center",
-                width: 200,
-                height: 40,
-                paddingHorizontal: 10,
-                paddingVertical: 5,
-                color: "#645fb1",
-                fontWeight: "bold",
-              }}
-              onChangeText={(value) => {
-                setCarbohydrates(value);
-              }}
-              value={carbohydrates}
+              value={proteins}
               keyboardType="numeric"
             />
           </View>
@@ -380,8 +336,8 @@ const ProductScreen = ({ navigation, route }) => {
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "#645fb1" }}>Белки:</Text>
-            <TextInput /*                                                   Ввод белков*/
+            <Text style={{ color: "#645fb1" }}>Углеводы:</Text>
+            <TextInput /*                                                   Ввод углеводов*/
               style={{
                 textAlign: "center",
                 borderWidth: 0.5,
@@ -396,9 +352,9 @@ const ProductScreen = ({ navigation, route }) => {
                 fontWeight: "bold",
               }}
               onChangeText={(value) => {
-                setProteins(value);
+                setCarbohydrates(value);
               }}
-              value={proteins}
+              value={carbohydrates}
               keyboardType="numeric"
             />
           </View>
@@ -410,7 +366,37 @@ const ProductScreen = ({ navigation, route }) => {
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "#645fb1" }}>Количество:</Text>
+            <Text style={{ color: "#645fb1" }}>Калории:</Text>
+            <TextInput /*                                                   Ввод калорий*/
+              style={{
+                textAlign: "center",
+                borderWidth: 0.5,
+                borderRadius: 5,
+                borderColor: "#645fb1",
+                alignSelf: "center",
+                width: 200,
+                height: 40,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                color: "#645fb1",
+                fontWeight: "bold",
+              }}
+              onChangeText={(value) => {
+                setCalories(value);
+              }}
+              value={calories}
+              keyboardType="numeric"
+            />
+          </View>
+          <View
+            style={{
+              marginVertical: 5,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "#645fb1" }}>Количество (гр.):</Text>
             <TextInput /*                                                   Ввод количества*/
               style={{
                 textAlign: "center",
@@ -440,39 +426,10 @@ const ProductScreen = ({ navigation, route }) => {
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "#645fb1" }}>Единицы измерения:</Text>
-            <TouchableOpacity /*                                 Открывает модальное окно с выбором measurement_type*/
-              onPress={() => {
-                toggleModalOne();
-              }}
-              style={{
-                borderWidth: 0.5,
-                padding: 5,
-                borderRadius: 5,
-                borderColor: "#645fb1",
-                width: 200,
-                height: 40,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
-                {measurement_type}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              marginVertical: 5,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
             <Text style={{ color: "#645fb1" }}>Категория:</Text>
             <TouchableOpacity /*                                 Открывает модальное окно с выбором product_category*/
               onPress={() => {
-                toggleModalTwo();
+                toggleModal();
               }}
               style={{
                 borderWidth: 0.5,
@@ -512,61 +469,15 @@ const ProductScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         )}
       </View>
-
-      <Modal /*                                 Модальное окно, которое откроет выбор measurement_type*/
-        hideModalContentWhileAnimating={true}
-        onBackButtonPress={() => {
-          toggleModalOne();
-        }}
-        onBackdropPress={() => {
-          toggleModalOne();
-        }}
-        isVisible={isVisibleOne}
-        animationIn="pulse"
-        animationOut="slideOutUp"
-        animationInTiming={500}
-        animationOutTiming={500}
-        backdropOpacity={0.7}
-        backdropTransitionInTiming={500}
-        backdropTransitionOutTiming={1}
-      >
-        <View
-          style={{
-            width: 200,
-            backgroundColor: "white",
-            alignSelf: "center",
-            borderRadius: 20,
-          }}
-        >
-          {measurementTypes.map((el) => {
-            return (
-              <TouchableOpacity
-                key={Math.random() * 9999}
-                style={{
-                  height: 50,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onPress={() => {
-                  setMeasurement_type(el);
-                  toggleModalOne();
-                }}
-              >
-                <Text>{el}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </Modal>
       <Modal /*                                 Модальное окно, которое откроет выбор категории*/
         hideModalContentWhileAnimating={true}
         onBackButtonPress={() => {
-          toggleModalTwo();
+          toggleModal();
         }}
         onBackdropPress={() => {
-          toggleModalTwo();
+          toggleModal();
         }}
-        isVisible={isVisibleTwo}
+        isVisible={isVisible}
         animationIn="pulse"
         animationOut="slideOutUp"
         animationInTiming={500}
@@ -594,7 +505,7 @@ const ProductScreen = ({ navigation, route }) => {
                 }}
                 onPress={() => {
                   setProduct_category(item);
-                  toggleModalTwo();
+                  toggleModal();
                 }}
               >
                 <Text>{item.name}</Text>
