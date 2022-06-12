@@ -8,15 +8,18 @@ import {
 } from "react-native";
 import React, { useState, useLayoutEffect, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useSelector, useDispatch } from "react-redux";
 
 import ScreenHeader from "../components/ScreenHeader";
 import LoadingIndicator from "../components/LoadingIndicator";
-
 import ContainerProduct from "../components/ContainerProduct";
 import { getTokenFromStore } from "../methods/SecureStoreMethods";
-import { useIsFocused } from "@react-navigation/native";
+import { setNeedRefreshFalse } from "../redux/slices/needRefreshSlice";
 
 const AllProductScreen = ({ navigation, route }) => {
+  const dispatch = useDispatch();
+
+  const needRefresh = useSelector((state) => state.needRefresh.value);
   const [name, setName] = useState("");
   const [dataAll, setDataAll] = useState([]);
   const [dataSearch, setDataSearch] = useState([]);
@@ -84,15 +87,20 @@ const AllProductScreen = ({ navigation, route }) => {
     navigation.navigate("ProductScreen", { item: item });
   };
 
-  let isFocused = useIsFocused();
-
   useLayoutEffect(() => {
-    if (isFocused) getMyProducts();
-  }, [isFocused]);
+    getMyProducts();
+  }, []);
 
   useEffect(() => {
     searchByName();
   }, [name]);
+
+  useEffect(() => {
+    if (needRefresh) {
+      getMyProducts();
+      dispatch(setNeedRefreshFalse());
+    }
+  }, [needRefresh]);
 
   return (
     <View style={{ flex: 1 }}>

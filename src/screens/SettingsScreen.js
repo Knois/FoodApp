@@ -1,16 +1,13 @@
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import React, { useState } from "react";
-
 import { Ionicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
 import { useDispatch, useSelector } from "react-redux";
+
 import { setUserInfo } from "../redux/slices/auth/userInfoSlice";
-
 import { setIsAuthFalse } from "../redux/slices/auth/isAuthSlice";
-
 import ScreenHeader from "../components/ScreenHeader";
 import { MAIN, SECONDARY } from "../constants/Constants";
-
 import UpdateUserForm from "../components/profile/UpdateUserForm";
 import BackModalButton from "../components/BackModalButton";
 import LoadingIndicator from "../components/LoadingIndicator";

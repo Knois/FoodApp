@@ -8,7 +8,6 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { setUserInfo } from "../redux/slices/auth/userInfoSlice";
 import { setProductCategories } from "../redux/slices/productCategoriesSlice";
-
 import MainScreen from "./MainScreen";
 import MealScreen from "./MealScreen";
 import MealElementScreen from "./MealElementScreen";

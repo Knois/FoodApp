@@ -11,14 +11,16 @@ import React, { useState, useEffect } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import ScreenHeader from "../components/ScreenHeader";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { countCalories } from "../methods/InformationMethods";
 import { getTokenFromStore } from "../methods/SecureStoreMethods";
+import { setNeedRefreshTrue } from "../redux/slices/needRefreshSlice";
 
 const ProductScreen = ({ navigation, route }) => {
+  const dispatch = useDispatch();
   const productCategories = useSelector((state) => state.productCategories.arr);
 
   const item = route.params.item;
@@ -137,6 +139,7 @@ const ProductScreen = ({ navigation, route }) => {
       const json = await response.json();
 
       if (json.id) {
+        dispatch(setNeedRefreshTrue());
         navigation.goBack();
       }
     } catch (error) {
@@ -165,6 +168,7 @@ const ProductScreen = ({ navigation, route }) => {
       );
       const json = await response.json();
       if (json.id) {
+        dispatch(setNeedRefreshTrue());
         navigation.goBack();
       }
     } catch (error) {
@@ -190,6 +194,7 @@ const ProductScreen = ({ navigation, route }) => {
       );
 
       if (response.status == 200) {
+        dispatch(setNeedRefreshTrue());
         navigation.goBack();
       }
     } catch (error) {

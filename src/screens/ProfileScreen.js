@@ -10,7 +10,6 @@ import {
   physicalActivityLevelArray,
   targetWeightTypeArray,
 } from "../constants/Constants";
-
 import ProfileInput from "../components/profile/ProfileInput";
 import ProfileArrayPicker from "../components/profile/ProfileArrayPicker";
 import ProfileAgePicker from "../components/profile/ProfileAgePicker";
