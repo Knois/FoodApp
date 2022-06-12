@@ -6,9 +6,10 @@ import {
   Image,
   Alert,
 } from "react-native";
-import React, { useContext } from "react";
+import React from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { TokenContext } from "../context/TokenContext";
+
+import { getTokenFromStore } from "../methods/SecureStoreMethods";
 
 const ContainerMealElement = ({
   item,
@@ -17,7 +18,6 @@ const ContainerMealElement = ({
   deleteMealElement,
   navigation,
 }) => {
-  const { token } = useContext(TokenContext);
   let imageKey = new Date();
   let imageUri = item.image_base64
     ? {
@@ -28,7 +28,7 @@ const ContainerMealElement = ({
         uri: item.image_url + "?random_number=" + imageKey,
         cache: "reload",
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: "Bearer " + getTokenFromStore(),
           "Content-Type": "application/json",
           Pragma: "no-cache",
         },

@@ -1,16 +1,19 @@
-import { useContext, useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { Alert } from "react-native";
-import * as SecureStore from "expo-secure-store";
 import { useDispatch } from "react-redux";
-import { setIsAuthTrue } from "../../redux/slices/auth/isAuthSlice";
 
+import { setIsAuthTrue } from "../../redux/slices/auth/isAuthSlice";
 import LoadingIndicator from "../../components/LoadingIndicator";
-import { TokenContext } from "../../context/TokenContext";
+import {
+  getEmailFromStore,
+  deleteEmailFromStore,
+  getPasswordFromStore,
+  deletePasswordFromStore,
+  setTokenToStore,
+} from "../../methods/SecureStoreMethods";
 
 const LoadingScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-
-  const { setToken } = useContext(TokenContext);
 
   const changeScreen = () => {
     navigation.reset({
@@ -19,29 +22,19 @@ const LoadingScreen = ({ navigation }) => {
     });
   };
 
-  const createErrorAlert = (message) => {
+  const createErrorAlert = (message, action) => {
     Alert.alert(
       "Ошибка",
       message,
       [
         {
           text: "ОК",
-          onPress: () => changeScreen(),
+          onPress: () => action(),
         },
       ],
       {
         cancelable: false,
       }
-    );
-  };
-
-  const deleteToken = async () => {
-    await SecureStore.deleteItemAsync("token");
-  };
-
-  const saveTokenToStore = (token) => {
-    SecureStore.setItemAsync("token", token).then(() =>
-      dispatch(setIsAuthTrue())
     );
   };
 
@@ -59,25 +52,25 @@ const LoadingScreen = ({ navigation }) => {
       );
 
       const json = await response.json();
-      setToken(json.jwt_token);
-      await saveTokenToStore(json.jwt_token);
+      if (json.jwt_token) {
+        await setTokenToStore(json.jwt_token);
+        dispatch(setIsAuthTrue());
+      }
     } catch (error) {
-      deleteToken();
-      createErrorAlert(
-        "Ошибка при попытке залогиниться и получить новый токен"
-      );
+      deleteEmailFromStore();
+      deletePasswordFromStore();
+      createErrorAlert("Ошибка при получении токена", changeScreen);
     } finally {
     }
   };
 
   const checkLoginState = async () => {
-    const token = await SecureStore.getItemAsync("token");
-    const email = await SecureStore.getItemAsync("email");
-    const password = await SecureStore.getItemAsync("password");
-    token ? createJwt({ email, password }) : changeScreen();
+    const email = await getEmailFromStore();
+    const password = await getPasswordFromStore();
+    email && password ? createJwt({ email, password }) : changeScreen();
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     checkLoginState();
   }, []);
 

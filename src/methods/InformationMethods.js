@@ -27,8 +27,9 @@ export const getRecommendedCaloriesPerDay = (
 ) => {
   if (gender && weight && height && birthday && physicalActivityLevel) {
     let result = 10 * weight + 6.25 * height - 5 * birthdayToAge(birthday);
-    gender == "MALE" ? (result = result + 5) : (result = result - 161);
-    result = result * physicalActivityLevel;
+    gender == "MALE"
+      ? (result = (result + 5) * physicalActivityLevel)
+      : (result = (result - 161) * physicalActivityLevel);
     return Math.round(result);
   } else {
     return 0;

@@ -1,5 +1,5 @@
 import { View, Alert, Text } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -10,7 +10,7 @@ import {
   physicalActivityLevelArray,
   targetWeightTypeArray,
 } from "../constants/Constants";
-import { TokenContext } from "../context/TokenContext";
+
 import ProfileInput from "../components/profile/ProfileInput";
 import ProfileArrayPicker from "../components/profile/ProfileArrayPicker";
 import ProfileAgePicker from "../components/profile/ProfileAgePicker";
@@ -20,16 +20,14 @@ import {
   getBodyMassIndex,
   getRecommendedCaloriesPerDay,
 } from "../methods/InformationMethods";
+import { getTokenFromStore } from "../methods/SecureStoreMethods";
 
 const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-
   const userInfo = useSelector((state) => state.userInfo.value);
   const userInfoProperties = useSelector(
     (state) => state.userInfoProperties.value
   );
-
-  const { token } = useContext(TokenContext);
 
   const [gender, setGender] = useState(
     userInfo ? userInfoProperties.gender : ""
@@ -75,6 +73,8 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   const getUserInfoProperties = async () => {
+    let token = await getTokenFromStore();
+
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/user_profile",
@@ -88,7 +88,6 @@ const ProfileScreen = ({ navigation }) => {
       );
 
       const json = await response.json();
-
       if (json) {
         dispatch(setUserInfoProperties(json));
       }
@@ -98,6 +97,8 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   const updateUserInfoProperties = async (obj) => {
+    let token = await getTokenFromStore();
+
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/user_profile",

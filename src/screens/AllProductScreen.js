@@ -6,18 +6,17 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState, useLayoutEffect, useEffect, useContext } from "react";
+import React, { useState, useLayoutEffect, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
 import ScreenHeader from "../components/ScreenHeader";
 import LoadingIndicator from "../components/LoadingIndicator";
-import { TokenContext } from "../context/TokenContext";
+
 import ContainerProduct from "../components/ContainerProduct";
+import { getTokenFromStore } from "../methods/SecureStoreMethods";
 import { useIsFocused } from "@react-navigation/native";
 
 const AllProductScreen = ({ navigation, route }) => {
-  const { token } = useContext(TokenContext);
-
   const [name, setName] = useState("");
   const [dataAll, setDataAll] = useState([]);
   const [dataSearch, setDataSearch] = useState([]);
@@ -31,7 +30,8 @@ const AllProductScreen = ({ navigation, route }) => {
   };
 
   const searchByName = async () => {
-    setLoading(true);
+    if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
 
     const url =
       "http://80.87.201.75:8079/gateway/my-food/product/search?search=name%3A" +
@@ -48,16 +48,17 @@ const AllProductScreen = ({ navigation, route }) => {
       });
       const json = await response.json();
       setDataSearch(json.content);
+      setLoading(false);
     } catch (error) {
       createErrorAlert("Ошибка при поиске на сервере");
-    } finally {
       setLoading(false);
+    } finally {
     }
   };
 
-  const getMy = async () => {
-    setLoading(true);
-
+  const getMyProducts = async () => {
+    if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
     const url =
       "http://80.87.201.75:8079/gateway/my-food/product?page=0&size=99999";
 
@@ -71,10 +72,11 @@ const AllProductScreen = ({ navigation, route }) => {
       });
       const json = await response.json();
       setDataAll(json.content);
+      setLoading(false);
     } catch (error) {
       createErrorAlert("Ошибка при запросе всех продуктов");
-    } finally {
       setLoading(false);
+    } finally {
     }
   };
 
@@ -85,7 +87,7 @@ const AllProductScreen = ({ navigation, route }) => {
   let isFocused = useIsFocused();
 
   useLayoutEffect(() => {
-    if (isFocused) getMy();
+    if (isFocused) getMyProducts();
   }, [isFocused]);
 
   useEffect(() => {

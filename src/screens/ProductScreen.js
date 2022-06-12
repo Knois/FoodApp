@@ -7,19 +7,18 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 import { useSelector } from "react-redux";
 
 import ScreenHeader from "../components/ScreenHeader";
-import { TokenContext } from "../context/TokenContext";
-import { countCalories } from "../methods/InformationMethods";
 import LoadingIndicator from "../components/LoadingIndicator";
+import { countCalories } from "../methods/InformationMethods";
+import { getTokenFromStore } from "../methods/SecureStoreMethods";
 
 const ProductScreen = ({ navigation, route }) => {
-  const { token } = useContext(TokenContext);
   const productCategories = useSelector((state) => state.productCategories.arr);
 
   const item = route.params.item;
@@ -62,7 +61,7 @@ const ProductScreen = ({ navigation, route }) => {
           text: "Отмена",
           style: "cancel",
         },
-        { text: "ОК", onPress: () => deleteProduct() },
+        { text: "ОК", onPress: () => deleteProduct(item.id) },
       ],
       {
         cancelable: true,
@@ -120,6 +119,7 @@ const ProductScreen = ({ navigation, route }) => {
 
   const createProduct = async (obj) => {
     if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
     let formattedObj = await UrlToBase64(obj);
 
     try {
@@ -148,6 +148,7 @@ const ProductScreen = ({ navigation, route }) => {
 
   const updateProduct = async (obj) => {
     if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
     let formattedObj = await UrlToBase64(obj);
 
     try {
@@ -173,10 +174,12 @@ const ProductScreen = ({ navigation, route }) => {
     }
   };
 
-  const deleteProduct = async () => {
+  const deleteProduct = async (id) => {
+    if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
     try {
       const response = await fetch(
-        "http://80.87.201.75:8079/gateway/my-food/product/" + item.id,
+        "http://80.87.201.75:8079/gateway/my-food/product/" + id,
         {
           method: "DELETE",
           headers: {
@@ -191,6 +194,7 @@ const ProductScreen = ({ navigation, route }) => {
       }
     } catch (error) {
       createErrorAlert("Ошибка при удалении продукта!");
+      setLoading(false);
     } finally {
     }
   };
@@ -214,15 +218,15 @@ const ProductScreen = ({ navigation, route }) => {
     ? {
         uri: image_url + "?random_number=" + imageKey,
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: "Bearer " + getTokenFromStore(),
           Pragma: "no-cache",
         },
       }
     : require("../../assets/img/addPhoto.png");
 
   useEffect(() => {
-    let countResult = countCalories(proteins, fats, carbohydrates);
-    setCalories(String(countResult));
+    let result = countCalories(proteins, fats, carbohydrates);
+    setCalories(String(result));
   }, [proteins, fats, carbohydrates]);
 
   return (

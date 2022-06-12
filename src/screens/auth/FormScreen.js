@@ -1,20 +1,22 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Text, Alert } from "react-native";
-import * as SecureStore from "expo-secure-store";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useDispatch } from "react-redux";
+
 import { setIsAuthTrue } from "../../redux/slices/auth/isAuthSlice";
-
 import SighInForm from "../../components/auth/SignInForm";
-
 import LoadingIndicator from "../../components/LoadingIndicator";
 import { MAIN } from "../../constants/Constants";
-import { TokenContext } from "../../context/TokenContext";
+import {
+  setEmailToStore,
+  deleteEmailFromStore,
+  setPasswordToStore,
+  deletePasswordFromStore,
+  setTokenToStore,
+} from "../../methods/SecureStoreMethods";
 
 const FormScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-
-  const { setToken } = useContext(TokenContext);
 
   const [hasProfile, setHasProfile] = useState(true);
   const [isLoading, setLoading] = useState(false);
@@ -24,12 +26,6 @@ const FormScreen = ({ navigation }) => {
     Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
       cancelable: true,
     });
-  };
-
-  const saveTokenToStore = (token) => {
-    SecureStore.setItemAsync("token", token).then(() =>
-      dispatch(setIsAuthTrue())
-    );
   };
 
   const createJwt = async (obj) => {
@@ -46,14 +42,15 @@ const FormScreen = ({ navigation }) => {
         }
       );
       const json = await response.json();
-
       if (json.jwt_token) {
-        setToken(json.jwt_token);
-        await saveTokenToStore(json.jwt_token);
+        await setTokenToStore(json.jwt_token);
+        dispatch(setIsAuthTrue());
       }
     } catch (error) {
+      deleteEmailFromStore();
+      deletePasswordFromStore();
+      createErrorAlert("Ошибка при получении токена");
       setLoading(false);
-      createErrorAlert("Ошибка при попытке залогиниться");
     } finally {
     }
   };
@@ -72,13 +69,14 @@ const FormScreen = ({ navigation }) => {
         }
       );
       const json = await response.json();
-      console.log(json);
       if (json.id) {
+        await setEmailToStore(obj.email);
+        await setPasswordToStore(obj.password);
         await createJwt({ email: obj.email, password: obj.password });
       }
     } catch (error) {
-      setLoading(false);
       createErrorAlert("Ошибка при попытке регистрации");
+      setLoading(false);
     } finally {
     }
   };

@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Alert } from "react-native";
-import React, { useContext, useState } from "react";
-import * as SecureStore from "expo-secure-store";
+import React, { useState } from "react";
+
 import { Ionicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,9 +10,22 @@ import { setIsAuthFalse } from "../redux/slices/auth/isAuthSlice";
 
 import ScreenHeader from "../components/ScreenHeader";
 import { MAIN, SECONDARY } from "../constants/Constants";
-import { TokenContext } from "../context/TokenContext";
+
 import UpdateUserForm from "../components/profile/UpdateUserForm";
 import BackModalButton from "../components/BackModalButton";
+import LoadingIndicator from "../components/LoadingIndicator";
+import TitleModal from "../components/TitleModal";
+import {
+  deleteEmailFromStore,
+  deletePasswordFromStore,
+  deleteTokenFromStore,
+  getEmailFromStore,
+  getPasswordFromStore,
+  getTokenFromStore,
+  setEmailToStore,
+  setPasswordToStore,
+  setTokenToStore,
+} from "../methods/SecureStoreMethods";
 
 const SettingsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -21,13 +34,26 @@ const SettingsScreen = ({ navigation }) => {
 
   const [isVisible, setIsVisible] = useState(false);
   const [mode, setMode] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
   const toggleModal = () => {
     setIsVisible(!isVisible);
   };
 
-  const deleteToken = async () => {
-    await SecureStore.deleteItemAsync("token");
+  const setModalMode = (string) => {
+    if (string !== mode) setMode(string);
+    toggleModal();
+  };
+
+  const createErrorAlert = (message) => {
+    Alert.alert(
+      "Ошибка при запросе на сервер",
+      message,
+      [{ text: "ОК", onPress: () => null }],
+      {
+        cancelable: true,
+      }
+    );
   };
 
   const createTwoButtonAlert = () =>
@@ -47,12 +73,144 @@ const SettingsScreen = ({ navigation }) => {
     );
 
   const signOut = () => {
-    deleteToken().then(() => dispatch(setIsAuthFalse()));
+    deleteTokenFromStore();
+    dispatch(setIsAuthFalse());
   };
 
-  const openModal = (string) => {
-    if (string !== mode) setMode(string);
-    toggleModal();
+  const updateUserName = async (obj) => {
+    if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
+
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/auth/user",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj),
+        }
+      );
+
+      const json = await response.json();
+      if (json) {
+        dispatch(setUserInfo(json));
+        console.log(json.email);
+        await setEmailToStore(json.email);
+
+        setLoading(false);
+        toggleModal();
+      }
+    } catch (error) {
+      createErrorAlert("Ошибка при попытке обновить имя");
+      setLoading(false);
+    } finally {
+    }
+  };
+
+  const updateUserEmail = async (obj) => {
+    if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
+
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/auth/user",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj),
+        }
+      );
+
+      const json = await response.json();
+      if (json.email) {
+        setEmailToStore(json.email);
+        dispatch(setUserInfo(json));
+        await createJwt();
+        setLoading(false);
+        toggleModal();
+      }
+    } catch (error) {
+      createErrorAlert("Ошибка при попытке обновить email");
+      setLoading(false);
+    } finally {
+    }
+  };
+
+  const updateUserPassword = async (obj) => {
+    if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
+
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/auth/user",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj),
+        }
+      );
+
+      const json = await response.json();
+      if (json) {
+        await setPasswordToStore(obj.password);
+        setLoading(false);
+        toggleModal();
+      }
+    } catch (error) {
+      createErrorAlert("Ошибка при попытке обновить имя");
+      setLoading(false);
+    } finally {
+    }
+  };
+
+  const createJwt = async () => {
+    let email = await getEmailFromStore();
+    let password = await getPasswordFromStore();
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/auth/authenticate/jwt",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+
+      const json = await response.json();
+      if (json.jwt_token) {
+        await setTokenToStore(json.jwt_token);
+      }
+    } catch (error) {
+      deleteEmailFromStore();
+      deletePasswordFromStore();
+      createErrorAlert("Ошибка при получении токена");
+      dispatch(setIsAuthFalse());
+    } finally {
+    }
+  };
+
+  const setAction = (obj) => {
+    switch (mode) {
+      case "name":
+        return updateUserName(obj);
+
+      case "email":
+        return updateUserEmail(obj);
+
+      case "password":
+        return updateUserPassword(obj);
+    }
   };
 
   return (
@@ -74,7 +232,7 @@ const SettingsScreen = ({ navigation }) => {
           height: 60,
         }}
         onPress={() => {
-          openModal("name");
+          setModalMode("name");
         }}
       >
         <View style={{ flex: 2, alignItems: "center" }}>
@@ -111,7 +269,7 @@ const SettingsScreen = ({ navigation }) => {
           height: 60,
         }}
         onPress={() => {
-          openModal("email");
+          setModalMode("email");
         }}
       >
         <View style={{ flex: 2, alignItems: "center" }}>
@@ -147,7 +305,7 @@ const SettingsScreen = ({ navigation }) => {
           height: 60,
         }}
         onPress={() => {
-          openModal("password");
+          setModalMode("password");
         }}
       >
         <View style={{ flex: 2, alignItems: "center" }}>
@@ -218,8 +376,15 @@ const SettingsScreen = ({ navigation }) => {
         backdropTransitionInTiming={1}
         backdropTransitionOutTiming={1}
       >
-        <UpdateUserForm mode={mode} params={userInfo} />
-        <BackModalButton action={toggleModal} />
+        {isLoading ? (
+          <LoadingIndicator />
+        ) : (
+          <>
+            <TitleModal />
+            <UpdateUserForm mode={mode} params={userInfo} action={setAction} />
+            <BackModalButton action={toggleModal} />
+          </>
+        )}
       </Modal>
     </View>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useContext } from "react";
+import React, { useState, useLayoutEffect, useEffect } from "react";
 import {
   Text,
   View,
@@ -9,8 +9,13 @@ import {
 } from "react-native";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
-import { useIsFocused } from "@react-navigation/native";
 import DatePicker from "react-native-modern-datepicker";
+import { useSelector, useDispatch } from "react-redux";
+
+import {
+  setNeedRefreshFalse,
+  setNeedRefreshTrue,
+} from "../redux/slices/needRefreshSlice";
 
 import ContainerMeal from "../components/ContainerMeal";
 import {
@@ -20,73 +25,22 @@ import {
 } from "../methods/DateMethods";
 import LoadingIndicator from "../components/LoadingIndicator";
 import ScreenHeader from "../components/ScreenHeader";
-import { TokenContext } from "../context/TokenContext";
 import BackModalButton from "../components/BackModalButton";
 import TitleModal from "../components/TitleModal";
+import { getTokenFromStore } from "../methods/SecureStoreMethods";
 
 const MainScreen = ({ navigation, route }) => {
-  const { token } = useContext(TokenContext);
+  const window = useWindowDimensions();
+  const dispatch = useDispatch();
 
+  const needRefresh = useSelector((state) => state.needRefresh.value);
   const [isLoading, setLoading] = useState(false);
   const [meals, setMeals] = useState([]);
   const [urlDate, setUrlDate] = useState(dateFormatted());
   const [isVisible, setVisible] = useState(false);
 
-  const window = useWindowDimensions();
-
   const toggleModal = () => {
     setVisible(!isVisible);
-  };
-
-  const getAllMeals = async () => {
-    if (!isLoading) setLoading(true);
-
-    try {
-      const response = await fetch(
-        "http://80.87.201.75:8079/gateway/my-food/meal/findByDate?date=" +
-          urlDate +
-          "&size=999&sort=dateTime%2Casc",
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + token,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const json = await response.json();
-      if (json.content) {
-        setMeals(json.content);
-      }
-    } catch (error) {
-      createErrorAlert(
-        "Произошла ошибка при попытке получить приемы пищи с сервера"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const deleteMeal = async (id) => {
-    if (!isLoading) setLoading(true);
-
-    try {
-      const response = await fetch(
-        "http://80.87.201.75:8079/gateway/my-food/meal/" + id,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: "Bearer " + token,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const json = await response;
-    } catch (error) {
-      createErrorAlert("Произошла ошибка при попытке удалить прием пищи");
-    } finally {
-      getAllMeals();
-    }
   };
 
   const createErrorAlert = (message) => {
@@ -116,13 +70,71 @@ const MainScreen = ({ navigation, route }) => {
       }
     );
 
-  let isFocused = useIsFocused();
+  const getAllMeals = async (urlDate) => {
+    if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
+
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/meal/findByDate?date=" +
+          urlDate +
+          "&size=999&sort=dateTime%2Casc",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const json = await response.json();
+      if (json.content) {
+        setMeals(json.content);
+      }
+    } catch (error) {
+      createErrorAlert(
+        "Произошла ошибка при попытке получить приемы пищи с сервера"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteMeal = async (id) => {
+    if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
+
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/meal/" + id,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status == 200) {
+        dispatch(setNeedRefreshTrue());
+      }
+    } catch (error) {
+      createErrorAlert("Произошла ошибка при попытке удалить прием пищи");
+      setLoading(false);
+    } finally {
+    }
+  };
 
   useLayoutEffect(() => {
-    if (isFocused) {
-      getAllMeals();
+    getAllMeals(urlDate);
+  }, [urlDate]);
+
+  useEffect(() => {
+    if (needRefresh) {
+      getAllMeals(urlDate);
+      dispatch(setNeedRefreshFalse());
     }
-  }, [urlDate, isFocused]);
+  }, [needRefresh]);
 
   return (
     <>
@@ -131,14 +143,14 @@ const MainScreen = ({ navigation, route }) => {
           <ScreenHeader
             canGoBack={false}
             title="Расписание питания"
-            action={getAllMeals}
-            rightIcon="refresh"
+            action={toggleModal}
+            rightIcon="calendar-outline"
           />
           <View style={{ margin: 10, flex: 1 }}>
-            <View /*                                 Дата и иконка календаря        */
+            <View /*                                 Дата         */
               style={{
                 flexDirection: "row",
-                justifyContent: "space-between",
+                justifyContent: "flex-start",
                 alignItems: "center",
               }}
             >
@@ -149,24 +161,6 @@ const MainScreen = ({ navigation, route }) => {
                 <Text style={{ color: "#645fb1" }}>
                   {dateToNormalDate(urlDate)}
                 </Text>
-              </View>
-              <View
-                style={{
-                  alignItems: "center",
-                  backgroundColor: "#d8d6ed",
-                  borderRadius: 10,
-                  width: 40,
-                  height: 40,
-                  padding: 5,
-                }}
-              >
-                <TouchableOpacity
-                  onPress={() => {
-                    toggleModal();
-                  }}
-                >
-                  <Ionicons name="calendar-outline" size={30} color="#645fb1" />
-                </TouchableOpacity>
               </View>
             </View>
             <View /*                                 Блок статистики       */

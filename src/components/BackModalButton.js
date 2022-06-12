@@ -8,6 +8,8 @@ const BackModalButton = ({ action }) => {
         backgroundColor: "#645fb1",
         padding: 10,
         alignItems: "center",
+        borderBottomStartRadius: 10,
+        borderBottomEndRadius: 10,
       }}
       onPress={() => {
         action();

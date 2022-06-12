@@ -1,20 +1,27 @@
-import { Text } from "react-native";
+import { View, Text } from "react-native";
 import React from "react";
 import { MAIN } from "../constants/Constants";
 
 const TitleModal = ({ title }) => {
   return (
-    <Text
+    <View
       style={{
+        borderTopStartRadius: 10,
+        borderTopEndRadius: 10,
         backgroundColor: "#fff",
-        padding: 10,
-        textAlign: "center",
-        fontWeight: "bold",
-        color: MAIN,
       }}
     >
-      {title}
-    </Text>
+      <Text
+        style={{
+          padding: 10,
+          textAlign: "center",
+          fontWeight: "bold",
+          color: MAIN,
+        }}
+      >
+        {title}
+      </Text>
+    </View>
   );
 };
 

@@ -18,13 +18,7 @@ const SighInForm = ({
   const [password, setPassword] = useState("");
 
   const handleSubmit = () => {
-    SecureStore.setItemAsync("email", email)
-      .then(SecureStore.setItemAsync("password", password))
-      .then(
-        actionButton(
-          hasProfile ? { password, email } : { password, email, name }
-        )
-      );
+    actionButton(hasProfile ? { password, email } : { password, email, name });
   };
 
   return (

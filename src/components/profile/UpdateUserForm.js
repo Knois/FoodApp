@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { MAIN, SECONDARY } from "../../constants/Constants";
 
 const UpdateUserForm = ({ mode, params, action }) => {
-  const [name, setName] = useState(params.user_properties.name);
+  const [name, setName] = useState(params.name);
   const [email, setEmail] = useState(params.email);
 
   const [password, setPassword] = useState("");
@@ -15,15 +15,10 @@ const UpdateUserForm = ({ mode, params, action }) => {
   const [passVisible, setPassVisible] = useState(false);
   const [passVisible2, setPassVisible2] = useState(false);
 
-  const createAlert = () => {
-    Alert.alert(
-      "Внимание!",
-      "Введенные пароли несовпадают",
-      [{ text: "ОК", onPress: () => null }],
-      {
-        cancelable: true,
-      }
-    );
+  const createAlert = (message) => {
+    Alert.alert("Внимание!", message, [{ text: "ОК", onPress: () => null }], {
+      cancelable: true,
+    });
   };
 
   const submitData = () => {
@@ -31,10 +26,23 @@ const UpdateUserForm = ({ mode, params, action }) => {
       if (password == password2) {
         action(obj);
       } else {
-        createAlert();
+        createAlert("Введенные пароли несовпадают");
       }
     } else {
       action(obj);
+    }
+  };
+
+  const setObj = (mode) => {
+    switch (mode) {
+      case "name":
+        return { name };
+
+      case "email":
+        return { email };
+
+      case "password":
+        return { password };
     }
   };
 
@@ -222,7 +230,7 @@ const UpdateUserForm = ({ mode, params, action }) => {
           margin: 5,
         }}
         onPress={() => {
-          null;
+          action(setObj(mode));
         }}
       >
         <Ionicons name="checkmark" size={40} color="#645fb1" />

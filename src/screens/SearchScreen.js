@@ -1,14 +1,13 @@
 import { View, TextInput, Text, FlatList, Alert } from "react-native";
-import React, { useState, useLayoutEffect, useContext } from "react";
+import React, { useState, useLayoutEffect } from "react";
 
 import ScreenHeader from "../components/ScreenHeader";
 import ContainerProduct from "../components/ContainerProduct";
 import LoadingIndicator from "../components/LoadingIndicator";
-import { TokenContext } from "../context/TokenContext";
+import { getTokenFromStore } from "../methods/SecureStoreMethods";
 
 const SearchScreen = ({ navigation, route }) => {
   const copyToMealElement = route.params.copyToMealElement;
-  const { token } = useContext(TokenContext);
 
   const [name, setName] = useState("");
   const [data, setData] = useState([]);
@@ -21,7 +20,8 @@ const SearchScreen = ({ navigation, route }) => {
   };
 
   const searchByName = async () => {
-    setLoading(true);
+    if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
 
     const url =
       "http://80.87.201.75:8079/gateway/my-food/product/search?search=name%3A" +

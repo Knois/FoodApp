@@ -7,22 +7,24 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 
+import { setNeedRefreshTrue } from "../redux/slices/needRefreshSlice";
 import ScreenHeader from "../components/ScreenHeader";
-import { TokenContext } from "../context/TokenContext";
 import { countCalories } from "../methods/InformationMethods";
 import LoadingIndicator from "../components/LoadingIndicator";
+import { getTokenFromStore } from "../methods/SecureStoreMethods";
+import { useDispatch } from "react-redux";
 
 const MealElementScreen = ({ navigation, route }) => {
-  const { token } = useContext(TokenContext);
   const item = route.params.item;
   const mealElementID = item ? item.id : null;
   const index = route.params.index;
   const mealID = route.params.mealID;
   const action = route.params.action;
+  const dispatch = useDispatch();
 
   const [calories, setCalories] = useState(item ? String(item.calories) : "0");
   const [carbohydrates, setCarbohydrates] = useState(
@@ -42,6 +44,7 @@ const MealElementScreen = ({ navigation, route }) => {
   const [fatsParam, setFatsParam] = useState(null);
   const [carbohydratesParam, setCarbohydratesParam] = useState(null);
   const [fromSearch, setFromSearch] = useState(false);
+
   const [isLoading, setLoading] = useState(false);
 
   const createErrorAlert = (message) => {
@@ -116,6 +119,7 @@ const MealElementScreen = ({ navigation, route }) => {
 
   const createMealElementOnServer = async (obj) => {
     if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
     let formattedObj = await UrlToBase64(obj);
 
     try {
@@ -133,6 +137,7 @@ const MealElementScreen = ({ navigation, route }) => {
       const json = await response.json();
 
       if (json.id) {
+        dispatch(setNeedRefreshTrue());
         navigation.goBack();
       }
     } catch (error) {
@@ -144,6 +149,7 @@ const MealElementScreen = ({ navigation, route }) => {
 
   const updateMealElementOnServer = async (obj) => {
     if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
     let formattedObj = await UrlToBase64(obj);
     try {
       const response = await fetch(
@@ -159,6 +165,7 @@ const MealElementScreen = ({ navigation, route }) => {
       );
       const json = await response.json();
       if (json.id) {
+        dispatch(setNeedRefreshTrue());
         navigation.goBack();
       }
     } catch (error) {
@@ -189,7 +196,7 @@ const MealElementScreen = ({ navigation, route }) => {
     ? {
         uri: image_url + "?random_number=" + imageKey,
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: "Bearer " + getTokenFromStore(),
           "Content-Type": "application/json",
           Pragma: "no-cache",
         },

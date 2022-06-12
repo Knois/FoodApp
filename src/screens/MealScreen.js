@@ -3,15 +3,14 @@ import {
   TextInput,
   View,
   FlatList,
-  ScrollView,
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
-import { useIsFocused } from "@react-navigation/native";
+import { useSelector, useDispatch } from "react-redux";
 
 import { timeNow, toNormalDate } from "../methods/DateMethods";
 import { getSumCaloriesFromArray } from "../methods/InformationMethods";
@@ -19,12 +18,16 @@ import LoadingIndicator from "../components/LoadingIndicator";
 import ContainerMealElement from "../components/ContainerMealElement";
 import ScreenHeader from "../components/ScreenHeader";
 import { mealTypes } from "../constants/Constants";
-import { TokenContext } from "../context/TokenContext";
+import { getTokenFromStore } from "../methods/SecureStoreMethods";
+import {
+  setNeedRefreshFalse,
+  setNeedRefreshTrue,
+} from "../redux/slices/needRefreshSlice";
 
 const MealScreen = ({ navigation, route }) => {
-  const { token } = useContext(TokenContext);
-
   const urlDate = route.params.urlDate;
+  const dispatch = useDispatch();
+  const needRefresh = useSelector((state) => state.needRefresh.value);
 
   const [meal_type, setMeal_type] = useState(
     route.params.meal_type ? route.params.meal_type : "BREAKFAST"
@@ -44,7 +47,6 @@ const MealScreen = ({ navigation, route }) => {
   const [isLoading, setLoading] = useState(false);
 
   let arrBase64 = [];
-  let isFocused = useIsFocused();
 
   const toggleModal = () => {
     setVisible(!isVisible);
@@ -83,18 +85,17 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const mealToObj = () => {
-    if (mealID) {
-      return {
-        date_time: date_time,
-        meal_type: meal_type,
-        id: mealID,
-      };
-    } else {
-      return {
-        date_time: date_time,
-        meal_type: meal_type,
-      };
-    }
+    let obj = mealID
+      ? {
+          date_time: date_time,
+          meal_type: meal_type,
+          id: mealID,
+        }
+      : {
+          date_time: date_time,
+          meal_type: meal_type,
+        };
+    return obj;
   };
 
   const addMealElement = (obj) => {
@@ -123,6 +124,9 @@ const MealScreen = ({ navigation, route }) => {
 
   const createMeal = async () => {
     setLoading(true);
+    let token = await getTokenFromStore();
+    let obj = mealToObj();
+
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal",
@@ -132,7 +136,7 @@ const MealScreen = ({ navigation, route }) => {
             Authorization: "Bearer " + token,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(mealToObj()),
+          body: JSON.stringify(obj),
         }
       );
       const json = await response.json();
@@ -142,17 +146,20 @@ const MealScreen = ({ navigation, route }) => {
         for (let el of arrBase64) {
           await createMealElement(el);
         }
-        await getMealElements(json.id);
+        dispatch(setNeedRefreshTrue());
+        navigation.goBack();
       }
     } catch (error) {
+      setLoading(false);
       createErrorAlert("Ошибка при создании приема пищи!");
     } finally {
-      setLoading(false);
     }
   };
 
   const updateMeal = async () => {
     setLoading(true);
+    let token = await getTokenFromStore();
+    let obj = mealToObj();
 
     try {
       const response = await fetch(
@@ -163,11 +170,14 @@ const MealScreen = ({ navigation, route }) => {
             Authorization: "Bearer " + token,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(mealToObj()),
+          body: JSON.stringify(obj),
         }
       );
       const json = await response.json();
-      navigation.goBack();
+      if (json.id) {
+        dispatch(setNeedRefreshTrue());
+        navigation.goBack();
+      }
     } catch (error) {
       setLoading(false);
       createErrorAlert("Ошибка при обновлении приема пищи");
@@ -176,6 +186,7 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const createMealElement = async (mealElement) => {
+    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal_element",
@@ -200,8 +211,8 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const getMealElements = async (mealID) => {
-    if (!isLoading) setLoading(true);
-
+    //if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal_element?mealId=" +
@@ -228,6 +239,7 @@ const MealScreen = ({ navigation, route }) => {
 
   const deleteMealElementFromServer = async (mealElementID) => {
     if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
 
     try {
       const response = await fetch(
@@ -242,7 +254,7 @@ const MealScreen = ({ navigation, route }) => {
         }
       );
       if (response.status == 200) {
-        getMealElements(mealID);
+        dispatch(setNeedRefreshTrue());
       }
     } catch (error) {
       setLoading(false);
@@ -251,9 +263,16 @@ const MealScreen = ({ navigation, route }) => {
     }
   };
 
+  useLayoutEffect(() => {
+    if (mealID) getMealElements(mealID);
+  }, []);
+
   useEffect(() => {
-    if (mealID && isFocused) getMealElements(mealID);
-  }, [isFocused]);
+    if (needRefresh) {
+      getMealElements(mealID);
+      dispatch(setNeedRefreshFalse());
+    }
+  }, [needRefresh]);
 
   return (
     <View style={{ flex: 1 }}>

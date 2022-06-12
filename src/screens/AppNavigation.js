@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { useWindowDimensions } from "react-native";
+import React from "react";
+import { useWindowDimensions, Alert } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -20,9 +20,9 @@ import FormScreen from "./auth/FormScreen";
 import AllProductScreen from "./AllProductScreen";
 import { MAIN, SECONDARY } from "../constants/Constants";
 import ProductScreen from "./ProductScreen";
-import { TokenContext } from "../context/TokenContext";
 import SettingsScreen from "./SettingsScreen";
 import { setUserInfoProperties } from "../redux/slices/auth/userInfoProperties";
+import { getTokenFromStore } from "../methods/SecureStoreMethods";
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -94,10 +94,16 @@ const ProfileStackScreen = () => {
 const AppNavigation = () => {
   const dispatch = useDispatch();
   const window = useWindowDimensions();
-  const { token } = useContext(TokenContext);
   const isAuth = useSelector((state) => state.isAuth.value);
 
+  const createErrorAlert = (message) => {
+    Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
+      cancelable: true,
+    });
+  };
+
   const getAllProductCategories = async () => {
+    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/product_category?page=0&size=99999",
@@ -114,11 +120,13 @@ const AppNavigation = () => {
         dispatch(setProductCategories(json.content));
       }
     } catch (error) {
+      createErrorAlert("Ошибка при получении категорий продуктов");
     } finally {
     }
   };
 
   const getUserInfo = async () => {
+    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/auth/user",
@@ -141,6 +149,7 @@ const AppNavigation = () => {
   };
 
   const getUserInfoProperties = async () => {
+    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/user_profile",
@@ -165,7 +174,7 @@ const AppNavigation = () => {
   };
 
   const createUserInfoProperties = async () => {
-    console.log("createUserInfoProperties start");
+    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/user_profile",

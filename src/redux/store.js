@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import isAuthReducer from "../redux/slices/auth/isAuthSlice";
+import needRefreshReducer from "../redux/slices/needRefreshSlice";
 import userInfoReducer from "../redux/slices/auth/userInfoSlice";
 import userInfoPropertiesReducer from "../redux/slices/auth/userInfoProperties";
 import productCategoriesReducer from "../redux/slices/productCategoriesSlice";
@@ -10,5 +11,6 @@ export default configureStore({
     productCategories: productCategoriesReducer,
     userInfo: userInfoReducer,
     userInfoProperties: userInfoPropertiesReducer,
+    needRefresh: needRefreshReducer,
   },
 });

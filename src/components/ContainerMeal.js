@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Pressable } from "react-native";
-import React, { useState, useLayoutEffect, useContext } from "react";
+import { View, Text, TouchableOpacity, Pressable, Alert } from "react-native";
+import React, { useState, useLayoutEffect } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -9,16 +9,21 @@ import {
   stringToNormalCase,
 } from "../methods/InformationMethods";
 import LoadingIndicator from "./LoadingIndicator";
-import { TokenContext } from "../context/TokenContext";
+import { getTokenFromStore } from "../methods/SecureStoreMethods";
 
 const ContainerMeal = ({ item, navigation, action }) => {
-  const { token } = useContext(TokenContext);
-
   const [mealElements, setMealElements] = useState([]);
   const [isLoading, setLoading] = useState(false);
 
+  const createErrorAlert = (message) => {
+    Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
+      cancelable: true,
+    });
+  };
+
   const getMealElements = async (mealID) => {
     if (!isLoading) setLoading(true);
+    let token = await getTokenFromStore();
 
     try {
       const response = await fetch(
