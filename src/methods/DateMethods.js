@@ -36,7 +36,7 @@ export const dateToWeekDay = (smth) => {
 };
 
 export const timeNow = (smth) => {
-  let time = moment(smth ? smth : new Date()).format(smth ? "HH:mm" : "HH:mm");
+  let time = moment(smth ? smth : new Date()).format("HH:mm");
   return time;
 };
 
@@ -47,5 +47,12 @@ export const birthdayToAge = (smth) => {
 
 export const today = () => {
   let date = moment(new Date()).format("YYYY-MM-DD");
+  return date;
+};
+
+export const dateToNotNormalDate = (smth) => {
+  let date = moment(smth ? smth : new Date(), "DD MMMM YYYY").format(
+    "YYYY-MM-DD"
+  );
   return date;
 };

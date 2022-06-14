@@ -50,7 +50,8 @@ const DailyStats = ({
           Углеводы: {dailyCarbohydrates}
         </Text>
         <Text style={{ fontWeight: "bold", color: "#645fb1" }}>
-          Калории: {dailyCalories}/{userInfoProperties.dayLimitCal}
+          Калории: {dailyCalories}/
+          {userInfoProperties.dayLimitCal ? userInfoProperties.dayLimitCal : 0}
         </Text>
       </View>
     </View>

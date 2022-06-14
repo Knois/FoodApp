@@ -267,14 +267,8 @@ const MainScreen = ({ navigation }) => {
             <TitleModal title="Укажите дату" />
             <DatePicker
               onDateChange={(date) => {
-                if (dateFormatted(date) == urlDate) {
-                  getAllMeals();
-                  toggleModal();
-                }
-                if (dateFormatted(date) !== urlDate) {
-                  setUrlDate(dateFormatted(date));
-                  toggleModal();
-                }
+                setUrlDate(dateFormatted(date));
+                toggleModal();
               }}
               minimumDate="2022-01-01"
               maximumDate="2999-01-01"

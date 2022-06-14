@@ -10,10 +10,18 @@ import React, { useState, useEffect } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
+import DatePicker from "react-native-modern-datepicker";
 import { useSelector, useDispatch } from "react-redux";
 
-import { timeNow, toNormalDate } from "../methods/DateMethods";
+import {
+  dateToNormalDate,
+  dateToNotNormalDate,
+  timeNow,
+  toNormalDate,
+} from "../methods/DateMethods";
 import { getSumCaloriesFromArray } from "../methods/InformationMethods";
+import BackModalButton from "../components/BackModalButton";
+import TitleModal from "../components/TitleModal";
 import LoadingIndicator from "../components/LoadingIndicator";
 import ContainerMealElement from "../components/ContainerMealElement";
 import ScreenHeader from "../components/ScreenHeader";
@@ -32,10 +40,13 @@ const MealScreen = ({ navigation, route }) => {
   const [meal_type, setMeal_type] = useState(
     route.params.meal_type ? route.params.meal_type : "BREAKFAST"
   );
-  const [date_time, setDate_time] = useState(
+  const [date, setDate] = useState(
     route.params.date_time
-      ? toNormalDate(route.params.date_time)
-      : urlDate + " " + timeNow() + ":00"
+      ? dateToNormalDate(route.params.date_time)
+      : dateToNormalDate(urlDate)
+  );
+  const [time, setTime] = useState(
+    route.params.date_time ? timeNow(route.params.date_time) : timeNow()
   );
 
   const [meal_elements, setMeal_elements] = useState(
@@ -44,12 +55,22 @@ const MealScreen = ({ navigation, route }) => {
   const [mealID, setMealID] = useState(route.params.mealID);
 
   const [isVisible, setVisible] = useState(false);
+  const [isVisibleDate, setVisibleDate] = useState(false);
+  const [isVisibleTime, setVisibleTime] = useState(false);
   const [isLoading, setLoading] = useState(false);
 
   let arrBase64 = [];
 
   const toggleModal = () => {
     setVisible(!isVisible);
+  };
+
+  const toggleModalDate = () => {
+    setVisibleDate(!isVisibleDate);
+  };
+
+  const toggleModalTime = () => {
+    setVisibleTime(!isVisibleTime);
   };
 
   const arrUrlToBase64 = async (id) => {
@@ -87,14 +108,15 @@ const MealScreen = ({ navigation, route }) => {
   const mealToObj = () => {
     let obj = mealID
       ? {
-          date_time: date_time,
+          date_time: dateToNotNormalDate(date) + " " + time + ":00",
           meal_type: meal_type,
           id: mealID,
         }
       : {
-          date_time: date_time,
+          date_time: dateToNotNormalDate(date) + " " + time + ":00",
           meal_type: meal_type,
         };
+
     return obj;
   };
 
@@ -313,7 +335,6 @@ const MealScreen = ({ navigation, route }) => {
                 </Text>
               </TouchableOpacity>
             </View>
-
             <View
               style={{
                 marginVertical: 10,
@@ -322,27 +343,55 @@ const MealScreen = ({ navigation, route }) => {
                 alignItems: "center",
               }}
             >
-              <Text style={{ color: "#645fb1" }}>Дата и время:</Text>
-              <TextInput /*                                                   Ввод даты и времени приема пищи*/
+              <Text style={{ color: "#645fb1" }}>Дата:</Text>
+              <TouchableOpacity /*                                 Открывает модальное окно с выбором даты*/
+                onPress={() => {
+                  toggleModalDate();
+                }}
                 style={{
-                  textAlign: "center",
                   borderWidth: 0.5,
+                  padding: 5,
                   borderRadius: 5,
                   borderColor: "#645fb1",
-                  alignSelf: "center",
                   width: 200,
                   height: 40,
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  color: "#645fb1",
-                  fontWeight: "bold",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
-                onChangeText={(text) => {
-                  setDate_time(text);
+              >
+                <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
+                  {date}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                marginVertical: 10,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#645fb1" }}>Время:</Text>
+              <TouchableOpacity /*                                 Открывает модальное окно с выбором времени*/
+                onPress={() => {
+                  toggleModalTime();
                 }}
-                value={date_time}
-                keyboardType="numeric"
-              />
+                style={{
+                  borderWidth: 0.5,
+                  padding: 5,
+                  borderRadius: 5,
+                  borderColor: "#645fb1",
+                  width: 200,
+                  height: 40,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ color: "#645fb1", fontWeight: "bold" }}>
+                  {time}
+                </Text>
+              </TouchableOpacity>
             </View>
             <View
               style={{
@@ -440,6 +489,83 @@ const MealScreen = ({ navigation, route }) => {
                 );
               })}
             </View>
+          </Modal>
+          <Modal //Модальное окно с календарем
+            hideModalContentWhileAnimating={true}
+            onBackButtonPress={() => {
+              toggleModalDate();
+            }}
+            onBackdropPress={() => {
+              toggleModalDate();
+            }}
+            isVisible={isVisibleDate}
+            animationIn="slideInUp"
+            animationInTiming={500}
+            animationOutTiming={500}
+            backdropOpacity={0.7}
+            backdropTransitionInTiming={1}
+            backdropTransitionOutTiming={1}
+          >
+            <TitleModal title="Укажите дату" />
+            <DatePicker
+              onDateChange={(date) => {
+                setDate(dateToNormalDate(date));
+                toggleModalDate();
+              }}
+              minimumDate="2022-01-01"
+              maximumDate="2999-01-01"
+              current={dateToNotNormalDate(date)}
+              selected={dateToNotNormalDate(date)}
+              mode="calendar"
+              options={{
+                headerAnimationDistance: 100,
+                daysAnimationDistance: 100,
+                textHeaderColor: "#645fb1",
+                textDefaultColor: "#645fb1",
+                selectedTextColor: "white",
+                mainColor: "#645fb1",
+                textSecondaryColor: "#645fb1",
+                borderColor: "#645fb1",
+              }}
+            />
+            <BackModalButton action={toggleModalDate} />
+          </Modal>
+          <Modal //Модальное окно с выбором времени
+            hideModalContentWhileAnimating={true}
+            onBackButtonPress={() => {
+              toggleModalTime();
+            }}
+            onBackdropPress={() => {
+              toggleModalTime();
+            }}
+            isVisible={isVisibleTime}
+            animationIn="slideInUp"
+            animationInTiming={500}
+            animationOutTiming={500}
+            backdropOpacity={0.7}
+            backdropTransitionInTiming={1}
+            backdropTransitionOutTiming={1}
+          >
+            <TitleModal title="Укажите время" />
+            <DatePicker
+              onTimeChange={(time) => {
+                setTime(time);
+                toggleModalTime();
+              }}
+              mode="time"
+              minuteInterval={5}
+              options={{
+                headerAnimationDistance: 100,
+                daysAnimationDistance: 100,
+                textHeaderColor: "#645fb1",
+                textDefaultColor: "#645fb1",
+                selectedTextColor: "white",
+                mainColor: "#645fb1",
+                textSecondaryColor: "#645fb1",
+                borderColor: "#645fb1",
+              }}
+            />
+            <BackModalButton action={toggleModalTime} />
           </Modal>
         </>
       )}
