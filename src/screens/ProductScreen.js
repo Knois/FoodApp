@@ -20,7 +20,7 @@ import { setNeedRefreshTrue } from "../redux/slices/needRefreshSlice";
 
 const ProductScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.token.arr);
+  const token = useSelector((state) => state.token.value);
   const productCategories = useSelector((state) => state.productCategories.arr);
 
   const item = route.params.item;
@@ -120,6 +120,7 @@ const ProductScreen = ({ navigation, route }) => {
   };
 
   const createProduct = async (obj) => {
+    console.log(token);
     if (!isLoading) setLoading(true);
     let formattedObj = await UrlToBase64(obj);
     try {
@@ -135,10 +136,11 @@ const ProductScreen = ({ navigation, route }) => {
         }
       );
       const json = await response.json();
+      console.log(json);
 
       if (json.id) {
-        dispatch(setNeedRefreshTrue());
         navigation.goBack();
+        dispatch(setNeedRefreshTrue());
       }
     } catch (error) {
       createErrorAlert("Ошибка при создании продукта");
@@ -164,8 +166,8 @@ const ProductScreen = ({ navigation, route }) => {
       );
       const json = await response.json();
       if (json.id) {
-        dispatch(setNeedRefreshTrue());
         navigation.goBack();
+        dispatch(setNeedRefreshTrue());
       }
     } catch (error) {
       createErrorAlert("Ошибка при обновлении продукта!");
@@ -189,8 +191,8 @@ const ProductScreen = ({ navigation, route }) => {
       );
 
       if (response.status == 200) {
-        dispatch(setNeedRefreshTrue());
         navigation.goBack();
+        dispatch(setNeedRefreshTrue());
       }
     } catch (error) {
       createErrorAlert("Ошибка при удалении продукта!");
