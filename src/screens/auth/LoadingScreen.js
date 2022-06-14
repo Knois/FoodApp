@@ -3,13 +3,13 @@ import { Alert } from "react-native";
 import { useDispatch } from "react-redux";
 
 import { setIsAuthTrue } from "../../redux/slices/auth/isAuthSlice";
+import { setToken } from "../../redux/slices/auth/tokenSlice";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import {
   getEmailFromStore,
   deleteEmailFromStore,
   getPasswordFromStore,
   deletePasswordFromStore,
-  setTokenToStore,
 } from "../../methods/SecureStoreMethods";
 
 const LoadingScreen = ({ navigation }) => {
@@ -53,7 +53,7 @@ const LoadingScreen = ({ navigation }) => {
 
       const json = await response.json();
       if (json.jwt_token) {
-        await setTokenToStore(json.jwt_token);
+        dispatch(setToken(json.jwt_token));
         dispatch(setIsAuthTrue());
       }
     } catch (error) {

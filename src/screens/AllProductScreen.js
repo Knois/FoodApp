@@ -13,12 +13,11 @@ import { useSelector, useDispatch } from "react-redux";
 import ScreenHeader from "../components/ScreenHeader";
 import LoadingIndicator from "../components/LoadingIndicator";
 import ContainerProduct from "../components/ContainerProduct";
-import { getTokenFromStore } from "../methods/SecureStoreMethods";
 import { setNeedRefreshFalse } from "../redux/slices/needRefreshSlice";
 
 const AllProductScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
-
+  const token = useSelector((state) => state.token.value);
   const needRefresh = useSelector((state) => state.needRefresh.value);
   const [name, setName] = useState("");
   const [dataAll, setDataAll] = useState([]);
@@ -34,7 +33,6 @@ const AllProductScreen = ({ navigation, route }) => {
 
   const searchByName = async () => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
 
     const url =
       "http://80.87.201.75:8079/gateway/my-food/product/search?search=name%3A" +
@@ -61,7 +59,7 @@ const AllProductScreen = ({ navigation, route }) => {
 
   const getMyProducts = async () => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
+
     const url =
       "http://80.87.201.75:8079/gateway/my-food/product?page=0&size=99999";
 

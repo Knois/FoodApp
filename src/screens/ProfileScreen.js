@@ -19,10 +19,10 @@ import {
   getBodyMassIndex,
   getRecommendedCaloriesPerDay,
 } from "../methods/InformationMethods";
-import { getTokenFromStore } from "../methods/SecureStoreMethods";
 
 const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.token.value);
   const userInfo = useSelector((state) => state.userInfo.value);
   const userInfoProperties = useSelector(
     (state) => state.userInfoProperties.value
@@ -72,8 +72,6 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   const getUserInfoProperties = async () => {
-    let token = await getTokenFromStore();
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/user_profile",
@@ -96,8 +94,6 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   const updateUserInfoProperties = async (obj) => {
-    let token = await getTokenFromStore();
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/user_profile",

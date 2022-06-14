@@ -18,7 +18,6 @@ import {
 import ScreenHeader from "../components/ScreenHeader";
 import BackModalButton from "../components/BackModalButton";
 import TitleModal from "../components/TitleModal";
-import { getTokenFromStore } from "../methods/SecureStoreMethods";
 import DailyStats from "../components/DailyStats";
 import LoadingIndicator from "../components/LoadingIndicator";
 import {
@@ -30,7 +29,7 @@ import {
 
 const MainScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-
+  const token = useSelector((state) => state.token.value);
   const needRefresh = useSelector((state) => state.needRefresh.value);
 
   const [meals, setMeals] = useState([]);
@@ -77,7 +76,6 @@ const MainScreen = ({ navigation }) => {
 
   const getAllMeals = async (urlDate) => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal/findByDate?date=" +
@@ -94,7 +92,7 @@ const MainScreen = ({ navigation }) => {
       const json = await response.json();
       if (json.content) {
         for (let el of json.content) {
-          el.mealElements = await getMealElements(el.id, token);
+          el.mealElements = await getMealElements(el.id);
         }
         setMeals(json.content);
         setLoading(false);
@@ -108,7 +106,7 @@ const MainScreen = ({ navigation }) => {
     }
   };
 
-  const getMealElements = async (mealID, token) => {
+  const getMealElements = async (mealID) => {
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal_element?mealId=" +
@@ -136,8 +134,6 @@ const MainScreen = ({ navigation }) => {
   };
 
   const deleteMeal = async (id) => {
-    let token = await getTokenFromStore();
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal/" + id,

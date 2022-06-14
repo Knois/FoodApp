@@ -8,8 +8,7 @@ import {
 } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
-
-import { getTokenFromStore } from "../methods/SecureStoreMethods";
+import { useSelector } from "react-redux";
 
 const ContainerMealElement = ({
   item,
@@ -18,6 +17,8 @@ const ContainerMealElement = ({
   deleteMealElement,
   navigation,
 }) => {
+  const token = useSelector((state) => state.token.value);
+
   let imageKey = new Date();
   let imageUri = item.image_base64
     ? {
@@ -28,7 +29,7 @@ const ContainerMealElement = ({
         uri: item.image_url + "?random_number=" + imageKey,
         cache: "reload",
         headers: {
-          Authorization: "Bearer " + getTokenFromStore(),
+          Authorization: "Bearer " + token,
           "Content-Type": "application/json",
           Pragma: "no-cache",
         },
@@ -50,8 +51,6 @@ const ContainerMealElement = ({
         cancelable: true,
       }
     );
-
-  console.log(item);
 
   return (
     <Pressable

@@ -15,18 +15,16 @@ import TitleModal from "../components/TitleModal";
 import {
   deleteEmailFromStore,
   deletePasswordFromStore,
-  deleteTokenFromStore,
   getEmailFromStore,
   getPasswordFromStore,
-  getTokenFromStore,
   setEmailToStore,
   setPasswordToStore,
-  setTokenToStore,
 } from "../methods/SecureStoreMethods";
+import { setToken } from "../redux/slices/auth/tokenSlice";
 
 const SettingsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-
+  const token = useSelector((state) => state.token.value);
   const userInfo = useSelector((state) => state.userInfo.value);
 
   const [isVisible, setIsVisible] = useState(false);
@@ -70,14 +68,12 @@ const SettingsScreen = ({ navigation }) => {
     );
 
   const signOut = () => {
-    deleteTokenFromStore();
+    dispatch(setToken(null));
     dispatch(setIsAuthFalse());
   };
 
   const updateUserName = async (obj) => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/auth/user",
@@ -109,8 +105,6 @@ const SettingsScreen = ({ navigation }) => {
 
   const updateUserEmail = async (obj) => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/auth/user",
@@ -141,8 +135,6 @@ const SettingsScreen = ({ navigation }) => {
 
   const updateUserPassword = async (obj) => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/auth/user",
@@ -186,12 +178,13 @@ const SettingsScreen = ({ navigation }) => {
 
       const json = await response.json();
       if (json.jwt_token) {
-        await setTokenToStore(json.jwt_token);
+        dispatch(setToken(json.jwt_token));
       }
     } catch (error) {
       deleteEmailFromStore();
       deletePasswordFromStore();
       createErrorAlert("Ошибка при получении токена");
+      dispatch(setToken(null));
       dispatch(setIsAuthFalse());
     } finally {
     }

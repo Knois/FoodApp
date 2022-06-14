@@ -16,11 +16,11 @@ import { useSelector, useDispatch } from "react-redux";
 import ScreenHeader from "../components/ScreenHeader";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { countCalories } from "../methods/InformationMethods";
-import { getTokenFromStore } from "../methods/SecureStoreMethods";
 import { setNeedRefreshTrue } from "../redux/slices/needRefreshSlice";
 
 const ProductScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.token.arr);
   const productCategories = useSelector((state) => state.productCategories.arr);
 
   const item = route.params.item;
@@ -121,9 +121,7 @@ const ProductScreen = ({ navigation, route }) => {
 
   const createProduct = async (obj) => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
     let formattedObj = await UrlToBase64(obj);
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/product",
@@ -151,9 +149,7 @@ const ProductScreen = ({ navigation, route }) => {
 
   const updateProduct = async (obj) => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
     let formattedObj = await UrlToBase64(obj);
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/product",
@@ -180,7 +176,6 @@ const ProductScreen = ({ navigation, route }) => {
 
   const deleteProduct = async (id) => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/product/" + id,
@@ -223,7 +218,7 @@ const ProductScreen = ({ navigation, route }) => {
     ? {
         uri: image_url + "?random_number=" + imageKey,
         headers: {
-          Authorization: "Bearer " + getTokenFromStore(),
+          Authorization: "Bearer " + token,
           Pragma: "no-cache",
         },
       }

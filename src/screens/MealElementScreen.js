@@ -10,13 +10,12 @@ import {
 import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
+import { useDispatch, useSelector } from "react-redux";
 
 import { setNeedRefreshTrue } from "../redux/slices/needRefreshSlice";
 import ScreenHeader from "../components/ScreenHeader";
 import { countCalories } from "../methods/InformationMethods";
 import LoadingIndicator from "../components/LoadingIndicator";
-import { getTokenFromStore } from "../methods/SecureStoreMethods";
-import { useDispatch } from "react-redux";
 
 const MealElementScreen = ({ navigation, route }) => {
   const item = route.params.item;
@@ -24,7 +23,9 @@ const MealElementScreen = ({ navigation, route }) => {
   const index = route.params.index;
   const mealID = route.params.mealID;
   const action = route.params.action;
+
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.token.value);
 
   const [calories, setCalories] = useState(item ? String(item.calories) : "0");
   const [carbohydrates, setCarbohydrates] = useState(
@@ -88,7 +89,7 @@ const MealElementScreen = ({ navigation, route }) => {
           FileSystem.documentDirectory + "bufferimg.jpg",
           {
             headers: {
-              Authorization: "Bearer " + getTokenFromStore(),
+              Authorization: "Bearer " + token,
             },
           }
         );
@@ -119,7 +120,6 @@ const MealElementScreen = ({ navigation, route }) => {
 
   const createMealElementOnServer = async (obj) => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
     let formattedObj = await UrlToBase64(obj);
 
     try {
@@ -149,7 +149,6 @@ const MealElementScreen = ({ navigation, route }) => {
 
   const updateMealElementOnServer = async (obj) => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
     let formattedObj = await UrlToBase64(obj);
     try {
       const response = await fetch(
@@ -196,12 +195,15 @@ const MealElementScreen = ({ navigation, route }) => {
     ? {
         uri: image_url + "?random_number=" + imageKey,
         headers: {
-          Authorization: "Bearer " + getTokenFromStore(),
+          Authorization: "Bearer " + token,
           "Content-Type": "application/json",
           Pragma: "no-cache",
         },
       }
     : require("../../assets/img/addPhoto.png");
+
+  console.log(item);
+  console.log(imageUri);
 
   useEffect(() => {
     let countResult = countCalories(proteins, fats, carbohydrates);

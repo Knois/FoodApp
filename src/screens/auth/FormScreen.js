@@ -4,6 +4,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useDispatch } from "react-redux";
 
 import { setIsAuthTrue } from "../../redux/slices/auth/isAuthSlice";
+import { setToken } from "../../redux/slices/auth/tokenSlice";
 import SighInForm from "../../components/auth/SignInForm";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import { MAIN } from "../../constants/Constants";
@@ -12,7 +13,6 @@ import {
   deleteEmailFromStore,
   setPasswordToStore,
   deletePasswordFromStore,
-  setTokenToStore,
 } from "../../methods/SecureStoreMethods";
 
 const FormScreen = ({ navigation }) => {
@@ -43,9 +43,9 @@ const FormScreen = ({ navigation }) => {
       );
       const json = await response.json();
       if (json.jwt_token) {
-        await setTokenToStore(json.jwt_token);
         await setEmailToStore(obj.email);
         await setPasswordToStore(obj.password);
+        dispatch(setToken(json.jwt_token));
         dispatch(setIsAuthTrue());
       }
     } catch (error) {

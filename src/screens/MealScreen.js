@@ -1,11 +1,4 @@
-import {
-  Text,
-  TextInput,
-  View,
-  FlatList,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { Text, View, FlatList, TouchableOpacity, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,7 +10,6 @@ import {
   dateToNormalDate,
   dateToNotNormalDate,
   timeNow,
-  toNormalDate,
 } from "../methods/DateMethods";
 import { getSumCaloriesFromArray } from "../methods/InformationMethods";
 import BackModalButton from "../components/BackModalButton";
@@ -26,7 +18,6 @@ import LoadingIndicator from "../components/LoadingIndicator";
 import ContainerMealElement from "../components/ContainerMealElement";
 import ScreenHeader from "../components/ScreenHeader";
 import { mealTypes } from "../constants/Constants";
-import { getTokenFromStore } from "../methods/SecureStoreMethods";
 import {
   setNeedRefreshFalse,
   setNeedRefreshTrue,
@@ -35,6 +26,7 @@ import {
 const MealScreen = ({ navigation, route }) => {
   const urlDate = route.params.urlDate;
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.token.value);
   const needRefresh = useSelector((state) => state.needRefresh.value);
 
   const [meal_type, setMeal_type] = useState(
@@ -84,7 +76,7 @@ const MealScreen = ({ navigation, route }) => {
             FileSystem.documentDirectory + "bufferimg.jpg",
             {
               headers: {
-                Authorization: "Bearer " + getTokenFromStore(),
+                Authorization: "Bearer " + token,
               },
             }
           );
@@ -146,7 +138,6 @@ const MealScreen = ({ navigation, route }) => {
 
   const createMeal = async () => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
     let obj = mealToObj();
 
     try {
@@ -180,7 +171,6 @@ const MealScreen = ({ navigation, route }) => {
 
   const updateMeal = async () => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
     let obj = mealToObj();
 
     try {
@@ -208,7 +198,6 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const createMealElement = async (mealElement) => {
-    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal_element",
@@ -234,7 +223,6 @@ const MealScreen = ({ navigation, route }) => {
 
   const getMealElements = async (mealID) => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal_element?mealId=" +
@@ -262,8 +250,6 @@ const MealScreen = ({ navigation, route }) => {
 
   const deleteMealElementFromServer = async (mealElementID) => {
     if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal_element/" +

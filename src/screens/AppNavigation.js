@@ -21,7 +21,6 @@ import { MAIN, SECONDARY } from "../constants/Constants";
 import ProductScreen from "./ProductScreen";
 import SettingsScreen from "./SettingsScreen";
 import { setUserInfoProperties } from "../redux/slices/auth/userInfoProperties";
-import { getTokenFromStore } from "../methods/SecureStoreMethods";
 
 const Drawer = createDrawerNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -93,6 +92,7 @@ const ProfileStackScreen = () => {
 const AppNavigation = () => {
   const dispatch = useDispatch();
   const window = useWindowDimensions();
+  const token = useSelector((state) => state.token.value);
   const isAuth = useSelector((state) => state.isAuth.value);
 
   const createErrorAlert = (message) => {
@@ -102,7 +102,6 @@ const AppNavigation = () => {
   };
 
   const getAllProductCategories = async () => {
-    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/product_category?page=0&size=99999",
@@ -125,7 +124,6 @@ const AppNavigation = () => {
   };
 
   const getUserInfo = async () => {
-    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/auth/user",
@@ -148,7 +146,6 @@ const AppNavigation = () => {
   };
 
   const getUserInfoProperties = async () => {
-    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/user_profile",
@@ -173,7 +170,6 @@ const AppNavigation = () => {
   };
 
   const createUserInfoProperties = async () => {
-    let token = await getTokenFromStore();
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/user_profile",
