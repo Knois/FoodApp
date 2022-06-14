@@ -88,7 +88,7 @@ const MealElementScreen = ({ navigation, route }) => {
           FileSystem.documentDirectory + "bufferimg.jpg",
           {
             headers: {
-              Authorization: "Bearer " + token,
+              Authorization: "Bearer " + getTokenFromStore(),
             },
           }
         );

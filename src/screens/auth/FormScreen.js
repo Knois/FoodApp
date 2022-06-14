@@ -44,6 +44,8 @@ const FormScreen = ({ navigation }) => {
       const json = await response.json();
       if (json.jwt_token) {
         await setTokenToStore(json.jwt_token);
+        await setEmailToStore(obj.email);
+        await setPasswordToStore(obj.password);
         dispatch(setIsAuthTrue());
       }
     } catch (error) {
@@ -70,8 +72,6 @@ const FormScreen = ({ navigation }) => {
       );
       const json = await response.json();
       if (json.id) {
-        await setEmailToStore(obj.email);
-        await setPasswordToStore(obj.password);
         await createJwt({ email: obj.email, password: obj.password });
       }
     } catch (error) {

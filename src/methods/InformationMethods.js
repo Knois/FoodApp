@@ -1,15 +1,70 @@
 import { birthdayToAge } from "./DateMethods";
 
-/*                         Возвращает сумму калорий из массива объектов*/
+//Возвращает сумму калорий/БЖУ из массива элементов приема пищи
 export const getSumCaloriesFromArray = (arr) => {
   let sum = 0;
   arr.forEach((el) => {
     sum = sum + +el.calories;
   });
-  return sum;
+  sum.toFixed(2);
+  return Math.ceil(sum * 100) / 100;
+};
+export const getSumProteinsFromArray = (arr) => {
+  let sum = 0;
+  arr.forEach((el) => {
+    sum = sum + +el.proteins;
+  });
+  sum.toFixed(2);
+  return Math.ceil(sum * 100) / 100;
+};
+export const getSumFatsFromArray = (arr) => {
+  let sum = 0;
+  arr.forEach((el) => {
+    sum = sum + +el.fats;
+  });
+  sum.toFixed(2);
+  return Math.ceil(sum * 100) / 100;
+};
+export const getSumCarbohydratesFromArray = (arr) => {
+  let sum = 0;
+  arr.forEach((el) => {
+    sum = sum + +el.carbohydrates;
+  });
+
+  return Math.ceil(sum * 100) / 100;
+};
+//Возвращает сумму калорий/БЖУ за день из массива приемов пищи
+export const countDailyCalories = (arr) => {
+  let sum = 0;
+  for (let el of arr) {
+    sum = sum + getSumCaloriesFromArray(el.mealElements);
+  }
+  return Math.floor(sum * 100) / 100;
+};
+export const countDailyProteins = (arr) => {
+  let sum = 0;
+  for (let el of arr) {
+    sum = sum + getSumProteinsFromArray(el.mealElements);
+  }
+  return Math.floor(sum * 100) / 100;
+};
+export const countDailyFats = (arr) => {
+  let sum = 0;
+  for (let el of arr) {
+    sum = sum + getSumFatsFromArray(el.mealElements);
+  }
+  return Math.floor(sum * 100) / 100;
+};
+export const countDailyCarbohydrates = (arr) => {
+  let sum = 0;
+  for (let el of arr) {
+    sum = sum + getSumCarbohydratesFromArray(el.mealElements);
+  }
+
+  return Math.floor(sum * 100) / 100;
 };
 
-/*                         Возвращает строку, где первый символ заглавный, остальные маленькие*/
+//Возвращает строку, где первый символ заглавный, остальные маленькие
 export const stringToNormalCase = (str) => {
   if (str == "") {
     return "Без названия";

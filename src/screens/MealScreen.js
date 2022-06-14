@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
@@ -39,7 +39,7 @@ const MealScreen = ({ navigation, route }) => {
   );
 
   const [meal_elements, setMeal_elements] = useState(
-    route.params.meal_elements ? route.params.meal_elements : []
+    route.params.mealElements ? route.params.mealElements : []
   );
   const [mealID, setMealID] = useState(route.params.mealID);
 
@@ -63,7 +63,7 @@ const MealScreen = ({ navigation, route }) => {
             FileSystem.documentDirectory + "bufferimg.jpg",
             {
               headers: {
-                Authorization: "Bearer " + token,
+                Authorization: "Bearer " + getTokenFromStore(),
               },
             }
           );
@@ -123,7 +123,7 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const createMeal = async () => {
-    setLoading(true);
+    if (!isLoading) setLoading(true);
     let token = await getTokenFromStore();
     let obj = mealToObj();
 
@@ -146,8 +146,8 @@ const MealScreen = ({ navigation, route }) => {
         for (let el of arrBase64) {
           await createMealElement(el);
         }
-        dispatch(setNeedRefreshTrue());
         navigation.goBack();
+        dispatch(setNeedRefreshTrue());
       }
     } catch (error) {
       setLoading(false);
@@ -157,7 +157,7 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const updateMeal = async () => {
-    setLoading(true);
+    if (!isLoading) setLoading(true);
     let token = await getTokenFromStore();
     let obj = mealToObj();
 
@@ -175,8 +175,8 @@ const MealScreen = ({ navigation, route }) => {
       );
       const json = await response.json();
       if (json.id) {
-        dispatch(setNeedRefreshTrue());
         navigation.goBack();
+        dispatch(setNeedRefreshTrue());
       }
     } catch (error) {
       setLoading(false);
@@ -211,7 +211,7 @@ const MealScreen = ({ navigation, route }) => {
   };
 
   const getMealElements = async (mealID) => {
-    //if (!isLoading) setLoading(true);
+    if (!isLoading) setLoading(true);
     let token = await getTokenFromStore();
     try {
       const response = await fetch(
@@ -229,11 +229,12 @@ const MealScreen = ({ navigation, route }) => {
       const json = await response.json();
       if (json.content) {
         setMeal_elements(json.content);
+        setLoading(false);
       }
     } catch (error) {
       createErrorAlert("Ошибка при получении элементов приема пищи c сервера");
-    } finally {
       setLoading(false);
+    } finally {
     }
   };
 
@@ -262,10 +263,6 @@ const MealScreen = ({ navigation, route }) => {
     } finally {
     }
   };
-
-  useLayoutEffect(() => {
-    if (mealID) getMealElements(mealID);
-  }, []);
 
   useEffect(() => {
     if (needRefresh) {

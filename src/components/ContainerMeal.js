@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Pressable, Alert } from "react-native";
-import React, { useState, useLayoutEffect } from "react";
+import { View, Text, TouchableOpacity, Pressable } from "react-native";
+import React from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -8,52 +8,9 @@ import {
   getSumCaloriesFromArray,
   stringToNormalCase,
 } from "../methods/InformationMethods";
-import LoadingIndicator from "./LoadingIndicator";
-import { getTokenFromStore } from "../methods/SecureStoreMethods";
 
 const ContainerMeal = ({ item, navigation, action }) => {
-  const [mealElements, setMealElements] = useState([]);
-  const [isLoading, setLoading] = useState(false);
-
-  const createErrorAlert = (message) => {
-    Alert.alert("Ошибка", message, [{ text: "ОК", onPress: () => null }], {
-      cancelable: true,
-    });
-  };
-
-  const getMealElements = async (mealID) => {
-    if (!isLoading) setLoading(true);
-    let token = await getTokenFromStore();
-
-    try {
-      const response = await fetch(
-        "http://80.87.201.75:8079/gateway/my-food/meal_element?mealId=" +
-          mealID +
-          "&page=0&size=999",
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + token,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const json = await response.json();
-      if (json.content) {
-        setMealElements(json.content);
-      }
-    } catch (error) {
-      createErrorAlert(
-        "Ошибка при получении элементов элементов приема пищи c сервера"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useLayoutEffect(() => {
-    getMealElements(item.id);
-  }, []);
+  const sumCalories = getSumCaloriesFromArray(item.mealElements);
 
   return (
     <>
@@ -70,7 +27,7 @@ const ContainerMeal = ({ item, navigation, action }) => {
             meal_type: item.meal_type,
             date_time: item.date_time,
             name: item.name,
-            meal_elements: mealElements,
+            mealElements: item.mealElements,
           });
         }}
       >
@@ -85,53 +42,47 @@ const ContainerMeal = ({ item, navigation, action }) => {
             {stringToNormalCase(item.meal_type)} at {timeNow(item.date_time)}
           </Text>
           <Text style={{ fontSize: 16, fontWeight: "bold", color: "#9599a4" }}>
-            {getSumCaloriesFromArray(mealElements)} ккал
+            {sumCalories} ккал
           </Text>
         </View>
 
         <View>
-          {isLoading ? (
-            <View style={{ height: 1 }}>
-              <LoadingIndicator />
-            </View>
-          ) : (
-            mealElements.map((el) => {
-              return (
+          {item.mealElements.map((el) => {
+            return (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: 5,
+                }}
+                key={Math.random() * 9999}
+              >
+                <MaterialCommunityIcons
+                  name="silverware-fork-knife"
+                  size={24}
+                  color="#645fb1"
+                />
                 <View
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    padding: 5,
+                    width: "90%",
+                    marginLeft: 10,
                   }}
-                  key={Math.random() * 9999}
                 >
-                  <MaterialCommunityIcons
-                    name="silverware-fork-knife"
-                    size={24}
-                    color="#645fb1"
-                  />
-                  <View
+                  <Text
                     style={{
-                      width: "90%",
-                      marginLeft: 10,
+                      fontWeight: "bold",
+                      color: "#645fb1",
                     }}
                   >
-                    <Text
-                      style={{
-                        fontWeight: "bold",
-                        color: "#645fb1",
-                      }}
-                    >
-                      {el.name}
-                    </Text>
-                    <Text style={{ color: "#9599a4" }}>
-                      {el.quantity} {stringToNormalCase(el.measurement_type)}
-                    </Text>
-                  </View>
+                    {el.name}
+                  </Text>
+                  <Text style={{ color: "#9599a4" }}>
+                    {el.quantity} {stringToNormalCase(el.measurement_type)}
+                  </Text>
                 </View>
-              );
-            })
-          )}
+              </View>
+            );
+          })}
         </View>
 
         <TouchableOpacity

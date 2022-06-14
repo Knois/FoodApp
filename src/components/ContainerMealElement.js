@@ -51,6 +51,8 @@ const ContainerMealElement = ({
       }
     );
 
+  console.log(item);
+
   return (
     <Pressable
       style={{

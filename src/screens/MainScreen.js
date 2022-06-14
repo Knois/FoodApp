@@ -1,12 +1,5 @@
 import React, { useState, useLayoutEffect, useEffect } from "react";
-import {
-  Text,
-  View,
-  FlatList,
-  TouchableOpacity,
-  useWindowDimensions,
-  Alert,
-} from "react-native";
+import { Text, View, FlatList, TouchableOpacity, Alert } from "react-native";
 import Modal from "react-native-modal";
 import { Ionicons } from "@expo/vector-icons";
 import DatePicker from "react-native-modern-datepicker";
@@ -22,21 +15,34 @@ import {
   dateToNormalDate,
   dateToWeekDay,
 } from "../methods/DateMethods";
-import LoadingIndicator from "../components/LoadingIndicator";
 import ScreenHeader from "../components/ScreenHeader";
 import BackModalButton from "../components/BackModalButton";
 import TitleModal from "../components/TitleModal";
 import { getTokenFromStore } from "../methods/SecureStoreMethods";
+import DailyStats from "../components/DailyStats";
+import LoadingIndicator from "../components/LoadingIndicator";
+import {
+  countDailyCalories,
+  countDailyCarbohydrates,
+  countDailyFats,
+  countDailyProteins,
+} from "../methods/InformationMethods";
 
-const MainScreen = ({ navigation, route }) => {
-  const window = useWindowDimensions();
+const MainScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const needRefresh = useSelector((state) => state.needRefresh.value);
-  const [isLoading, setLoading] = useState(false);
+
   const [meals, setMeals] = useState([]);
   const [urlDate, setUrlDate] = useState(dateFormatted());
+
+  const [isLoading, setLoading] = useState(false);
   const [isVisible, setVisible] = useState(false);
+
+  let dailyCalories = countDailyCalories(meals);
+  let dailyProteins = countDailyProteins(meals);
+  let dailyFats = countDailyFats(meals);
+  let dailyCarbohydrates = countDailyCarbohydrates(meals);
 
   const toggleModal = () => {
     setVisible(!isVisible);
@@ -72,7 +78,6 @@ const MainScreen = ({ navigation, route }) => {
   const getAllMeals = async (urlDate) => {
     if (!isLoading) setLoading(true);
     let token = await getTokenFromStore();
-
     try {
       const response = await fetch(
         "http://80.87.201.75:8079/gateway/my-food/meal/findByDate?date=" +
@@ -88,19 +93,49 @@ const MainScreen = ({ navigation, route }) => {
       );
       const json = await response.json();
       if (json.content) {
+        for (let el of json.content) {
+          el.mealElements = await getMealElements(el.id, token);
+        }
         setMeals(json.content);
+        setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       createErrorAlert(
         "Произошла ошибка при попытке получить приемы пищи с сервера"
       );
     } finally {
-      setLoading(false);
+    }
+  };
+
+  const getMealElements = async (mealID, token) => {
+    try {
+      const response = await fetch(
+        "http://80.87.201.75:8079/gateway/my-food/meal_element?mealId=" +
+          mealID +
+          "&page=0&size=999",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const json = await response.json();
+      if (json.content) {
+        return json.content;
+      }
+    } catch (error) {
+      createErrorAlert(
+        "Ошибка при получении элементов элементов приема пищи c сервера"
+      );
+      return null;
+    } finally {
     }
   };
 
   const deleteMeal = async (id) => {
-    if (!isLoading) setLoading(true);
     let token = await getTokenFromStore();
 
     try {
@@ -119,7 +154,6 @@ const MainScreen = ({ navigation, route }) => {
       }
     } catch (error) {
       createErrorAlert("Произошла ошибка при попытке удалить прием пищи");
-      setLoading(false);
     } finally {
     }
   };
@@ -139,14 +173,14 @@ const MainScreen = ({ navigation, route }) => {
     <>
       <View style={{ flex: 1 }}>
         <>
-          <ScreenHeader
+          <ScreenHeader //Шапка
             canGoBack={false}
             title="Расписание питания"
             action={toggleModal}
             rightIcon="calendar-outline"
           />
           <View style={{ margin: 10, flex: 1 }}>
-            <View /*                                 Дата         */
+            <View //Выбранная дата
               style={{
                 flexDirection: "row",
                 justifyContent: "flex-start",
@@ -155,32 +189,19 @@ const MainScreen = ({ navigation, route }) => {
             >
               <View>
                 <Text style={{ fontWeight: "bold", color: "#645fb1" }}>
-                  {dateToWeekDay(urlDate)},{" "}
+                  {dateToWeekDay(urlDate)},
                 </Text>
                 <Text style={{ color: "#645fb1" }}>
                   {dateToNormalDate(urlDate)}
                 </Text>
               </View>
             </View>
-            <View /*                                 Блок статистики       */
-              style={{
-                marginVertical: 15,
-                backgroundColor: "#d8d6ed",
-                borderRadius: 10,
-                width: "100%",
-                height: (window.height - window.height / 9) / 7,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {isLoading ? (
-                <LoadingIndicator />
-              ) : (
-                <Text style={{ fontWeight: "bold", color: "#645fb1" }}>
-                  Место под статистику
-                </Text>
-              )}
-            </View>
+            <DailyStats //Блок ежедневной статистики
+              dailyCalories={dailyCalories}
+              dailyProteins={dailyProteins}
+              dailyFats={dailyFats}
+              dailyCarbohydrates={dailyCarbohydrates}
+            />
             <View
               style={{
                 flex: 1,
@@ -189,7 +210,7 @@ const MainScreen = ({ navigation, route }) => {
               {isLoading ? (
                 <LoadingIndicator />
               ) : (
-                <FlatList /*                                 Список полученных приемов пищи       */
+                <FlatList //Список полученных приемов пищи
                   data={meals}
                   keyExtractor={(item) => item.id}
                   renderItem={(item) => {
@@ -205,7 +226,7 @@ const MainScreen = ({ navigation, route }) => {
               )}
             </View>
 
-            <TouchableOpacity /*                                 Кнопка создания приема пищи, переход на другой экран       */
+            <TouchableOpacity //Кнопка создания приема пищи (переход на другой экран)
               style={{
                 backgroundColor: "#d8d6ed",
                 width: 50,
@@ -227,7 +248,7 @@ const MainScreen = ({ navigation, route }) => {
               <Ionicons name="add-outline" size={40} color="#645fb1" />
             </TouchableOpacity>
           </View>
-          <Modal /*                                 Модальное окно с календарем       */
+          <Modal //Модальное окно с календарем
             hideModalContentWhileAnimating={true}
             onBackButtonPress={() => {
               toggleModal();
