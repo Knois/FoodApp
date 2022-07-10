@@ -67,8 +67,10 @@ const SettingsScreen = ({ navigation }) => {
       }
     );
 
-  const signOut = () => {
+  const signOut = async () => {
     dispatch(setToken(null));
+    await deletePasswordFromStore();
+    await deleteEmailFromStore();
     dispatch(setIsAuthFalse());
   };
 
